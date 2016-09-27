@@ -1,0 +1,44 @@
+Glurg
+================================================================================
+Glurg extracts resources, like meshes and textures, from OpenGL call sequences.
+Using certain heuristics, Glurg can also create so-called relationships between
+resources to also generate things like animations.
+
+Glurg is a weird way of saying 'OpenGL resource generator'. It probably means
+other things, too.
+
+Building
+================================================================================
+Glurg's application logic is written in Lua and must be run with LuaJIT.
+However, the native library, libglurg, requires building using your platform's
+C++ compiler.
+
+Glurg also depends on a patched glretrace, from apitrace.
+
+libglurg
+--------------------------------------------------------------------------------
+To build libglurg, execute CMake using the provided CMakeLists.txt as usual. You
+will need to provide some dependencies:
+
+* [Assimp](https://github.com/assimp/assimp)
+* [libpng](http://www.libpng.org/pub/png/libpng.html)
+* [Sodium](https://github.com/jedisct1/libsodium)
+* [Snappy](https://github.com/google/snappy)
+* [UbjsonCpp](https://github.com/WhiZTiM/UbjsonCpp)
+
+glretrace
+--------------------------------------------------------------------------------
+Glurg requires the patch (misc/apitrace_retrace_main.patch) to be applied. The
+patch works with apitrace 7.1. The custom glretrace executable should be used
+with Glurg.
+
+License
+================================================================================
+Glurg is licensed under the Mozilla Public License, version 2. See the file
+'LICENSE' in the root directory, or visit <http://mozilla.org/MPL/2.0/>.
+
+Copyright
+================================================================================
+Copyright 2016 [bk]door.maus
+
+Remember... Feed your head, feed your head.
