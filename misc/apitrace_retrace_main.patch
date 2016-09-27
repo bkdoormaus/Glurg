@@ -1,0 +1,68 @@
+diff --git a/retrace/retrace_main.cpp b/retrace/retrace_main.cpp
+index ec49a16..d2507f3 100644
+--- a/retrace/retrace_main.cpp
++++ b/retrace/retrace_main.cpp
+@@ -46,7 +46,7 @@
+ #include "state_writer.hpp"
+ #include "ws.hpp"
+ 
+-
++static bool dumpAllFrames = false;
+ static bool waitOnFinish = false;
+ 
+ static const char *snapshotPrefix = "";
+@@ -241,12 +241,15 @@ retraceCall(trace::Call *call) {
+         }
+     }
+ 
+-    if (call->no >= dumpStateCallNo &&
++    if ((dumpAllFrames || call->no >= dumpStateCallNo) &&
+         dumper->canDump()) {
+         StateWriter *writer = stateWriterFactory(std::cout);
+         dumper->dumpState(*writer);
+         delete writer;
+-        exit(0);
++
++        if (call->no >= dumpStateCallNo) {
++            exit(0);
++        }
+     }
+ }
+ 
+@@ -616,7 +619,8 @@ usage(const char *argv0) {
+         "      --dump-format=FORMAT dump state format (`json` or `ubjson`)\n"
+         "  -w, --wait              waitOnFinish on final frame\n"
+         "      --loop[=N]          loop N times (N<0 continuously) replaying final frame.\n"
+-        "      --singlethread      use a single thread to replay command stream\n";
++        "      --singlethread      use a single thread to replay command stream\n"
++        "  -a, --all-frames        dump all frames to the current directory\n";
+ }
+ 
+ enum {
+@@ -640,7 +644,7 @@ enum {
+ };
+ 
+ const static char *
+-shortOptions = "bdD:hs:S:vw";
++shortOptions = "bdD:hs:S:vwa";
+ 
+ const static struct option
+ longOptions[] = {
+@@ -669,6 +673,7 @@ longOptions[] = {
+     {"wait", no_argument, 0, 'w'},
+     {"loop", optional_argument, 0, LOOP_OPT},
+     {"singlethread", no_argument, 0, SINGLETHREAD_OPT},
++    {"all-frames", no_argument, 0, 'a'},
+     {0, 0, 0, 0}
+ };
+ 
+@@ -837,6 +842,9 @@ int main(int argc, char **argv)
+ 
+             retrace::profilingMemoryUsage = true;
+             break;
++        case 'a':
++            dumpAllFrames = true;
++            break;
+         default:
+             std::cerr << "error: unknown option " << opt << "\n";
+             usage(argv[0]);
