@@ -7,6 +7,9 @@
 #ifndef LIBGLURG_RESOURCES_RESOURCE_HPP
 #define LIBGLURG_RESOURCES_RESOURCE_HPP
 
+#include <cstddef>
+#include <cstdint>
+
 namespace glurg
 {
 	struct Hash;
@@ -16,7 +19,10 @@ namespace glurg
 	public:
 		virtual ~Resource() = default;
 
-		const glurg::Hash& get_hash() const;
+		virtual const glurg::Hash& get_hash() const = 0;
+
+		virtual const std::uint8_t* get_data() const = 0;
+		virtual const std::size_t get_size() const = 0;
 	};
 }
 
