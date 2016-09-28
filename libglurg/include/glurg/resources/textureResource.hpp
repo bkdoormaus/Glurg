@@ -28,8 +28,8 @@ namespace glurg
 			type_cube_map_negative_y,
 			type_cube_map_positive_z,
 			type_cube_map_negative_z,
-			type_2d_array,
-			type_3d_array
+			type_1d_array,
+			type_2d_array
 		};
 
 		enum
@@ -42,13 +42,13 @@ namespace glurg
 
 		enum
 		{
-			pixel_type_ubyte,
-			pixel_type_byte,
-			pixel_type_ushort,
-			pixel_type_short,
-			pixel_type_uint,
-			pixel_type_int,
-			pixel_type_float
+			pixel_format_ubyte,
+			pixel_format_byte,
+			pixel_format_ushort,
+			pixel_format_short,
+			pixel_format_uint,
+			pixel_format_int,
+			pixel_format_float
 		};
 
 		TextureResource(
@@ -63,17 +63,21 @@ namespace glurg
 		int get_level() const;
 		int get_texture_type() const;
 		int get_pixel_components() const;
-		int get_pixel_format();
-		std::uint8_t* get_pixels();
+		int get_pixel_format() const;
+		const std::uint8_t* get_pixels() const;
 
 		static int get_num_pixel_components(int pixel_components);
 		static int get_pixel_component_size(int pixel_format);
 		static int get_pixel_size(int pixel_components, int pixel_format);
 
-		const glurg::Hash& get_hash();
+		static bool is_valid_texture_type(int texture_type);
+		static bool is_valid_pixel_components(int pixel_components);
+		static bool is_valid_pixel_format(int pixel_format);
 
-		const std::uint8_t* get_data();
-		const std::size_t get_size();
+		const glurg::Hash& get_hash() const;
+
+		const std::uint8_t* get_data() const;
+		const std::size_t get_size() const;
 
 	private:
 		struct TextureHeader
