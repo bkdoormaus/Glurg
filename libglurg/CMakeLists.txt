@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(glurg CXX)
+project(glurg)
 
 find_package(Boost REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -11,6 +11,7 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/common/hash.hpp")
 
 set(LIBGLURG_SOURCE_FILES
+	"source/resources/textureResource.cpp"
 	"source/common/hash.cpp")
 
 set(LIBGLURG_INCLUDE_DIRS
@@ -18,7 +19,7 @@ set(LIBGLURG_INCLUDE_DIRS
 
 add_library(libglurg SHARED
 	${LIBGLURG_INCLUDE_FILES}
-	${LIBGLURG_SOURCE_FILE})
+	${LIBGLURG_SOURCE_FILES})
 
 set_target_properties(libglurg PROPERTIES LINKER_LANGUAGE CXX)
 
