@@ -29,6 +29,8 @@ namespace glurg
 		bool operator !=(const glurg::Hash& other) const;
 		bool operator <(const glurg::Hash& other) const;
 
+		static glurg::Hash hash(std::uint8_t* data, std::size_t size);
+
 	private:
 		std::uint8_t data[HASH_SIZE];
 	};

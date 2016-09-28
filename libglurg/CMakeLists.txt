@@ -30,8 +30,8 @@ target_include_directories(libglurg
 	${Sodium_INCLUDE_DIRS})
 
 target_link_libraries(libglurg
-	${Boost_LIBRARIES}
-	${Sodium_LIBRARIES})
+	${Boost_LIBRARIES} ${Boost_LDFLAGS}
+	${Sodium_LIBRARIES} ${Sodium_LDFLAGS})
 
 target_compile_features(libglurg PUBLIC
 	cxx_nullptr

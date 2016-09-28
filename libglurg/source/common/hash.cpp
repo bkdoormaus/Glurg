@@ -6,6 +6,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <sodium.h>
 #include "glurg/common/hash.hpp"
 
 glurg::Hash::Hash()
@@ -47,4 +48,15 @@ bool glurg::Hash::operator !=(const glurg::Hash &other) const
 bool glurg::Hash::operator <(const glurg::Hash &other) const
 {
 	return std::memcmp(this->data, other.data, HASH_SIZE) < 0;
+}
+
+glurg::Hash glurg::Hash::hash(std::uint8_t *data, std::size_t size)
+{
+	Hash result;
+	crypto_generichash(
+		result.data, HASH_SIZE,
+		data, size,
+		nullptr, 0);
+
+	return result;
 }
