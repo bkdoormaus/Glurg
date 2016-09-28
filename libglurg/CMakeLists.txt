@@ -6,6 +6,7 @@ find_package(PkgConfig REQUIRED)
 pkg_search_module(Sodium REQUIRED libsodium)
 
 set(LIBGLURG_INCLUDE_FILES
+	"include/glurg/resources/resource.hpp"
 	"include/glurg/common/hash.hpp")
 
 set(LIBGLURG_SOURCE_FILES
