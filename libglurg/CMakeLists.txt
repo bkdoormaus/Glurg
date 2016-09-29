@@ -12,12 +12,14 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/resources/textureResource.hpp"
 	"include/glurg/common/fileStream.hpp"
 	"include/glurg/common/hash.hpp"
-	"include/glurg/common/simpleFileStream.hpp")
+	"include/glurg/common/simpleFileStream.hpp"
+	"include/glurg/common/snappyAdapter.hpp")
 
 set(LIBGLURG_SOURCE_FILES
 	"source/resources/textureResource.cpp"
 	"source/common/hash.cpp"
-	"source/common/simpleFileStream.cpp")
+	"source/common/simpleFileStream.cpp"
+	"source/common/snappyAdapter.cpp")
 
 set(LIBGLURG_INCLUDE_DIRS
 	"include")
