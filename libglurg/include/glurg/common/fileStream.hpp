@@ -15,6 +15,13 @@ namespace glurg
 	class FileStream
 	{
 	public:
+		enum
+		{
+			mode_read = 0x1,
+			mode_write = 0x2,
+			mode_read_write = mode_read | mode_write
+		};
+
 		virtual ~FileStream() = default;
 
 		virtual std::size_t write(const std::uint8_t* data, std::size_t length) = 0;
