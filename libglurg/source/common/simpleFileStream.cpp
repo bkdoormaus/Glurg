@@ -13,6 +13,8 @@ glurg::SimpleFileStream::SimpleFileStream(const std::string& filename, int mode)
 
 void glurg::SimpleFileStream::open(const std::string &filename, int mode)
 {
+	close();
+
 	int ios_mode = std::ios::binary;
 	if (mode & FileStream::mode_read)
 	{
@@ -31,20 +33,16 @@ void glurg::SimpleFileStream::close()
 	this->file.close();
 }
 
-std::size_t glurg::SimpleFileStream::write(
+void glurg::SimpleFileStream::write(
 	const std::uint8_t *data, std::size_t length)
 {
 	this->file.write((const char*)data, length);
-
-	return length;
 }
 
-std::size_t glurg::SimpleFileStream::read(
+void glurg::SimpleFileStream::read(
 	std::uint8_t *data, std::size_t length)
 {
 	this->file.read((char*)data, length);
-
-	return length;
 }
 
 std::size_t glurg::SimpleFileStream::get_position()

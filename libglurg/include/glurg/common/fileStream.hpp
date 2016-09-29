@@ -24,13 +24,15 @@ namespace glurg
 
 		virtual ~FileStream() = default;
 
-		virtual std::size_t write(const std::uint8_t* data, std::size_t length) = 0;
-		virtual std::size_t read(std::uint8_t* data, std::size_t length) = 0;
+		virtual void write(const std::uint8_t* data, std::size_t length) = 0;
+		virtual void read(std::uint8_t* data, std::size_t length) = 0;
 
 		virtual std::size_t get_position() = 0;
 		virtual void set_position(std::size_t position);
 
 		virtual bool get_is_end_of_file() const = 0;
+
+		virtual void close();
 	};
 }
 

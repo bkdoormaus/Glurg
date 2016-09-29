@@ -21,15 +21,16 @@ namespace glurg
 		~SimpleFileStream() = default;
 
 		void open(const std::string& filename, int mode);
-		void close();
 
-		std::size_t write(const std::uint8_t* data, std::size_t length);
-		std::size_t read(std::uint8_t* data, std::size_t length);
+		void write(const std::uint8_t* data, std::size_t length);
+		void read(std::uint8_t* data, std::size_t length);
 
 		std::size_t get_position();
 		void set_position(std::size_t position);
 
 		bool get_is_end_of_file() const;
+		
+		void close();
 
 	private:
 		std::fstream file;
