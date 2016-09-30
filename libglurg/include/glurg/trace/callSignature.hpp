@@ -32,7 +32,7 @@ namespace glurg
 		ParameterCount get_num_parameters() const;
 		std::string get_parameter_at(ParameterIndex index) const;
 
-		static CallSignature* read(TraceFile& file, FileStream& stream);
+		static CallSignature* read(ID id, TraceFile& trace, FileStream& stream);
 
 	private:
 		void set_id(ID value);

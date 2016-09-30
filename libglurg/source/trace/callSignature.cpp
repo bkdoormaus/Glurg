@@ -5,6 +5,7 @@
 // Copyright 2016 [bk]door.maus
 
 #include "glurg/trace/callSignature.hpp"
+#include "glurg/trace/traceFile.hpp"
 
 glurg::CallSignature::ID glurg::CallSignature::get_id() const
 {
@@ -46,4 +47,21 @@ void glurg::CallSignature::set_parameter_at(
 	ParameterIndex index, const std::string& value)
 {
 	this->parameters.at(index) = value;
+}
+
+glurg::CallSignature* glurg::CallSignature::read(
+	ID id, TraceFile& trace, FileStream& stream)
+{
+	CallSignature* signature = new CallSignature();
+
+	signature->set_id(id);
+	signature->set_name(trace.read_string(stream));
+
+	signature->set_num_parameters(trace.read_unsigned_integer(stream));
+	for (ParameterCount i = 0; i < signature->get_num_parameters(); ++i)
+	{
+		signature->set_parameter_at(i, trace.read_string(stream));
+	}
+
+	return signature;
 }
