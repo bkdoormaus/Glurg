@@ -14,6 +14,7 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/common/hash.hpp"
 	"include/glurg/common/simpleFileStream.hpp"
 	"include/glurg/common/snappyAdapter.hpp"
+	"include/glurg/trace/bitmaskSignature.hpp"
 	"include/glurg/trace/callSignature.hpp"
 	"include/glurg/trace/enumerationSignature.hpp"
 	"include/glurg/trace/traceFile.hpp")
@@ -23,6 +24,7 @@ set(LIBGLURG_SOURCE_FILES
 	"source/common/hash.cpp"
 	"source/common/simpleFileStream.cpp"
 	"source/common/snappyAdapter.cpp"
+	"source/trace/bitmaskSignature.cpp"
 	"source/trace/callSignature.cpp"
 	"source/trace/enumerationSignature.cpp")
 
