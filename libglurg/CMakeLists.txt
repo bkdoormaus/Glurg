@@ -13,13 +13,15 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/common/fileStream.hpp"
 	"include/glurg/common/hash.hpp"
 	"include/glurg/common/simpleFileStream.hpp"
-	"include/glurg/common/snappyAdapter.hpp")
+	"include/glurg/common/snappyAdapter.hpp"
+	"include/glurg/trace/callSignature.hpp")
 
 set(LIBGLURG_SOURCE_FILES
 	"source/resources/textureResource.cpp"
 	"source/common/hash.cpp"
 	"source/common/simpleFileStream.cpp"
-	"source/common/snappyAdapter.cpp")
+	"source/common/snappyAdapter.cpp"
+	"source/trace/callSignature.cpp")
 
 set(LIBGLURG_INCLUDE_DIRS
 	"include")
