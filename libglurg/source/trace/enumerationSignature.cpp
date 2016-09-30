@@ -4,6 +4,7 @@
 //
 // Copyright 2016 [bk]door.maus
 
+#include <cstdint>
 #include <utility>
 #include "glurg/trace/enumerationSignature.hpp"
 #include "glurg/trace/traceFile.hpp"
