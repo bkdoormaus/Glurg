@@ -13,6 +13,9 @@
 
 namespace glurg
 {
+	class FileStream;
+	class TraceFile;
+
 	class CallSignature
 	{
 	public:
@@ -20,19 +23,23 @@ namespace glurg
 		typedef std::uint32_t ParameterIndex;
 		typedef std::uint32_t ParameterCount;
 
-		ID get_id() const;
-		void set_id(ID value);
+		CallSignature() = default;
+		~CallSignature() = default;
 
+		ID get_id() const;
 		const std::string& get_name() const;
-		void set_name(const std::string& value);
 
 		ParameterCount get_num_parameters() const;
-		void set_num_parameters(ParameterCount value);
-
 		std::string get_parameter_at(ParameterIndex index) const;
-		void set_parameter_at(ParameterIndex index, const std::string& value);
+
+		static CallSignature* read(TraceFile& file, FileStream& stream);
 
 	private:
+		void set_id(ID value);
+		void set_name(const std::string& value);
+		void set_num_parameters(ParameterCount value);
+		void set_parameter_at(ParameterIndex index, const std::string& value);
+
 		ID id;
 		std::string name;
 		std::vector<std::string> parameters;
