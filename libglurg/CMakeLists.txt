@@ -26,7 +26,8 @@ set(LIBGLURG_SOURCE_FILES
 	"source/common/snappyAdapter.cpp"
 	"source/trace/bitmaskSignature.cpp"
 	"source/trace/callSignature.cpp"
-	"source/trace/enumerationSignature.cpp")
+	"source/trace/enumerationSignature.cpp"
+	"source/trace/values.cpp")
 
 set(LIBGLURG_INCLUDE_DIRS
 	"include")
