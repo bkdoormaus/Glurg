@@ -262,6 +262,11 @@ namespace glurg
 	class HandleValue : public Value
 	{
 	public:
+		static const Type HANDLE = 0x0d;
+
+		HandleValue() = default;
+		explicit HandleValue(std::uint32_t value);
+
 		Type get_type() const override;
 		Value* clone() const override;
 

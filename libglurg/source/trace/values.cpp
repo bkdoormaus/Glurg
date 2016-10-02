@@ -424,3 +424,29 @@ glurg::Value* glurg::ArrayValue::read_array(
 
 	return v;
 }
+
+glurg::HandleValue::HandleValue(std::uint32_t value)
+{
+	this->value = value;
+}
+
+glurg::Value::Type glurg::HandleValue::get_type() const
+{
+	return HANDLE;
+}
+
+glurg::Value* glurg::HandleValue::clone() const
+{
+	return new HandleValue(this->value);
+}
+
+std::uint32_t glurg::HandleValue::to_handle() const
+{
+	return this->value;
+}
+
+glurg::Value* glurg::HandleValue::read_handle(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	return new HandleValue(trace.read_unsigned_integer(stream));
+}
