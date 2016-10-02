@@ -65,3 +65,23 @@ const glurg::Array* glurg::Value::to_array() const
 {
 	throw std::runtime_error("invalid conversion to array");
 }
+
+std::size_t glurg::Array::get_size() const
+{
+	return values.size();
+}
+
+void glurg::Array::set_size(std::size_t value)
+{
+	values.resize(value);
+}
+
+const glurg::Value* glurg::Array::get_value_at(std::size_t index) const
+{
+	return values.at(index).get();
+}
+
+void glurg::Array::set_value_at(std::size_t index, const glurg::Value* value)
+{
+	values.at(index) = ValuePointer(value->clone());
+}
