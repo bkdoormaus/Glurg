@@ -177,6 +177,7 @@ namespace glurg
 	class BlobValue : public Value
 	{
 	public:
+		static const Type NULL_POINTER = 0x00;
 		static const Type BLOB = 0x08;
 
 		BlobValue() = default;
@@ -190,6 +191,8 @@ namespace glurg
 		Blob to_blob() const override;
 
 		static Value* read_blob(
+			Type type, TraceFile& trace, FileStream& stream);
+		static Value* read_null_pointer(
 			Type type, TraceFile& trace, FileStream& stream);
 	private:
 		std::uint8_t* data;

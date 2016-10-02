@@ -265,7 +265,14 @@ glurg::BlobValue::~BlobValue()
 
 glurg::Value::Type glurg::BlobValue::get_type() const
 {
-	return BLOB;
+	if (this->data == nullptr)
+	{
+		return NULL_POINTER;
+	}
+	else
+	{
+		return BLOB;
+	}
 }
 
 glurg::Value* glurg::BlobValue::clone() const
@@ -285,6 +292,16 @@ glurg::Value* glurg::BlobValue::read_blob(
 
 	BlobValue* value = new BlobValue(length);
 	stream.read(value->data, length);
+
+	return value;
+}
+
+glurg::Value* glurg::BlobValue::read_null_pointer(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	BlobValue* value = new BlobValue();
+	value->data = nullptr;
+	value->length = 0;
 
 	return value;
 }
