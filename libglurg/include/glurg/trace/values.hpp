@@ -66,7 +66,7 @@ namespace glurg
 	{
 	public:
 		std::size_t get_size() const;
-		void set_size(std::size_t value) const;
+		void set_size(std::size_t value);
 
 		const Value* get_value_at(std::size_t index) const;
 		void set_value_at(std::size_t index, const Value* value);
