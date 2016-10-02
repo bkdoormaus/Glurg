@@ -220,6 +220,11 @@ namespace glurg
 	class BitmaskValue : public Value
 	{
 	public:
+		static const Type BITMASK = 0x0a;
+
+		BitmaskValue() = default;
+		BitmaskValue(const BitmaskSignature* signature, std::uint32_t value);
+
 		Type get_type() const override;
 		Value* clone() const override;
 

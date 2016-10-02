@@ -330,3 +330,40 @@ glurg::Value* glurg::EnumerationValue::read_enumeration(
 	return new EnumerationValue(
 		trace.get_enumeration_signature(id), trace.read_value(stream));
 }
+
+glurg::BitmaskValue::BitmaskValue(
+	const BitmaskSignature* signature, std::uint32_t value)
+{
+	this->value.signature = signature;
+	this->value.value = value;
+}
+
+glurg::Value::Type glurg::BitmaskValue::get_type() const
+{
+	return BITMASK;
+}
+
+glurg::Value* glurg::BitmaskValue::clone() const
+{
+	return new BitmaskValue(this->value.signature, this->value.value);
+}
+
+glurg::Bitmask glurg::BitmaskValue::to_bitmask() const
+{
+	return this->value;
+}
+
+glurg::Value* glurg::BitmaskValue::read_bitmask(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	BitmaskSignature::ID id = trace.read_unsigned_integer(stream);
+	if (!trace.has_bitmask_signature(id))
+	{
+		BitmaskSignature* s = BitmaskSignature::read(id, trace, stream);
+		trace.register_bitmask_signature(s);
+	}
+
+	Value* v = trace.read_value(stream);
+	return new BitmaskValue(
+		trace.get_bitmask_signature(id), v->to_unsigned_integer());
+}
