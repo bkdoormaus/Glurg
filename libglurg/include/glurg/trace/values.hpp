@@ -243,6 +243,11 @@ namespace glurg
 	class ArrayValue : public Value
 	{
 	public:
+		static const Type ARRAY = 0x0b;
+
+		ArrayValue() = default;
+		ArrayValue(const Array* array);
+
 		Type get_type() const override;
 		Value* clone() const override;
 

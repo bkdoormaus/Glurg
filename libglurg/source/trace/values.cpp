@@ -384,3 +384,43 @@ glurg::Value* glurg::BitmaskValue::read_bitmask(
 	return new BitmaskValue(
 		trace.get_bitmask_signature(id), v->to_unsigned_integer());
 }
+
+glurg::ArrayValue::ArrayValue(const Array* array)
+{
+	this->value.set_size(array->get_size());
+	for (std::size_t i = 0; i < array->get_size(); ++i)
+	{
+		this->value.set_value_at(i, array->get_value_at(i)->clone());
+	}
+}
+
+glurg::Value::Type glurg::ArrayValue::get_type() const
+{
+	return ARRAY;
+}
+
+glurg::Value* glurg::ArrayValue::clone() const
+{
+	return new ArrayValue(&this->value);
+}
+
+const glurg::Array* glurg::ArrayValue::to_array() const
+{
+	return &this->value;
+}
+
+glurg::Value* glurg::ArrayValue::read_array(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	ArrayValue* v = new ArrayValue();
+
+	std::size_t count = trace.read_unsigned_integer(stream);
+	v->value.set_size(count);
+
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		v->value.set_value_at(i, trace.read_value(stream));
+	}
+
+	return v;
+}
