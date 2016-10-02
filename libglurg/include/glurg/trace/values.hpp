@@ -23,13 +23,13 @@ namespace glurg
 
 	struct Enumeration
 	{
-		EnumerationSignature* signature;
+		const EnumerationSignature* signature;
 		Value* value;
 	};
 
 	struct Bitmask
 	{
-		BitmaskSignature* signature;
+		const BitmaskSignature* signature;
 		std::uint32_t value;
 	};
 
@@ -199,6 +199,12 @@ namespace glurg
 	class EnumerationValue : public Value
 	{
 	public:
+		static const Type ENUMERATION = 0x09;
+
+		EnumerationValue() = default;
+		EnumerationValue(const EnumerationSignature* signature, Value* value);
+		~EnumerationValue();
+
 		Type get_type() const override;
 		Value* clone() const override;
 

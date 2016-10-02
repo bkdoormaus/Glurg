@@ -288,3 +288,45 @@ glurg::Value* glurg::BlobValue::read_blob(
 
 	return value;
 }
+
+glurg::EnumerationValue::EnumerationValue(
+	const EnumerationSignature* signature, Value* value)
+{
+	this->value.signature = signature;
+	this->value.value = value;
+}
+
+glurg::EnumerationValue::~EnumerationValue()
+{
+	delete this->value.value;
+}
+
+glurg::Value::Type glurg::EnumerationValue::get_type() const
+{
+	return ENUMERATION;
+}
+
+glurg::Value* glurg::EnumerationValue::clone() const
+{
+	return new EnumerationValue(
+		this->value.signature, this->value.value->clone());
+}
+
+glurg::Enumeration glurg::EnumerationValue::to_enumeration() const
+{
+	return this->value;
+}
+
+glurg::Value* glurg::EnumerationValue::read_enumeration(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	EnumerationSignature::ID id = trace.read_unsigned_integer(stream);
+	if (!trace.has_enumeration_signature(id))
+	{
+		EnumerationSignature* s = EnumerationSignature::read(id, trace, stream);
+		trace.register_enumeration_signature(s);
+	}
+
+	return new EnumerationValue(
+		trace.get_enumeration_signature(id), trace.read_value(stream));
+}
