@@ -15,12 +15,29 @@
 namespace glurg
 {
 	class Array;
-	class Bitmask;
 	class BitmaskSignature;
-	class Enumeration;
 	class EnumerationSignature;
 	class FileStream;
 	class TraceFile;
+	class Value;
+
+	struct Enumeration
+	{
+		EnumerationSignature* signature;
+		Value* value;
+	};
+
+	struct Bitmask
+	{
+		BitmaskSignature* signature;
+		std::uint32_t value;
+	};
+
+	struct Blob
+	{
+		const std::uint8_t* data;
+		std::size_t length;
+	};
 
 	class Value
 	{
@@ -40,26 +57,14 @@ namespace glurg
 
 		virtual std::string to_string() const;
 
-		virtual const std::uint8_t* to_pointer() const;
+		virtual Blob to_blob() const;
 		virtual std::uint32_t to_handle() const;
 
-		virtual const Enumeration* to_enumeration() const;
-		virtual const Bitmask* to_bitmask() const;
+		virtual Enumeration to_enumeration() const;
+		virtual Bitmask to_bitmask() const;
 		virtual const Array* to_array() const;
 
 		virtual Value* clone() const = 0;
-	};
-
-	struct Enumeration
-	{
-		EnumerationSignature* signature;
-		Value* value;
-	};
-
-	struct Bitmask
-	{
-		BitmaskSignature* signature;
-		std::uint32_t value;
 	};
 
 	class Array
@@ -160,7 +165,7 @@ namespace glurg
 		Value* clone() const override;
 		
 		std::string to_string() const override;
-		const std::uint8_t* to_pointer() const override;
+		Blob to_blob() const override;
 
 		static Value* read_string(
 			Type type, TraceFile& trace, FileStream& stream);
@@ -172,15 +177,23 @@ namespace glurg
 	class BlobValue : public Value
 	{
 	public:
+		static const Type BLOB = 0x08;
+
+		BlobValue() = default;
+		explicit BlobValue(std::size_t length);
+		BlobValue(std::size_t length, const std::uint8_t* data);
+		~BlobValue();
+
 		Type get_type() const override;
 		Value* clone() const override;
 
-		const std::uint8_t* to_pointer() const override;
+		Blob to_blob() const override;
 
 		static Value* read_blob(
 			Type type, TraceFile& trace, FileStream& stream);
 	private:
-		std::uint8_t* value;
+		std::uint8_t* data;
+		std::size_t length;
 	};
 
 	class EnumerationValue : public Value
@@ -189,7 +202,7 @@ namespace glurg
 		Type get_type() const override;
 		Value* clone() const override;
 
-		const Enumeration* to_enumeration() const override;
+		Enumeration to_enumeration() const override;
 
 		static Value* read_enumeration(
 			Type type, TraceFile& trace, FileStream& stream);
@@ -204,7 +217,7 @@ namespace glurg
 		Type get_type() const override;
 		Value* clone() const override;
 
-		const Bitmask* to_bitmask() const override;
+		Bitmask to_bitmask() const override;
 
 		static Value* read_bitmask(
 			Type type, TraceFile& trace, FileStream& stream);

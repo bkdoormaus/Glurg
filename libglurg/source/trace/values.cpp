@@ -41,9 +41,9 @@ std::string glurg::Value::to_string() const
 	throw std::runtime_error("invalid conversion to string");
 }
 
-const std::uint8_t* glurg::Value::to_pointer() const
+glurg::Blob glurg::Value::to_blob() const
 {
-	throw std::runtime_error("invalid conversion to raw pointer");
+	throw std::runtime_error("invalid conversion to blob");
 }
 
 std::uint32_t glurg::Value::to_handle() const
@@ -51,12 +51,12 @@ std::uint32_t glurg::Value::to_handle() const
 	throw std::runtime_error("invalid conversion to handle");
 }
 
-const glurg::Enumeration* glurg::Value::to_enumeration() const
+glurg::Enumeration glurg::Value::to_enumeration() const
 {
 	throw std::runtime_error("invalid conversion to enumeration");
 }
 
-const glurg::Bitmask* glurg::Value::to_bitmask() const
+glurg::Bitmask glurg::Value::to_bitmask() const
 {
 	throw std::runtime_error("invalid conversion to bitmask");
 }
@@ -233,13 +233,58 @@ std::string glurg::StringValue::to_string() const
 	return this->value;
 }
 
-const std::uint8_t* glurg::StringValue::to_pointer() const
+glurg::Blob glurg::StringValue::to_blob() const
 {
-	return (std::uint8_t*)this->value.c_str();
+	return { (std::uint8_t*)this->value.c_str(), this->value.size() };
 }
 
 glurg::Value* glurg::StringValue::read_string(
 	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
 {
 	return new StringValue(trace.read_string(stream));
+}
+
+glurg::BlobValue::BlobValue(std::size_t length)
+{
+	this->data = new std::uint8_t[length];
+	this->length = length;
+}
+
+glurg::BlobValue::BlobValue(std::size_t length, const std::uint8_t* data)
+{
+	this->data = new std::uint8_t[length];
+	std::memcpy(this->data, data, length);
+
+	this->length = length;
+}
+
+glurg::BlobValue::~BlobValue()
+{
+	delete this->data;
+}
+
+glurg::Value::Type glurg::BlobValue::get_type() const
+{
+	return BLOB;
+}
+
+glurg::Value* glurg::BlobValue::clone() const
+{
+	return new BlobValue(this->length, this->data);
+}
+
+glurg::Blob glurg::BlobValue::to_blob() const
+{
+	return { this->data, this->length };
+}
+
+glurg::Value* glurg::BlobValue::read_blob(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	std::size_t length = trace.read_unsigned_integer(stream);
+
+	BlobValue* value = new BlobValue(length);
+	stream.read(value->data, length);
+
+	return value;
 }
