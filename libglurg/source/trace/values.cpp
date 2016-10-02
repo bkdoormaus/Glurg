@@ -212,3 +212,34 @@ glurg::Value* glurg::FloatingPointValue::read_double(
 
 	return new FloatingPointValue(DOUBLE, v);
 }
+
+glurg::StringValue::StringValue(const std::string& value)
+{
+	this->value = value;
+}
+
+glurg::Value::Type glurg::StringValue::get_type() const
+{
+	return STRING;
+}
+
+glurg::Value* glurg::StringValue::clone() const
+{
+	return new StringValue(this->value);
+}
+
+std::string glurg::StringValue::to_string() const
+{
+	return this->value;
+}
+
+const std::uint8_t* glurg::StringValue::to_pointer() const
+{
+	return (std::uint8_t*)this->value.c_str();
+}
+
+glurg::Value* glurg::StringValue::read_string(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	return new StringValue(trace.read_string(stream));
+}

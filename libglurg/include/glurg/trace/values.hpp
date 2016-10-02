@@ -151,6 +151,11 @@ namespace glurg
 	class StringValue : public Value
 	{
 	public:
+		static const Type STRING = 0x07;
+
+		StringValue() = default;
+		StringValue(const std::string& value);
+
 		Type get_type() const override;
 		Value* clone() const override;
 		
