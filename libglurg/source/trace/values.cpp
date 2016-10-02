@@ -68,20 +68,59 @@ const glurg::Array* glurg::Value::to_array() const
 
 std::size_t glurg::Array::get_size() const
 {
-	return values.size();
+	return this->values.size();
 }
 
 void glurg::Array::set_size(std::size_t value)
 {
-	values.resize(value);
+	this->values.resize(value);
 }
 
 const glurg::Value* glurg::Array::get_value_at(std::size_t index) const
 {
-	return values.at(index).get();
+	return this->values.at(index).get();
 }
 
 void glurg::Array::set_value_at(std::size_t index, const glurg::Value* value)
 {
-	values.at(index) = ValuePointer(value->clone());
+	this->values.at(index) = ValuePointer(value->clone());
+}
+
+glurg::BoolValue::BoolValue(bool value)
+{
+	this->value = value;
+}
+
+glurg::Value::Type glurg::BoolValue::get_type() const
+{
+	if (value == false)
+	{
+		return FALSE_BOOLEAN;
+	}
+	else
+	{
+		return TRUE_BOOLEAN;
+	}
+}
+
+glurg::Value* glurg::BoolValue::clone() const
+{
+	return new BoolValue(this->value);
+}
+
+bool glurg::BoolValue::to_boolean() const
+{
+	return this->value;
+}
+
+glurg::Value* glurg::BoolValue::read_false_boolean(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	return new BoolValue(false);
+}
+
+glurg::Value* glurg::BoolValue::read_true_boolean(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	return new BoolValue(true);
 }

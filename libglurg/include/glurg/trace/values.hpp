@@ -79,6 +79,12 @@ namespace glurg
 	class BoolValue : public Value
 	{
 	public:
+		static const Type FALSE_BOOLEAN = 0x01;
+		static const Type TRUE_BOOLEAN = 0x02;
+
+		BoolValue() = default;
+		BoolValue(bool value);
+
 		Type get_type() const override;
 		Value* clone() const override;
 
