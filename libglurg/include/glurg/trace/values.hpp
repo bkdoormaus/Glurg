@@ -126,6 +126,12 @@ namespace glurg
 	class FloatingPointValue : public Value
 	{
 	public:
+		static const Type FLOAT = 0x05;
+		static const Type DOUBLE = 0x06;
+
+		FloatingPointValue() = default;
+		FloatingPointValue(Type type, double value);
+
 		Type get_type() const override;
 		Value* clone() const override;
 		
@@ -138,6 +144,7 @@ namespace glurg
 			Type type, TraceFile& trace, FileStream& stream);
 
 	private:
+		Type type;
 		double value;
 	};
 

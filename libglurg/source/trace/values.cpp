@@ -168,3 +168,47 @@ glurg::Value* glurg::IntegerValue::read_negative_integer(
 {
 	return new IntegerValue(-((std::int64_t)trace.read_unsigned_integer(stream)));
 }
+
+glurg::FloatingPointValue::FloatingPointValue(Type type, double value)
+{
+	this->type = type;
+	this->value = value;
+}
+
+glurg::Value::Type glurg::FloatingPointValue::get_type() const
+{
+	return this->type;
+}
+
+glurg::Value* glurg::FloatingPointValue::clone() const
+{
+	return new FloatingPointValue(this->type, this->value);
+}
+
+float glurg::FloatingPointValue::to_single() const
+{
+	return this->value;
+}
+
+double glurg::FloatingPointValue::to_double() const
+{
+	return this->value;
+}
+
+glurg::Value* glurg::FloatingPointValue::read_single(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	float v;
+	stream.read((std::uint8_t*)&v, sizeof(float));
+
+	return new FloatingPointValue(FLOAT, v);
+}
+
+glurg::Value* glurg::FloatingPointValue::read_double(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	double v;
+	stream.read((std::uint8_t*) &v, sizeof(double));
+
+	return new FloatingPointValue(DOUBLE, v);
+}
