@@ -83,7 +83,7 @@ namespace glurg
 		static const Type TRUE_BOOLEAN = 0x02;
 
 		BoolValue() = default;
-		BoolValue(bool value);
+		explicit BoolValue(bool value);
 
 		Type get_type() const override;
 		Value* clone() const override;
@@ -102,6 +102,12 @@ namespace glurg
 	class IntegerValue : public Value
 	{
 	public:
+		static const Type NEGATIVE_NUMBER = 0x03;
+		static const Type POSITIVE_NUMBER = 0x04;
+
+		IntegerValue() = default;
+		explicit IntegerValue(std::int64_t value);
+
 		Type get_type() const override;
 		Value* clone() const override;
 		

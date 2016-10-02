@@ -124,3 +124,47 @@ glurg::Value* glurg::BoolValue::read_true_boolean(
 {
 	return new BoolValue(true);
 }
+
+glurg::IntegerValue::IntegerValue(std::int64_t value)
+{
+	this->value = value;
+}
+
+glurg::Value::Type glurg::IntegerValue::get_type() const
+{
+	if (value < 0)
+	{
+		return NEGATIVE_NUMBER;
+	}
+	else
+	{
+		return POSITIVE_NUMBER;
+	}
+}
+
+glurg::Value* glurg::IntegerValue::clone() const
+{
+	return new IntegerValue(this->value);
+}
+
+std::int32_t glurg::IntegerValue::to_signed_integer() const
+{
+	return (std::int32_t)this->value;
+}
+
+std::uint32_t glurg::IntegerValue::to_unsigned_integer() const
+{
+	return (std::uint32_t)this->value;
+}
+
+glurg::Value* glurg::IntegerValue::read_positive_integer(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	return new IntegerValue(trace.read_unsigned_integer(stream));
+}
+
+glurg::Value* glurg::IntegerValue::read_negative_integer(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	return new IntegerValue(-((std::int64_t)trace.read_unsigned_integer(stream)));
+}
