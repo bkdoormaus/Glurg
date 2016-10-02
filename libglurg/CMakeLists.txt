@@ -27,6 +27,7 @@ set(LIBGLURG_SOURCE_FILES
 	"source/trace/bitmaskSignature.cpp"
 	"source/trace/callSignature.cpp"
 	"source/trace/enumerationSignature.cpp"
+	"source/trace/events.cpp"
 	"source/trace/values.cpp")
 
 set(LIBGLURG_INCLUDE_DIRS
