@@ -35,6 +35,9 @@ namespace glurg
 		void register_enumeration_signature(
 			EnumerationSignature* signature);
 
+		void register_backtrace(std::uint32_t id);
+		bool has_backtrace(std::uint32_t id);
+
 		Value* read_value(FileStream& stream);
 		void register_value_read_function(
 			Value::Type type, Value::ReadFunction func);

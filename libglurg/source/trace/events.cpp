@@ -4,11 +4,58 @@
 //
 // Copyright 2016 [bk]door.maus
 
+#include <stdexcept>
 #include "glurg/common/fileStream.hpp"
 #include "glurg/trace/callSignature.hpp"
 #include "glurg/trace/events.hpp"
 #include "glurg/trace/traceFile.hpp"
 #include "glurg/trace/values.hpp"
+
+void glurg::Event::skip_backtrace(
+	glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	std::uint32_t id = trace.read_unsigned_integer(stream);
+	if (!trace.has_backtrace(id))
+	{
+		enum
+		{
+			backtrace_terminator = 0,
+			backtrace_module_name = 1,
+			backtrace_function_name = 2,
+			backtrace_source_file_name = 3,
+			backtrace_source_line_number = 4,
+			backtrace_offset = 5
+		};
+
+		std::uint8_t detail = 0;
+		do
+		{
+			stream.read(&detail, sizeof(std::uint8_t));
+			switch (detail)
+			{
+				case backtrace_terminator:
+					break;
+				case backtrace_module_name:
+				case backtrace_function_name:
+				case backtrace_source_file_name:
+					{
+						// Single string.
+						std::uint32_t length =
+							trace.read_unsigned_integer(stream);
+						stream.set_position(stream.get_position() + length);
+					}
+					break;
+				case backtrace_source_line_number:
+				case backtrace_offset:
+					// Single unsigned integer.
+					trace.read_unsigned_integer(stream);
+					break;
+				default:
+					throw std::runtime_error("unknown backtrace detail op");
+			}
+		} while(detail != backtrace_terminator);
+	}
+}
 
 glurg::EnterCallEvent::Thread glurg::EnterCallEvent::get_thread() const
 {
