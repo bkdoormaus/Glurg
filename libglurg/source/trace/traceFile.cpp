@@ -13,6 +13,30 @@ glurg::TraceFile::TraceFile()
 	register_all_value_read_functions();
 }
 
+const glurg::BitmaskSignature* glurg::TraceFile::get_bitmask_signature(
+	BitmaskSignature::ID id) const
+{
+	auto e = this->bitmasks.find(id);
+	if (e == this->bitmasks.end())
+	{
+		return nullptr;
+	}
+
+	return e->second.get();
+}
+
+bool glurg::TraceFile::has_bitmask_signature(BitmaskSignature::ID id) const
+{
+	return this->bitmasks.find(id) != this->bitmasks.end();
+}
+
+void glurg::TraceFile::register_bitmask_signature(
+	glurg::BitmaskSignature* signature)
+{
+	this->bitmasks.insert(
+		std::make_pair(signature->get_id(), BitmaskPointer(signature)));
+}
+
 glurg::Value* glurg::TraceFile::read_value(glurg::FileStream& stream)
 {
 	std::uint8_t type = 0;
