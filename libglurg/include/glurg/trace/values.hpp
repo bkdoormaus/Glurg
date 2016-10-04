@@ -45,6 +45,8 @@ namespace glurg
 		typedef std::uint8_t Type;
 		typedef Value* (* ReadFunction)(Type, TraceFile&, FileStream&);
 
+		virtual ~Value() = default;
+
 		virtual Type get_type() const = 0;
 
 		virtual bool to_boolean() const;
