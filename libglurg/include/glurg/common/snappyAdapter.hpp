@@ -9,6 +9,7 @@
 
 #include <stdexcept>
 #include <type_traits>
+#include <list>
 #include "glurg/common/fileStream.hpp"
 
 namespace glurg
@@ -25,10 +26,31 @@ namespace glurg
 			FileStream* stream, const std::uint8_t* data, std::size_t length);
 		void snappy_read(
 			FileStream* stream, std::uint8_t* data, std::size_t length);
+
+		void snappy_seek(FileStream* stream, std::size_t virtual_offset);
+		std::size_t snappy_tell();
+
 		void snappy_flush_write_buffer(FileStream* stream);
 
 	private:
 		bool snappy_fetch_read_buffer(FileStream* stream);
+		void snappy_add_block(
+			std::size_t physical_position, std::size_t physical_size,
+			std::size_t virtual_size);
+		void snappy_get_last_block_info(
+			std::size_t& max_physical_position,
+			std::size_t& max_virtual_position);
+
+		struct snappy_block
+		{
+			std::size_t physical_position;
+			std::size_t physical_size;
+			std::size_t virtual_position;
+			std::size_t virtual_size;
+		};
+		std::list<snappy_block> snappy_blocks;
+
+		std::size_t snappy_current_block_virtual_position;
 
 		std::uint8_t* snappy_output_buffer;
 		std::size_t snappy_output_buffer_size;
