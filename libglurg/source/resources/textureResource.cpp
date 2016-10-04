@@ -44,6 +44,11 @@ glurg::TextureResource::TextureResource(
 	hash = Hash::hash(this->data, this->size);
 }
 
+glurg::TextureResource::~TextureResource()
+{
+	delete[] this->data;
+}
+
 int glurg::TextureResource::get_width() const
 {
 	return this->header->width;
