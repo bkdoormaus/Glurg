@@ -90,7 +90,24 @@ namespace glurg
 		static const char MAGIC_BYTE_1 = 'a';
 		static const char MAGIC_BYTE_2 = 't';
 
+		struct snappy_scope_lock
+		{
+			snappy_scope_lock(SnappyAdapter<FileStreamImpl>& snappy_adapter) :
+				snappy_adapter(snappy_adapter)
+			{
+				this->snappy_adapter.use_filestream_impl = true;
+			}
+
+			~snappy_scope_lock()
+			{
+				this->snappy_adapter.use_filestream_impl = false;
+			}
+
+			SnappyAdapter<FileStreamImpl>& snappy_adapter;
+		};
+
 		bool is_new;
+		bool use_filestream_impl;
 	};
 }
 
@@ -99,13 +116,30 @@ glurg::SnappyAdapter<FileStreamImpl>::SnappyAdapter(std::size_t block_size)
 	: SnappyAdapterBase(block_size)
 {
 	this->is_new = true;
+	this->use_filestream_impl = false;
 }
 
 template <typename FileStreamImpl>
 void glurg::SnappyAdapter<FileStreamImpl>::write(
 	const std::uint8_t* data, std::size_t length)
 {
-	this->snappy_write(this, data, length);
+	if (this->is_new)
+	{
+		char magic[] = { MAGIC_BYTE_1, MAGIC_BYTE_2 };
+		FileStreamImpl::write(magic, sizeof(magic));
+
+		this->is_new = false;
+	}
+
+	if (this->use_filestream_impl)
+	{
+		FileStreamImpl::write(data, length);
+	}
+	else
+	{
+		snappy_scope_lock lock(*this);
+		snappy_write(this, data, length);
+	}
 }
 
 template <typename FileStreamImpl>
@@ -125,27 +159,55 @@ void glurg::SnappyAdapter<FileStreamImpl>::read(
 		this->is_new = false;
 	}
 
-	this->snappy_read(this, data, length);
+	if (this->use_filestream_impl)
+	{
+		FileStreamImpl::read(data, length);
+	}
+	else
+	{
+		snappy_scope_lock lock(*this);
+		snappy_read(this, data, length);
+	}
 }
 
 template <typename FileStreamImpl>
 std::size_t glurg::SnappyAdapter<FileStreamImpl>::get_position()
 {
-	return this->snappy_tell();
+	if (this->use_filestream_impl)
+	{
+		return FileStreamImpl::get_position();
+	}
+	else
+	{
+		snappy_scope_lock lock(*this);
+		return snappy_tell();
+	}
 }
 
 template <typename FileStreamImpl>
 void glurg::SnappyAdapter<FileStreamImpl>::set_position(std::size_t position)
 {
-	this->snappy_seek(position);
+	if (this->use_filestream_impl)
+	{
+		return FileStreamImpl::get_position();
+	}
+	else
+	{
+		snappy_scope_lock lock(*this);
+		snappy_seek(position);
+	}
 }
 
 template <typename FileStreamImpl>
 void glurg::SnappyAdapter<FileStreamImpl>::close()
 {
-	this->snappy_flush_write_buffer(this);
-	this->snappy_reset_state();
+	snappy_flush_write_buffer(this);
+	snappy_reset_state();
+
 	this->is_new = true;
+	this->use_filestream_impl = false;
+
+	FileStreamImpl::close();
 }
 
 #endif
