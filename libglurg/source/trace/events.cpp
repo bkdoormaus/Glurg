@@ -4,6 +4,7 @@
 //
 // Copyright 2016 [bk]door.maus
 
+#include <cassert>
 #include <stdexcept>
 #include "glurg/common/fileStream.hpp"
 #include "glurg/trace/callSignature.hpp"
@@ -81,9 +82,11 @@ const glurg::Value* glurg::EnterCallEvent::get_argument_at(ArgumentIndex index)
 glurg::EnterCallEvent* glurg::EnterCallEvent::read(
 	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
 {
-	EnterCallEvent* event = new EnterCallEvent();
+	assert(type == Event::event_enter);
 
+	EnterCallEvent* event = new EnterCallEvent();
 	event->thread = trace.read_unsigned_integer(stream);
+
 	CallSignature::ID signature_id = trace.read_unsigned_integer(stream);
 	if (!trace.has_call_signature(signature_id))
 	{
@@ -134,6 +137,12 @@ glurg::EnterCallEvent* glurg::EnterCallEvent::read(
 	return event;
 }
 
+glurg::Event::Type glurg::EnterCallEvent::get_type() const
+{
+	return Event::event_enter;
+}
+
+
 glurg::EnterCallEvent::CallIndex
 glurg::LeaveCallEvent::get_call_index() const
 {
@@ -148,6 +157,8 @@ const glurg::Value* glurg::LeaveCallEvent::get_return_value() const
 glurg::LeaveCallEvent* glurg::LeaveCallEvent::read(
 	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
 {
+	assert(type == Event::event_leave);
+
 	LeaveCallEvent* event = new LeaveCallEvent();
 	event->call_index = trace.read_unsigned_integer(stream);
 
@@ -165,6 +176,7 @@ glurg::LeaveCallEvent* glurg::LeaveCallEvent::read(
 				break;
 			case call_detail_return:
 				event->return_value = trace.read_value(stream);
+				break;
 			case call_detail_thread:
 				// Eat input argument.
 				trace.read_unsigned_integer(stream);
@@ -176,4 +188,9 @@ glurg::LeaveCallEvent* glurg::LeaveCallEvent::read(
 	} while (detail_type != call_detail_terminator);
 
 	return event;
+}
+
+glurg::Event::Type glurg::LeaveCallEvent::get_type() const
+{
+	return Event::event_leave;
 }
