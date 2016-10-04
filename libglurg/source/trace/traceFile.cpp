@@ -150,6 +150,13 @@ std::string glurg::TraceFile::read_string(glurg::FileStream& stream)
 	return result;
 }
 
+bool glurg::TraceFile::verify_is_compatible_version(glurg::FileStream& stream)
+{
+	std::uint32_t version = read_unsigned_integer(stream);
+
+	return version == VERSION;
+}
+
 void glurg::TraceFile::register_all_value_read_functions()
 {
 	register_value_read_function(

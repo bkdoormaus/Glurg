@@ -23,6 +23,8 @@ namespace glurg
 	class TraceFile
 	{
 	public:
+		static const std::uint32_t VERSION = 5;
+		
 		TraceFile();
 		~TraceFile() = default;
 
@@ -48,6 +50,8 @@ namespace glurg
 		Value* read_value(FileStream& stream);
 		std::uint32_t read_unsigned_integer(FileStream& stream);
 		std::string read_string(FileStream& stream);
+
+		bool verify_is_compatible_version(FileStream& stream);
 
 	private:
 		void register_all_value_read_functions();
