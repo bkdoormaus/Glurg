@@ -117,6 +117,39 @@ glurg::Value* glurg::TraceFile::read_value(glurg::FileStream& stream)
 	return read_func(type, *this, stream);
 }
 
+std::uint32_t glurg::TraceFile::read_unsigned_integer(glurg::FileStream& stream)
+{
+	std::uint32_t current_value = 0;
+	std::uint8_t current_byte = 0;
+	do
+	{
+		current_value <<= 7;
+
+		stream.read(&current_byte, sizeof(std::uint8_t));
+		current_value |= current_byte & 0x7F;
+	} while(current_byte & 0x80);
+
+	return current_value;
+}
+
+std::string glurg::TraceFile::read_string(glurg::FileStream& stream)
+{
+	std::string result;
+
+	std::uint32_t length = read_unsigned_integer(stream);
+	result.reserve(length);
+
+	for (std::uint32_t i = 0; i < length; ++i)
+	{
+		std::uint8_t c;
+		stream.read(&c, sizeof(std::uint8_t));
+
+		result.push_back(c);
+	}
+
+	return result;
+}
+
 void glurg::TraceFile::register_all_value_read_functions()
 {
 	register_value_read_function(
