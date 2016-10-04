@@ -43,7 +43,7 @@ namespace glurg
 			EnumerationSignature* signature);
 
 		void register_backtrace(std::uint32_t id);
-		bool has_backtrace(std::uint32_t id);
+		bool has_backtrace(std::uint32_t id) const;
 
 		Value* read_value(FileStream& stream);
 		std::uint32_t read_unsigned_integer(FileStream& stream);

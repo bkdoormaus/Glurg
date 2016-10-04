@@ -79,6 +79,22 @@ glurg::TraceFile::has_enumeration_signature(EnumerationSignature::ID id) const
 	return this->enumerations.find(id) != this->enumerations.end();
 }
 
+void glurg::TraceFile::register_backtrace(std::uint32_t id)
+{
+	if (!has_backtrace(id))
+	{
+		this->backtraces.push_back(id);
+	}
+}
+
+bool glurg::TraceFile::has_backtrace(std::uint32_t id) const
+{
+	auto begin = this->backtraces.begin();
+	auto end = this->backtraces.end();
+
+	return std::find(begin, end, id) != end;
+}
+
 void glurg::TraceFile::register_enumeration_signature(
 	glurg::EnumerationSignature* signature)
 {
