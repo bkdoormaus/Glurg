@@ -9,6 +9,8 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
+#include <vector>
 #include "glurg/trace/bitmaskSignature.hpp"
 #include "glurg/trace/callSignature.hpp"
 #include "glurg/trace/enumerationSignature.hpp"
@@ -16,9 +18,14 @@
 
 namespace glurg
 {
+	class FileStream;
+
 	class TraceFile
 	{
 	public:
+		TraceFile();
+		~TraceFile() = default;
+
 		const BitmaskSignature* get_bitmask_signature(
 			BitmaskSignature::ID id) const;
 		bool has_bitmask_signature(BitmaskSignature::ID id) const;
@@ -39,11 +46,26 @@ namespace glurg
 		bool has_backtrace(std::uint32_t id);
 
 		Value* read_value(FileStream& stream);
+		std::uint32_t read_unsigned_integer(FileStream& stream);
+		std::string read_string(FileStream& stream);
+
+	private:
+		void register_all_value_read_functions();
 		void register_value_read_function(
 			Value::Type type, Value::ReadFunction func);
 
-		std::uint32_t read_unsigned_integer(FileStream& stream);
-		std::string read_string(FileStream& stream);
+		typedef std::unique_ptr<BitmaskSignature> BitmaskPointer;
+		std::unordered_map<BitmaskSignature::ID, BitmaskPointer> bitmasks;
+
+		typedef std::unique_ptr<CallSignature> CallPointer;
+		std::unordered_map<CallSignature::ID, CallPointer> calls;
+
+		typedef std::unique_ptr<EnumerationSignature> EnumerationPointer;
+		std::unordered_map<EnumerationSignature::ID, EnumerationPointer> enumerations;
+
+		std::vector<std::uint32_t> backtraces;
+
+		std::unordered_map<Value::Type, Value::ReadFunction> read_value_functions;
 	};
 }
 
