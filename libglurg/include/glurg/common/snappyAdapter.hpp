@@ -31,6 +31,7 @@ namespace glurg
 		std::size_t snappy_tell();
 
 		void snappy_flush_write_buffer(FileStream* stream);
+		void snappy_reset_state();
 
 	private:
 		bool snappy_fetch_read_buffer(FileStream* stream);
@@ -129,6 +130,7 @@ template <typename FileStreamImpl>
 void glurg::SnappyAdapter<FileStreamImpl>::close()
 {
 	this->snappy_flush_write_buffer(this);
+	this->snappy_reset_state();
 	this->is_new = true;
 }
 

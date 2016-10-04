@@ -35,7 +35,9 @@ glurg::SnappyAdapterBase::~SnappyAdapterBase()
 	delete[] this->snappy_write_buffer;
 
 	if (this->snappy_read_buffer != nullptr)
+	{
 		delete[] this->snappy_read_buffer;
+	}
 }
 
 void glurg::SnappyAdapterBase::snappy_write(
@@ -170,6 +172,23 @@ void glurg::SnappyAdapterBase::snappy_flush_write_buffer(
 	std::uint32_t header = (std::uint32_t)output_size;
 	stream->write((std::uint8_t*)&header, sizeof(std::uint32_t));
 	stream->write(this->snappy_output_buffer, output_size);
+}
+
+void glurg::SnappyAdapterBase::snappy_reset_state()
+{
+	if (this->snappy_read_buffer != nullptr)
+	{
+		delete[] this->snappy_read_buffer;
+		this->snappy_read_buffer = nullptr;
+	}
+
+	this->snappy_read_buffer_size = 0;
+	this->snappy_read_buffer_offset = 0;
+
+	this->max_snappy_write_buffer_size = 0;
+	this->cur_snappy_write_buffer_size = 0;
+
+	this->snappy_current_block_virtual_position = 0;
 }
 
 bool glurg::SnappyAdapterBase::snappy_fetch_read_buffer(glurg::FileStream* stream)
