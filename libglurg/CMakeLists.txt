@@ -50,9 +50,10 @@ target_include_directories(libglurg
 	${Snappy_INCLUDE_DIRS}
 	${Sodium_INCLUDE_DIRS})
 
-target_link_libraries(libglurg
+target_link_libraries(libglurg PUBLIC
 	${Boost_LIBRARIES} ${Boost_LDFLAGS}
-	${Sodium_LIBRARIES} ${Sodium_LDFLAGS})
+	${Sodium_LIBRARIES} ${Sodium_LDFLAGS}
+	${Snappy_LIBRARIES} ${Snappy_LDFLAGS})
 
 target_compile_features(libglurg PUBLIC
 	cxx_nullptr
