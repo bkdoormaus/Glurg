@@ -29,11 +29,14 @@ namespace glurg
 		void set_position(std::size_t position);
 
 		bool get_is_end_of_file() const;
+
+		int get_mode() const;
 		
 		void close();
 
 	private:
 		std::fstream file;
+		int mode;
 	};
 }
 

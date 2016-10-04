@@ -26,6 +26,7 @@ void glurg::SimpleFileStream::open(const std::string &filename, int mode)
 	}
 
 	this->file.open(filename, ios_mode);
+	this->mode = mode;
 }
 
 void glurg::SimpleFileStream::close()
@@ -58,4 +59,9 @@ void glurg::SimpleFileStream::set_position(std::size_t position)
 bool glurg::SimpleFileStream::get_is_end_of_file() const
 {
 	return this->file.eof();
+}
+
+int glurg::SimpleFileStream::get_mode() const
+{
+	return this->mode;
 }
