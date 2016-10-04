@@ -126,7 +126,7 @@ void glurg::SnappyAdapter<FileStreamImpl>::write(
 	if (this->is_new)
 	{
 		char magic[] = { MAGIC_BYTE_1, MAGIC_BYTE_2 };
-		FileStreamImpl::write(magic, sizeof(magic));
+		FileStreamImpl::write((std::uint8_t*)magic, sizeof(magic));
 
 		this->is_new = false;
 	}
@@ -149,7 +149,7 @@ void glurg::SnappyAdapter<FileStreamImpl>::read(
 	if (this->is_new)
 	{
 		char magic[2];
-		FileStreamImpl::read((char*)magic, 2);
+		FileStreamImpl::read((std::uint8_t*)magic, 2);
 
 		if (magic[0] != MAGIC_BYTE_1 || magic[1] != MAGIC_BYTE_2)
 		{
@@ -196,12 +196,12 @@ void glurg::SnappyAdapter<FileStreamImpl>::set_position(std::size_t position)
 
 	if (this->use_filestream_impl)
 	{
-		return FileStreamImpl::get_position();
+		FileStreamImpl::set_position(position);
 	}
 	else
 	{
 		snappy_scope_lock lock(*this);
-		snappy_seek(position);
+		snappy_seek(this, position);
 	}
 }
 

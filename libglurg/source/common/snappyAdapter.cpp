@@ -102,7 +102,7 @@ void glurg::SnappyAdapterBase::snappy_read(
 			std::memcpy(
 				data + current_offset,
 				this->snappy_read_buffer + this->snappy_read_buffer_offset,
-				read_buffer_remainder);
+				l);
 
 			this->snappy_read_buffer_offset += l;
 			current_offset += l;
