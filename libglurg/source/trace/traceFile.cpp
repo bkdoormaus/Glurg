@@ -37,6 +37,55 @@ void glurg::TraceFile::register_bitmask_signature(
 		std::make_pair(signature->get_id(), BitmaskPointer(signature)));
 }
 
+const glurg::CallSignature* glurg::TraceFile::get_call_signature(
+	CallSignature::ID id) const
+{
+	auto e = this->calls.find(id);
+	if (e == this->calls.end())
+	{
+		return nullptr;
+	}
+
+	return e->second.get();
+}
+
+bool glurg::TraceFile::has_call_signature(CallSignature::ID id) const
+{
+	return this->calls.find(id) != this->calls.end();
+}
+
+void glurg::TraceFile::register_call_signature(
+	glurg::CallSignature* signature)
+{
+	this->calls.insert(
+		std::make_pair(signature->get_id(), CallPointer(signature)));
+}
+
+const glurg::EnumerationSignature* glurg::TraceFile::get_enumeration_signature(
+	EnumerationSignature::ID id) const
+{
+	auto e = this->enumerations.find(id);
+	if (e == this->enumerations.end())
+	{
+		return nullptr;
+	}
+
+	return e->second.get();
+}
+
+bool
+glurg::TraceFile::has_enumeration_signature(EnumerationSignature::ID id) const
+{
+	return this->enumerations.find(id) != this->enumerations.end();
+}
+
+void glurg::TraceFile::register_enumeration_signature(
+	glurg::EnumerationSignature* signature)
+{
+	this->enumerations.insert(
+		std::make_pair(signature->get_id(), EnumerationPointer(signature)));
+}
+
 glurg::Value* glurg::TraceFile::read_value(glurg::FileStream& stream)
 {
 	std::uint8_t type = 0;
