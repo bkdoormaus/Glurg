@@ -78,6 +78,9 @@ namespace glurg
 
 		void write(const std::uint8_t* data, std::size_t length) override;
 		void read(std::uint8_t* data, std::size_t length) override;
+
+		std::size_t get_position() override;
+		void set_position(std::size_t position) override;
 		
 		void close() override;
 
@@ -125,6 +128,17 @@ void glurg::SnappyAdapter<FileStreamImpl>::read(
 	this->snappy_read(this, data, length);
 }
 
+template <typename FileStreamImpl>
+std::size_t glurg::SnappyAdapter<FileStreamImpl>::get_position()
+{
+	return this->snappy_tell();
+}
+
+template <typename FileStreamImpl>
+void glurg::SnappyAdapter<FileStreamImpl>::set_position(std::size_t position)
+{
+	this->snappy_seek(position);
+}
 
 template <typename FileStreamImpl>
 void glurg::SnappyAdapter<FileStreamImpl>::close()
