@@ -28,13 +28,13 @@ namespace glurg
 		virtual void read(std::uint8_t* data, std::size_t length) = 0;
 
 		virtual std::size_t get_position() = 0;
-		virtual void set_position(std::size_t position);
+		virtual void set_position(std::size_t position) = 0;
 
 		virtual bool get_is_end_of_file() const = 0;
 
 		virtual int get_mode() const = 0;
 
-		virtual void close();
+		virtual void close() = 0;
 	};
 }
 
