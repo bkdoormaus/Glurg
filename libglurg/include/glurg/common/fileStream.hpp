@@ -32,6 +32,8 @@ namespace glurg
 
 		virtual bool get_is_end_of_file() const = 0;
 
+		virtual int get_mode() const = 0;
+
 		virtual void close();
 	};
 }

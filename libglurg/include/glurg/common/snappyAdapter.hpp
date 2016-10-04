@@ -187,6 +187,13 @@ std::size_t glurg::SnappyAdapter<FileStreamImpl>::get_position()
 template <typename FileStreamImpl>
 void glurg::SnappyAdapter<FileStreamImpl>::set_position(std::size_t position)
 {
+	if (FileStreamImpl::get_mode() & FileStream::mode_write)
+	{
+		// It's simply too complex to handle seeking and reading/writing
+		// (inclusive), so only allow seeking when the file stream mode is read.
+		throw std::runtime_error("cannot seek when writing Snappy file");
+	}
+
 	if (this->use_filestream_impl)
 	{
 		return FileStreamImpl::get_position();

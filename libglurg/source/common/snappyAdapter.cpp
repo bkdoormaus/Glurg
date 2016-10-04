@@ -43,6 +43,16 @@ glurg::SnappyAdapterBase::~SnappyAdapterBase()
 void glurg::SnappyAdapterBase::snappy_write(
 	glurg::FileStream* stream, const std::uint8_t* data, std::size_t length)
 {
+	if (stream->get_mode() & FileStream::mode_read)
+	{
+		// This is because of seeking.
+		//
+		// A seeking implementation that supports both reading and writing is
+		// way too hairy (i.e., complex) based on the apitrace Snappy format, so
+		// simply disallow writing to a file that can also be read from.
+		throw std::runtime_error("cannot both write and read Snappy file");
+	}
+
 	std::size_t requested_size = this->cur_snappy_write_buffer_size + length;
 	std::size_t current_offset = 0;
 	while (requested_size > this->max_snappy_write_buffer_size)
