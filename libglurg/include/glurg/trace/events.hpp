@@ -82,17 +82,18 @@ namespace glurg
 
 		~LeaveCallEvent();
 
-		const EnterCallEvent* get_enter_event() const;
+		CallIndex get_call_index() const;
 
 		const Value* get_return_value() const;
 
-		static EnterCallEvent* read(
+		static LeaveCallEvent* read(
 			Type type, TraceFile& trace, FileStream& stream);
 		
 		Event::Type get_type() const;
 
 	private:
-		Value* value;
+		Value* return_value;
+		CallIndex call_index;
 	};
 }
 

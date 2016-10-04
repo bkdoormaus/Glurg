@@ -133,3 +133,47 @@ glurg::EnterCallEvent* glurg::EnterCallEvent::read(
 
 	return event;
 }
+
+glurg::EnterCallEvent::CallIndex
+glurg::LeaveCallEvent::get_call_index() const
+{
+	return this->call_index;
+}
+
+const glurg::Value* glurg::LeaveCallEvent::get_return_value() const
+{
+	return this->return_value;
+}
+
+glurg::LeaveCallEvent* glurg::LeaveCallEvent::read(
+	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+{
+	LeaveCallEvent* event = new LeaveCallEvent();
+	event->call_index = trace.read_unsigned_integer(stream);
+
+	std::uint8_t detail_type = 0;
+	do
+	{
+		stream.read(&detail_type, sizeof(std::uint8_t));
+
+		switch (detail_type)
+		{
+			case call_detail_terminator:
+				continue;
+			case call_detail_argument:
+			throw std::runtime_error("unexpected argument type in leave event");
+				break;
+			case call_detail_return:
+				event->return_value = trace.read_value(stream);
+			case call_detail_thread:
+				// Eat input argument.
+				trace.read_unsigned_integer(stream);
+				break;
+			case call_detail_backtrace:
+				skip_backtrace(trace, stream);
+				break;
+		}
+	} while (detail_type != call_detail_terminator);
+
+	return event;
+}
