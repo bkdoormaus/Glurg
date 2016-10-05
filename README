@@ -9,6 +9,8 @@ other things, too.
 
 Building
 ================================================================================
+Currently, Glurg is in very early stages of develop. See develop branch.
+
 Glurg's application logic is written in Lua and must be run with LuaJIT.
 However, the native library, libglurg, requires building using your platform's
 C++ compiler.
