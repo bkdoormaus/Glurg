@@ -30,15 +30,17 @@ namespace glurg
 
 		const Value* get_value_by_name(const std::string& name) const;
 
-		static EnumerationSignature* read(ID id, TraceFile& trace, FileStream& stream);
+		static EnumerationSignature* read(
+			ID id, TraceFile& trace, FileStream& stream);
 
 	private:
 		void set_id(ID value);
-		void set_value_by_name(const std::string& name, Value* value);
+		void set_value_by_name(
+			const std::string& name, std::shared_ptr<Value> value);
 
 		ID id;
 
-		typedef std::unique_ptr<glurg::Value> ValuePointer;
+		typedef std::shared_ptr<glurg::Value> ValuePointer;
 		std::unordered_map<std::string, ValuePointer> values;
 	};
 }

@@ -121,14 +121,12 @@ void glurg::Event::parse_call_detail(
 			case call_detail_argument:
 				{
 					Call::ArgumentIndex index = trace.read_unsigned_integer(stream);
-					Value* value = trace.read_value(stream);
-
-					call->set_argument_at(index, value);
-					delete value;
+					auto value = trace.read_value(stream);
+					call->set_argument_at(index, value.get());
 				}
 				break;
 			case call_detail_return:
-				call->set_return_value(trace.read_value(stream));
+				call->set_return_value(trace.read_value(stream).get());
 				break;
 			case call_detail_thread:
 				// Eat input argument.

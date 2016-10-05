@@ -90,7 +90,7 @@ const glurg::Value* glurg::Array::get_value_at(std::size_t index) const
 
 void glurg::Array::set_value_at(std::size_t index, const glurg::Value* value)
 {
-	this->values.at(index) = ValuePointer(value->clone());
+	this->values.at(index) = value->clone();
 }
 
 glurg::BoolValue::BoolValue(bool value)
@@ -110,9 +110,9 @@ glurg::Value::Type glurg::BoolValue::get_type() const
 	}
 }
 
-glurg::Value* glurg::BoolValue::clone() const
+std::shared_ptr<glurg::Value> glurg::BoolValue::clone() const
 {
-	return new BoolValue(this->value);
+	return std::shared_ptr<Value>(new BoolValue(this->value));
 }
 
 bool glurg::BoolValue::to_boolean() const
@@ -149,9 +149,9 @@ glurg::Value::Type glurg::IntegerValue::get_type() const
 	}
 }
 
-glurg::Value* glurg::IntegerValue::clone() const
+std::shared_ptr<glurg::Value> glurg::IntegerValue::clone() const
 {
-	return new IntegerValue(this->value);
+	return std::shared_ptr<glurg::Value>(new IntegerValue(this->value));
 }
 
 std::int32_t glurg::IntegerValue::to_signed_integer() const
@@ -187,9 +187,10 @@ glurg::Value::Type glurg::FloatingPointValue::get_type() const
 	return this->type;
 }
 
-glurg::Value* glurg::FloatingPointValue::clone() const
+std::shared_ptr<glurg::Value> glurg::FloatingPointValue::clone() const
 {
-	return new FloatingPointValue(this->type, this->value);
+	return std::shared_ptr<Value>(
+		new FloatingPointValue(this->type, this->value));
 }
 
 float glurg::FloatingPointValue::to_single() const
@@ -230,9 +231,9 @@ glurg::Value::Type glurg::StringValue::get_type() const
 	return STRING;
 }
 
-glurg::Value* glurg::StringValue::clone() const
+std::shared_ptr<glurg::Value> glurg::StringValue::clone() const
 {
-	return new StringValue(this->value);
+	return std::shared_ptr<glurg::Value>(new StringValue(this->value));
 }
 
 std::string glurg::StringValue::to_string() const
@@ -282,9 +283,9 @@ glurg::Value::Type glurg::BlobValue::get_type() const
 	}
 }
 
-glurg::Value* glurg::BlobValue::clone() const
+std::shared_ptr<glurg::Value> glurg::BlobValue::clone() const
 {
-	return new BlobValue(this->length, this->data);
+	return std::shared_ptr<Value>(new BlobValue(this->length, this->data));
 }
 
 glurg::Blob glurg::BlobValue::to_blob() const
@@ -314,15 +315,10 @@ glurg::Value* glurg::BlobValue::read_null_pointer(
 }
 
 glurg::EnumerationValue::EnumerationValue(
-	const EnumerationSignature* signature, Value* value)
+	const EnumerationSignature* signature, const std::shared_ptr<Value>& value)
 {
 	this->value.signature = signature;
 	this->value.value = value;
-}
-
-glurg::EnumerationValue::~EnumerationValue()
-{
-	delete this->value.value;
 }
 
 glurg::Value::Type glurg::EnumerationValue::get_type() const
@@ -330,10 +326,10 @@ glurg::Value::Type glurg::EnumerationValue::get_type() const
 	return ENUMERATION;
 }
 
-glurg::Value* glurg::EnumerationValue::clone() const
+std::shared_ptr<glurg::Value> glurg::EnumerationValue::clone() const
 {
-	return new EnumerationValue(
-		this->value.signature, this->value.value->clone());
+	return std::shared_ptr<Value>(new EnumerationValue(
+		this->value.signature, this->value.value->clone()));
 }
 
 glurg::Enumeration glurg::EnumerationValue::to_enumeration() const
@@ -353,7 +349,7 @@ glurg::Value* glurg::EnumerationValue::read_enumeration(
 	}
 
 	return new EnumerationValue(
-		registry.get_signature(id), trace.read_value(stream));
+		registry.get_signature(id), trace.read_value(stream)->clone());
 }
 
 glurg::BitmaskValue::BitmaskValue(
@@ -368,9 +364,10 @@ glurg::Value::Type glurg::BitmaskValue::get_type() const
 	return BITMASK;
 }
 
-glurg::Value* glurg::BitmaskValue::clone() const
+std::shared_ptr<glurg::Value> glurg::BitmaskValue::clone() const
 {
-	return new BitmaskValue(this->value.signature, this->value.value);
+	return std::shared_ptr<Value>(
+		new BitmaskValue(this->value.signature, this->value.value));
 }
 
 glurg::Bitmask glurg::BitmaskValue::to_bitmask() const
@@ -398,7 +395,7 @@ glurg::ArrayValue::ArrayValue(const Array* array)
 	this->value.set_size(array->get_size());
 	for (std::size_t i = 0; i < array->get_size(); ++i)
 	{
-		this->value.set_value_at(i, array->get_value_at(i)->clone());
+		this->value.set_value_at(i, array->get_value_at(i));
 	}
 }
 
@@ -407,9 +404,9 @@ glurg::Value::Type glurg::ArrayValue::get_type() const
 	return ARRAY;
 }
 
-glurg::Value* glurg::ArrayValue::clone() const
+std::shared_ptr<glurg::Value> glurg::ArrayValue::clone() const
 {
-	return new ArrayValue(&this->value);
+	return std::shared_ptr<Value>(new ArrayValue(&this->value));
 }
 
 const glurg::Array* glurg::ArrayValue::to_array() const
@@ -427,7 +424,7 @@ glurg::Value* glurg::ArrayValue::read_array(
 
 	for (std::size_t i = 0; i < count; ++i)
 	{
-		v->value.set_value_at(i, trace.read_value(stream));
+		v->value.set_value_at(i, trace.read_value(stream).get());
 	}
 
 	return v;
@@ -435,7 +432,7 @@ glurg::Value* glurg::ArrayValue::read_array(
 
 glurg::StructureValue::StructureValue(const StructureSignature* signature)
 {
-	this->value = new Structure(signature);
+	this->value = StructurePointer(new Structure(signature));
 }
 
 glurg::Value::Type glurg::StructureValue::get_type() const
@@ -443,7 +440,7 @@ glurg::Value::Type glurg::StructureValue::get_type() const
 	return STRUCTURE;
 }
 
-glurg::Value* glurg::StructureValue::clone() const
+std::shared_ptr<glurg::Value> glurg::StructureValue::clone() const
 {
 	auto signature = this->value->get_signature();
 	StructureValue* other = new StructureValue(signature);
@@ -457,12 +454,12 @@ glurg::Value* glurg::StructureValue::clone() const
 		}
 	}
 
-	return other;
+	return std::shared_ptr<Value>(other);
 }
 
 const glurg::Structure* glurg::StructureValue::to_structure() const
 {
-	return this->value;
+	return this->value.get();
 }
 
 glurg::Value* glurg::StructureValue::read_structure(
@@ -480,7 +477,7 @@ glurg::Value* glurg::StructureValue::read_structure(
 	StructureValue* v = new StructureValue(signature);
 	for (std::size_t i = 0; i < signature->get_num_fields(); ++i)
 	{
-		v->value->set_field_by_index(i, trace.read_value(stream));
+		v->value->set_field_by_index(i, trace.read_value(stream).get());
 	}
 
 	return v;
@@ -496,9 +493,9 @@ glurg::Value::Type glurg::HandleValue::get_type() const
 	return HANDLE;
 }
 
-glurg::Value* glurg::HandleValue::clone() const
+std::shared_ptr<glurg::Value> glurg::HandleValue::clone() const
 {
-	return new HandleValue(this->value);
+	return std::shared_ptr<glurg::Value>(new HandleValue(this->value));
 }
 
 std::uint32_t glurg::HandleValue::to_handle() const

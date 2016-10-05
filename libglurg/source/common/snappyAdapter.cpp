@@ -237,6 +237,11 @@ bool glurg::SnappyAdapterBase::snappy_fetch_read_buffer(glurg::FileStream* strea
 		throw std::runtime_error("couldn't decode read buffer");
 	}
 
+	if (this->snappy_read_buffer != nullptr)
+	{
+		delete[] this->snappy_read_buffer;
+	}
+
 	this->snappy_read_buffer = read_buffer;
 	this->snappy_read_buffer_offset = 0;
 	this->snappy_read_buffer_size = read_buffer_size;

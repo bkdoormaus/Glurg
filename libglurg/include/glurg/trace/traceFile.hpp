@@ -54,7 +54,7 @@ namespace glurg
 		Call* get_call(Call::Index index);
 		const Call* get_call(Call::Index index) const;
 
-		Value* read_value(FileStream& stream);
+		std::shared_ptr<Value> read_value(FileStream& stream);
 		std::uint32_t read_unsigned_integer(FileStream& stream);
 		std::string read_string(FileStream& stream);
 

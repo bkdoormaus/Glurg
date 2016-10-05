@@ -44,7 +44,7 @@ namespace glurg
 
 		Thread thread;
 
-		typedef std::unique_ptr<Value> ValuePointer;
+		typedef std::shared_ptr<Value> ValuePointer;
 		std::vector<ValuePointer> arguments;
 
 		ValuePointer return_value;

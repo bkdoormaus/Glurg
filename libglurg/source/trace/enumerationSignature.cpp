@@ -32,9 +32,9 @@ const glurg::Value* glurg::EnumerationSignature::get_value_by_name(
 }
 
 void glurg::EnumerationSignature::set_value_by_name(
-	const std::string& name, Value* value)
+	const std::string& name, std::shared_ptr<Value> value)
 {
-	this->values.insert(std::make_pair(name, ValuePointer(value)));
+	this->values.insert(std::make_pair(name, value->clone()));
 }
 
 glurg::EnumerationSignature* glurg::EnumerationSignature::read(
@@ -47,7 +47,7 @@ glurg::EnumerationSignature* glurg::EnumerationSignature::read(
 	for (std::uint32_t i = 0; i < count; ++i)
 	{
 		signature->set_value_by_name(
-			trace.read_string(stream), trace.read_value(stream));
+			trace.read_string(stream), trace.read_value(stream)->clone());
 	}
 
 	return signature;

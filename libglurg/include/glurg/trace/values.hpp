@@ -26,7 +26,7 @@ namespace glurg
 	struct Enumeration
 	{
 		const EnumerationSignature* signature;
-		Value* value;
+		std::shared_ptr<Value> value;
 	};
 
 	struct Bitmask
@@ -69,7 +69,7 @@ namespace glurg
 		virtual const Array* to_array() const;
 		virtual const Structure* to_structure() const;
 
-		virtual Value* clone() const = 0;
+		virtual std::shared_ptr<Value> clone() const = 0;
 	};
 
 	class Array
@@ -82,7 +82,7 @@ namespace glurg
 		void set_value_at(std::size_t index, const Value* value);
 
 	private:
-		typedef std::unique_ptr<Value> ValuePointer;
+		typedef std::shared_ptr<Value> ValuePointer;
 		std::vector<ValuePointer> values;
 	};
 
@@ -96,7 +96,7 @@ namespace glurg
 		explicit BoolValue(bool value);
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 
 		bool to_boolean() const override;
 
@@ -119,7 +119,7 @@ namespace glurg
 		explicit IntegerValue(std::int64_t value);
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 		
 		std::int32_t to_signed_integer() const override;
 		std::uint32_t to_unsigned_integer() const override;
@@ -143,7 +143,7 @@ namespace glurg
 		FloatingPointValue(Type type, double value);
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 		
 		float to_single() const override;
 		double to_double() const override;
@@ -167,7 +167,7 @@ namespace glurg
 		StringValue(const std::string& value);
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 		
 		std::string to_string() const override;
 		Blob to_blob() const override;
@@ -191,7 +191,7 @@ namespace glurg
 		~BlobValue();
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 
 		Blob to_blob() const override;
 
@@ -210,11 +210,13 @@ namespace glurg
 		static const Type ENUMERATION = 0x09;
 
 		EnumerationValue() = default;
-		EnumerationValue(const EnumerationSignature* signature, Value* value);
-		~EnumerationValue();
+		EnumerationValue(
+			const EnumerationSignature* signature,
+			const std::shared_ptr<Value>& value);
+		~EnumerationValue()=  default;
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 
 		Enumeration to_enumeration() const override;
 
@@ -234,7 +236,7 @@ namespace glurg
 		BitmaskValue(const BitmaskSignature* signature, std::uint32_t value);
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 
 		Bitmask to_bitmask() const override;
 
@@ -254,7 +256,7 @@ namespace glurg
 		ArrayValue(const Array* array);
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 
 		const Array* to_array() const override;
 
@@ -273,7 +275,7 @@ namespace glurg
 		StructureValue(const StructureSignature* signature);
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 
 		const Structure* to_structure() const override;
 
@@ -281,7 +283,8 @@ namespace glurg
 			Type type, TraceFile& trace, FileStream& stream);
 		
 	private:
-		Structure* value;
+		typedef std::unique_ptr<Structure> StructurePointer;
+		StructurePointer value;
 	};
 
 	class HandleValue : public Value
@@ -293,7 +296,7 @@ namespace glurg
 		explicit HandleValue(std::uint32_t value);
 
 		Type get_type() const override;
-		Value* clone() const override;
+		std::shared_ptr<Value> clone() const override;
 
 		std::uint32_t to_handle() const override;
 
