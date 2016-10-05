@@ -88,8 +88,9 @@ void glurg::Event::skip_backtrace(
 				case backtrace_function_name:
 				case backtrace_source_file_name:
 					{
-						// Single string.
-						trace.read_string(stream);
+						std::uint32_t length =
+							trace.read_unsigned_integer(stream);
+						stream.set_position(stream.get_position() + length);
 					}
 					break;
 				case backtrace_source_line_number:
