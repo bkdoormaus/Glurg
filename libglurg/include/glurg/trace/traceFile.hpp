@@ -15,6 +15,7 @@
 #include "glurg/trace/call.hpp"
 #include "glurg/trace/callSignature.hpp"
 #include "glurg/trace/enumerationSignature.hpp"
+#include "glurg/trace/structureSignature.hpp"
 #include "glurg/trace/values.hpp"
 
 namespace glurg
@@ -45,6 +46,12 @@ namespace glurg
 		void register_enumeration_signature(
 			EnumerationSignature* signature);
 
+		const StructureSignature* get_structure_signature(
+			StructureSignature::ID id) const;
+		bool has_structure_signature(StructureSignature::ID id) const;
+		void register_structure_signature(
+			StructureSignature* signature);
+
 		void register_backtrace(std::uint32_t id);
 		bool has_backtrace(std::uint32_t id) const;
 
@@ -74,6 +81,10 @@ namespace glurg
 		typedef std::unique_ptr<EnumerationSignature> EnumerationSignaturePointer;
 		std::unordered_map<EnumerationSignature::ID, EnumerationSignaturePointer>
 			enumerationSignatures;
+
+		typedef std::unique_ptr<StructureSignature> StructureSignaturePointer;
+		std::unordered_map<StructureSignature::ID, StructureSignaturePointer>
+			structureSignatures;
 
 		std::vector<std::uint32_t> backtraces;
 

@@ -18,6 +18,8 @@ namespace glurg
 	class BitmaskSignature;
 	class EnumerationSignature;
 	class FileStream;
+	class Structure;
+	class StructureSignature;
 	class TraceFile;
 	class Value;
 
@@ -65,6 +67,7 @@ namespace glurg
 		virtual Enumeration to_enumeration() const;
 		virtual Bitmask to_bitmask() const;
 		virtual const Array* to_array() const;
+		virtual const Structure* to_structure() const;
 
 		virtual Value* clone() const = 0;
 	};
@@ -259,6 +262,26 @@ namespace glurg
 			Type type, TraceFile& trace, FileStream& stream);
 	private:
 		Array value;
+	};
+
+	class StructureValue : public Value
+	{
+	public:
+		static const Type STRUCTURE = 0x0c;
+
+		StructureValue() = default;
+		StructureValue(const StructureSignature* signature);
+
+		Type get_type() const override;
+		Value* clone() const override;
+
+		const Structure* to_structure() const override;
+
+		static Value* read_structure(
+			Type type, TraceFile& trace, FileStream& stream);
+		
+	private:
+		Structure* value;
 	};
 
 	class HandleValue : public Value

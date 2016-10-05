@@ -79,6 +79,38 @@ glurg::TraceFile::has_enumeration_signature(EnumerationSignature::ID id) const
 	return this->enumerationSignatures.find(id) != this->enumerationSignatures.end();
 }
 
+void glurg::TraceFile::register_enumeration_signature(
+	glurg::EnumerationSignature* signature)
+{
+	this->enumerationSignatures.insert(
+		std::make_pair(signature->get_id(), EnumerationSignaturePointer(signature)));
+}
+
+const glurg::StructureSignature* glurg::TraceFile::get_structure_signature(
+	StructureSignature::ID id) const
+{
+	auto e = this->structureSignatures.find(id);
+	if (e == this->structureSignatures.end())
+	{
+		return nullptr;
+	}
+
+	return e->second.get();
+}
+
+bool
+glurg::TraceFile::has_structure_signature(StructureSignature::ID id) const
+{
+	return this->structureSignatures.find(id) != this->structureSignatures.end();
+}
+
+void glurg::TraceFile::register_structure_signature(
+	glurg::StructureSignature* signature)
+{
+	this->structureSignatures.insert(
+		std::make_pair(signature->get_id(), StructureSignaturePointer(signature)));
+}
+
 void glurg::TraceFile::register_backtrace(std::uint32_t id)
 {
 	if (!has_backtrace(id))
@@ -93,13 +125,6 @@ bool glurg::TraceFile::has_backtrace(std::uint32_t id) const
 	auto end = this->backtraces.end();
 
 	return std::find(begin, end, id) != end;
-}
-
-void glurg::TraceFile::register_enumeration_signature(
-	glurg::EnumerationSignature* signature)
-{
-	this->enumerationSignatures.insert(
-		std::make_pair(signature->get_id(), EnumerationSignaturePointer(signature)));
 }
 
 glurg::Call* glurg::TraceFile::create_call(CallSignature::ID id)
@@ -207,6 +232,9 @@ void glurg::TraceFile::register_all_value_read_functions()
 
 	register_value_read_function(
 		ArrayValue::ARRAY, ArrayValue::read_array);
+
+	register_value_read_function(
+		StructureValue::STRUCTURE, StructureValue::read_structure);
 
 	register_value_read_function(
 		HandleValue::HANDLE, HandleValue::read_handle);

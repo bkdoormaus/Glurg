@@ -8,6 +8,8 @@
 #include "glurg/common/fileStream.hpp"
 #include "glurg/trace/bitmaskSignature.hpp"
 #include "glurg/trace/enumerationSignature.hpp"
+#include "glurg/trace/structure.hpp"
+#include "glurg/trace/structureSignature.hpp"
 #include "glurg/trace/traceFile.hpp"
 #include "glurg/trace/values.hpp"
 
@@ -64,6 +66,11 @@ glurg::Bitmask glurg::Value::to_bitmask() const
 const glurg::Array* glurg::Value::to_array() const
 {
 	throw std::runtime_error("invalid conversion to array");
+}
+
+const glurg::Structure* glurg::Value::to_structure() const
+{
+	throw std::runtime_error("invalid conversion to structure");
 }
 
 std::size_t glurg::Array::get_size() const
@@ -419,6 +426,58 @@ glurg::Value* glurg::ArrayValue::read_array(
 	for (std::size_t i = 0; i < count; ++i)
 	{
 		v->value.set_value_at(i, trace.read_value(stream));
+	}
+
+	return v;
+}
+
+glurg::StructureValue::StructureValue(const StructureSignature* signature)
+{
+	this->value = new Structure(signature);
+}
+
+glurg::Value::Type glurg::StructureValue::get_type() const
+{
+	return STRUCTURE;
+}
+
+glurg::Value* glurg::StructureValue::clone() const
+{
+	auto signature = this->value->get_signature();
+	StructureValue* other = new StructureValue(signature);
+
+	for (std::size_t i = 0; i < signature->get_num_fields(); ++i)
+	{
+		auto field = this->value->get_field_by_index(i);
+		if (field != nullptr)
+		{
+			other->value->set_field_by_index(i, field);
+		}
+	}
+
+	return other;
+}
+
+const glurg::Structure* glurg::StructureValue::to_structure() const
+{
+	return this->value;
+}
+
+glurg::Value* glurg::StructureValue::read_structure(
+	Type type, TraceFile& trace, FileStream& stream)
+{
+	StructureSignature::ID id = trace.read_unsigned_integer(stream);
+	if (!trace.has_structure_signature(id))
+	{
+		StructureSignature* s = StructureSignature::read(id, trace, stream);
+		trace.register_structure_signature(s);
+	}
+
+	auto signature = trace.get_structure_signature(id);
+	StructureValue* v = new StructureValue(signature);
+	for (std::size_t i = 0; i < signature->get_num_fields(); ++i)
+	{
+		v->value->set_field_by_index(i, trace.read_value(stream));
 	}
 
 	return v;
