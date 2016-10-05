@@ -228,7 +228,7 @@ bool glurg::SnappyAdapterBase::snappy_fetch_read_buffer(glurg::FileStream* strea
 		throw std::runtime_error("couldn't get read buffer size");
 	}
 
-	std::uint8_t* read_buffer = new std::uint8_t[header];
+	std::uint8_t* read_buffer = new std::uint8_t[read_buffer_size];
 	if (!snappy::RawUncompress(
 		(char*)compressed_buffer.get(), header,
 		(char*)read_buffer))
