@@ -46,9 +46,9 @@ glurg::BitmaskSignature* glurg::BitmaskSignature::read(
 	for (std::uint32_t i = 0; i < count; ++i)
 	{
 		std::string name = trace.read_string(stream);
-		Value* value = trace.read_value(stream);
+		std::uint32_t value = trace.read_unsigned_integer(stream);
 
-		signature->set_mask_by_name(name, value->to_unsigned_integer());
+		signature->set_mask_by_name(name, value);
 	}
 
 	return signature;

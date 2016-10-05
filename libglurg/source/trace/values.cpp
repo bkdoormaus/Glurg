@@ -380,9 +380,8 @@ glurg::Value* glurg::BitmaskValue::read_bitmask(
 		trace.register_bitmask_signature(s);
 	}
 
-	Value* v = trace.read_value(stream);
-	return new BitmaskValue(
-		trace.get_bitmask_signature(id), v->to_unsigned_integer());
+	std::uint32_t v = trace.read_unsigned_integer(stream);
+	return new BitmaskValue(trace.get_bitmask_signature(id), v);
 }
 
 glurg::ArrayValue::ArrayValue(const Array* array)
