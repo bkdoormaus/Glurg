@@ -10,6 +10,8 @@
 
 glurg::TraceFile::TraceFile()
 {
+	this->lifetime_num_calls = 0;
+
 	register_all_value_read_functions();
 }
 
@@ -56,19 +58,39 @@ bool glurg::TraceFile::has_backtrace(std::uint32_t id) const
 glurg::Call* glurg::TraceFile::create_call(CallSignature::ID id)
 {
 	auto signature = get_call_signature_registry().get_signature(id);
-	calls.push_back(CallPointer(new Call(calls.size(), signature)));
+	Call* call = new Call(this->lifetime_num_calls, signature);
+	calls.emplace(this->lifetime_num_calls, CallPointer(call));
 
-	return calls.back().get();
+	++this->lifetime_num_calls;
+
+	return call;
+}
+
+void glurg::TraceFile::delete_call(glurg::Call* call)
+{
+	this->calls.erase(call->get_call_index());
 }
 
 glurg::Call* glurg::TraceFile::get_call(Call::Index index)
 {
-	return calls.at(index).get();
+	auto e = this->calls.find(index);
+	if (e != this->calls.end())
+	{
+		return e->second.get();
+	}
+
+	return nullptr;
 }
 
 const glurg::Call* glurg::TraceFile::get_call(Call::Index index) const
 {
-	return calls.at(index).get();
+	auto e = this->calls.find(index);
+	if (e != this->calls.end())
+	{
+		return e->second.get();
+	}
+
+	return nullptr;
 }
 
 glurg::Value* glurg::TraceFile::read_value(glurg::FileStream& stream)

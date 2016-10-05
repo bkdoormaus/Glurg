@@ -49,6 +49,8 @@ namespace glurg
 		bool has_backtrace(std::uint32_t id) const;
 
 		Call* create_call(CallSignature::ID id);
+		void delete_call(Call* call);
+
 		Call* get_call(Call::Index index);
 		const Call* get_call(Call::Index index) const;
 
@@ -73,7 +75,8 @@ namespace glurg
 		std::unordered_map<Value::Type, Value::ReadFunction> read_value_functions;
 
 		typedef std::unique_ptr<Call> CallPointer;
-		std::vector<CallPointer> calls;
+		std::unordered_map<Call::Index, CallPointer> calls;
+		Call::Index lifetime_num_calls;
 	};
 }
 
