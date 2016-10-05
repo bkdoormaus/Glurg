@@ -45,7 +45,7 @@ const glurg::Value* glurg::Call::get_argument_at(ArgumentIndex index) const
 void glurg::Call::set_argument_at(
 	ArgumentIndex index, const glurg::Value* value)
 {
-	this->arguments.at(index) = ValuePointer(value->clone());
+	this->arguments.at(index) = value->clone();
 }
 
 const glurg::Value* glurg::Call::get_return_value() const
@@ -55,5 +55,5 @@ const glurg::Value* glurg::Call::get_return_value() const
 
 void glurg::Call::set_return_value(const glurg::Value* value)
 {
-	this->return_value = ValuePointer(value->clone());
+	this->return_value = value->clone();
 }

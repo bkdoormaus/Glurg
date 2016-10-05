@@ -33,7 +33,7 @@ namespace glurg
 	private:
 		const StructureSignature* signature;
 
-		typedef std::unique_ptr<Value> ValuePointer;
+		typedef std::shared_ptr<Value> ValuePointer;
 		std::unordered_map<std::string, ValuePointer> fields;
 	};
 }

@@ -15,12 +15,22 @@
 #include "glurg/trace/call.hpp"
 #include "glurg/trace/callSignature.hpp"
 #include "glurg/trace/enumerationSignature.hpp"
+#include "glurg/trace/signatureRegistry.hpp"
 #include "glurg/trace/structureSignature.hpp"
 #include "glurg/trace/values.hpp"
 
 namespace glurg
 {
 	class FileStream;
+
+	typedef SignatureRegistry<BitmaskSignature::ID, BitmaskSignature>
+		BitmaskSignatureRegistry;
+	typedef SignatureRegistry<CallSignature::ID, CallSignature>
+		CallSignatureRegistry;
+	typedef SignatureRegistry<EnumerationSignature::ID, EnumerationSignature>
+		EnumerationSignatureRegistry;
+	typedef SignatureRegistry<StructureSignature::ID, StructureSignature>
+		StructureSignatureRegistry;
 
 	class TraceFile
 	{
@@ -30,36 +40,21 @@ namespace glurg
 		TraceFile();
 		~TraceFile() = default;
 
-		const BitmaskSignature* get_bitmask_signature(
-			BitmaskSignature::ID id) const;
-		bool has_bitmask_signature(BitmaskSignature::ID id) const;
-		void register_bitmask_signature(BitmaskSignature* signature);
-
-		const CallSignature* get_call_signature(
-			CallSignature::ID id) const;
-		bool has_call_signature(CallSignature::ID id) const;
-		void register_call_signature(CallSignature* signature);
-
-		const EnumerationSignature* get_enumeration_signature(
-			EnumerationSignature::ID id) const;
-		bool has_enumeration_signature(EnumerationSignature::ID id) const;
-		void register_enumeration_signature(
-			EnumerationSignature* signature);
-
-		const StructureSignature* get_structure_signature(
-			StructureSignature::ID id) const;
-		bool has_structure_signature(StructureSignature::ID id) const;
-		void register_structure_signature(
-			StructureSignature* signature);
+		BitmaskSignatureRegistry& get_bitmask_signature_registry();
+		CallSignatureRegistry& get_call_signature_registry();
+		EnumerationSignatureRegistry& get_enumeration_signature_registry();
+		StructureSignatureRegistry& get_structure_signature_registry();
 
 		void register_backtrace(std::uint32_t id);
 		bool has_backtrace(std::uint32_t id) const;
 
 		Call* create_call(CallSignature::ID id);
+		void delete_call(Call* call);
+
 		Call* get_call(Call::Index index);
 		const Call* get_call(Call::Index index) const;
 
-		Value* read_value(FileStream& stream);
+		std::shared_ptr<Value> read_value(FileStream& stream);
 		std::uint32_t read_unsigned_integer(FileStream& stream);
 		std::string read_string(FileStream& stream);
 
@@ -70,28 +65,18 @@ namespace glurg
 		void register_value_read_function(
 			Value::Type type, Value::ReadFunction func);
 
-		typedef std::unique_ptr<BitmaskSignature> BitmaskSignaturePointer;
-		std::unordered_map<BitmaskSignature::ID, BitmaskSignaturePointer>
-			bitmaskSignatures;
-
-		typedef std::unique_ptr<CallSignature> CallSignaturePointer;
-		std::unordered_map<CallSignature::ID, CallSignaturePointer>
-			callSignatures;
-
-		typedef std::unique_ptr<EnumerationSignature> EnumerationSignaturePointer;
-		std::unordered_map<EnumerationSignature::ID, EnumerationSignaturePointer>
-			enumerationSignatures;
-
-		typedef std::unique_ptr<StructureSignature> StructureSignaturePointer;
-		std::unordered_map<StructureSignature::ID, StructureSignaturePointer>
-			structureSignatures;
+		BitmaskSignatureRegistry bitmaskSignatures;
+		CallSignatureRegistry callSignatures;
+		EnumerationSignatureRegistry enumerationSignatures;
+		StructureSignatureRegistry structureSignatures;
 
 		std::vector<std::uint32_t> backtraces;
 
 		std::unordered_map<Value::Type, Value::ReadFunction> read_value_functions;
 
 		typedef std::unique_ptr<Call> CallPointer;
-		std::vector<CallPointer> calls;
+		std::unordered_map<Call::Index, CallPointer> calls;
+		Call::Index lifetime_num_calls;
 	};
 }
 

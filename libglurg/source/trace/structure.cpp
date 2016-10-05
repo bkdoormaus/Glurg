@@ -42,7 +42,7 @@ void glurg::Structure::set_field_by_name(
 {
 	if (this->signature->has_field_name(name))
 	{
-		this->fields.insert(std::make_pair(name, ValuePointer(value->clone())));
+		this->fields.insert(std::make_pair(name, value->clone()));
 	}
 }
 
@@ -50,5 +50,5 @@ void glurg::Structure::set_field_by_index(
 	std::size_t index, const glurg::Value* value)
 {
 	auto name = this->signature->get_field_name(index);
-	this->fields.insert(std::make_pair(name, ValuePointer(value->clone())));
+	this->fields.insert(std::make_pair(name, value->clone()));
 }

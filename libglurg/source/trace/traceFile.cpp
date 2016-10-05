@@ -10,105 +10,33 @@
 
 glurg::TraceFile::TraceFile()
 {
+	this->lifetime_num_calls = 0;
+
 	register_all_value_read_functions();
 }
 
-const glurg::BitmaskSignature* glurg::TraceFile::get_bitmask_signature(
-	BitmaskSignature::ID id) const
+glurg::BitmaskSignatureRegistry&
+glurg::TraceFile::get_bitmask_signature_registry()
 {
-	auto e = this->bitmaskSignatures.find(id);
-	if (e == this->bitmaskSignatures.end())
-	{
-		return nullptr;
-	}
-
-	return e->second.get();
+	return this->bitmaskSignatures;
 }
 
-bool glurg::TraceFile::has_bitmask_signature(BitmaskSignature::ID id) const
+glurg::CallSignatureRegistry&
+glurg::TraceFile::get_call_signature_registry()
 {
-	return this->bitmaskSignatures.find(id) != this->bitmaskSignatures.end();
+	return this->callSignatures;
 }
 
-void glurg::TraceFile::register_bitmask_signature(
-	glurg::BitmaskSignature* signature)
+glurg::EnumerationSignatureRegistry&
+glurg::TraceFile::get_enumeration_signature_registry()
 {
-	this->bitmaskSignatures.insert(
-		std::make_pair(signature->get_id(), BitmaskSignaturePointer(signature)));
+	return this->enumerationSignatures;
 }
 
-const glurg::CallSignature* glurg::TraceFile::get_call_signature(
-	CallSignature::ID id) const
+glurg::StructureSignatureRegistry&
+glurg::TraceFile::get_structure_signature_registry()
 {
-	auto e = this->callSignatures.find(id);
-	if (e == this->callSignatures.end())
-	{
-		return nullptr;
-	}
-
-	return e->second.get();
-}
-
-bool glurg::TraceFile::has_call_signature(CallSignature::ID id) const
-{
-	return this->callSignatures.find(id) != this->callSignatures.end();
-}
-
-void glurg::TraceFile::register_call_signature(
-	glurg::CallSignature* signature)
-{
-	this->callSignatures.insert(
-		std::make_pair(signature->get_id(), CallSignaturePointer(signature)));
-}
-
-const glurg::EnumerationSignature* glurg::TraceFile::get_enumeration_signature(
-	EnumerationSignature::ID id) const
-{
-	auto e = this->enumerationSignatures.find(id);
-	if (e == this->enumerationSignatures.end())
-	{
-		return nullptr;
-	}
-
-	return e->second.get();
-}
-
-bool
-glurg::TraceFile::has_enumeration_signature(EnumerationSignature::ID id) const
-{
-	return this->enumerationSignatures.find(id) != this->enumerationSignatures.end();
-}
-
-void glurg::TraceFile::register_enumeration_signature(
-	glurg::EnumerationSignature* signature)
-{
-	this->enumerationSignatures.insert(
-		std::make_pair(signature->get_id(), EnumerationSignaturePointer(signature)));
-}
-
-const glurg::StructureSignature* glurg::TraceFile::get_structure_signature(
-	StructureSignature::ID id) const
-{
-	auto e = this->structureSignatures.find(id);
-	if (e == this->structureSignatures.end())
-	{
-		return nullptr;
-	}
-
-	return e->second.get();
-}
-
-bool
-glurg::TraceFile::has_structure_signature(StructureSignature::ID id) const
-{
-	return this->structureSignatures.find(id) != this->structureSignatures.end();
-}
-
-void glurg::TraceFile::register_structure_signature(
-	glurg::StructureSignature* signature)
-{
-	this->structureSignatures.insert(
-		std::make_pair(signature->get_id(), StructureSignaturePointer(signature)));
+	return this->structureSignatures;
 }
 
 void glurg::TraceFile::register_backtrace(std::uint32_t id)
@@ -129,22 +57,44 @@ bool glurg::TraceFile::has_backtrace(std::uint32_t id) const
 
 glurg::Call* glurg::TraceFile::create_call(CallSignature::ID id)
 {
-	calls.push_back(CallPointer(new Call(calls.size(), get_call_signature(id))));
+	auto signature = get_call_signature_registry().get_signature(id);
+	Call* call = new Call(this->lifetime_num_calls, signature);
+	calls.emplace(this->lifetime_num_calls, CallPointer(call));
 
-	return calls.back().get();
+	++this->lifetime_num_calls;
+
+	return call;
+}
+
+void glurg::TraceFile::delete_call(glurg::Call* call)
+{
+	this->calls.erase(call->get_call_index());
 }
 
 glurg::Call* glurg::TraceFile::get_call(Call::Index index)
 {
-	return calls.at(index).get();
+	auto e = this->calls.find(index);
+	if (e != this->calls.end())
+	{
+		return e->second.get();
+	}
+
+	return nullptr;
 }
 
 const glurg::Call* glurg::TraceFile::get_call(Call::Index index) const
 {
-	return calls.at(index).get();
+	auto e = this->calls.find(index);
+	if (e != this->calls.end())
+	{
+		return e->second.get();
+	}
+
+	return nullptr;
 }
 
-glurg::Value* glurg::TraceFile::read_value(glurg::FileStream& stream)
+std::shared_ptr<glurg::Value> glurg::TraceFile::read_value(
+	glurg::FileStream& stream)
 {
 	std::uint8_t type = 0;
 	stream.read(&type, sizeof(std::uint8_t));
@@ -156,7 +106,7 @@ glurg::Value* glurg::TraceFile::read_value(glurg::FileStream& stream)
 	}
 
 	auto read_func = e->second;
-	return read_func(type, *this, stream);
+	return std::shared_ptr<Value>(read_func(type, *this, stream));
 }
 
 std::uint32_t glurg::TraceFile::read_unsigned_integer(glurg::FileStream& stream)

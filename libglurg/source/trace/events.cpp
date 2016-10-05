@@ -34,10 +34,11 @@ glurg::Event* glurg::Event::read(glurg::TraceFile& trace, glurg::FileStream& str
 		Call::Thread thread = trace.read_unsigned_integer(stream);
 
 		CallSignature::ID signature_id = trace.read_unsigned_integer(stream);
-		if (!trace.has_call_signature(signature_id))
+		auto& registry = trace.get_call_signature_registry();
+		if (!registry.has_signature(signature_id))
 		{
 			CallSignature* s = CallSignature::read(signature_id, trace, stream);
-			trace.register_call_signature(s);
+			registry.register_signature(signature_id, s);
 		}
 
 		call = trace.create_call(signature_id);
@@ -120,14 +121,12 @@ void glurg::Event::parse_call_detail(
 			case call_detail_argument:
 				{
 					Call::ArgumentIndex index = trace.read_unsigned_integer(stream);
-					Value* value = trace.read_value(stream);
-
-					call->set_argument_at(index, value);
-					delete value;
+					auto value = trace.read_value(stream);
+					call->set_argument_at(index, value.get());
 				}
 				break;
 			case call_detail_return:
-				call->set_return_value(trace.read_value(stream));
+				call->set_return_value(trace.read_value(stream).get());
 				break;
 			case call_detail_thread:
 				// Eat input argument.
