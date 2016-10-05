@@ -36,13 +36,14 @@ glurg::StructureSignature* glurg::StructureSignature::read(
 {
 	StructureSignature* signature = new StructureSignature();
 	signature->id = id;
+	signature->name = trace.read_string(stream);
 
 	std::size_t count = trace.read_unsigned_integer(stream);
 	signature->set_num_fields(count);
-
 	for (std::size_t i = 0; i < count; ++i)
 	{
-		signature->set_field_name(i, trace.read_string(stream));
+		std::string field = trace.read_string(stream);
+		signature->set_field_name(i, field);
 	}
 
 	return signature;

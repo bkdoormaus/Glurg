@@ -26,6 +26,7 @@ namespace glurg
 		~StructureSignature() = default;
 
 		ID get_id() const;
+		std::string get_name() const;
 
 		std::size_t get_num_fields() const;
 		std::string get_field_name(std::size_t index) const;
@@ -39,6 +40,7 @@ namespace glurg
 		void set_field_name(std::size_t index, const std::string& value);
 
 		ID id;
+		std::string name;
 
 		std::vector<std::string> fields;
 	};
