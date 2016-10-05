@@ -34,10 +34,11 @@ glurg::Event* glurg::Event::read(glurg::TraceFile& trace, glurg::FileStream& str
 		Call::Thread thread = trace.read_unsigned_integer(stream);
 
 		CallSignature::ID signature_id = trace.read_unsigned_integer(stream);
-		if (!trace.has_call_signature(signature_id))
+		auto& registry = trace.get_call_signature_registry();
+		if (!registry.has_signature(signature_id))
 		{
 			CallSignature* s = CallSignature::read(signature_id, trace, stream);
-			trace.register_call_signature(s);
+			registry.register_signature(signature_id, s);
 		}
 
 		call = trace.create_call(signature_id);

@@ -345,14 +345,15 @@ glurg::Value* glurg::EnumerationValue::read_enumeration(
 	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
 {
 	EnumerationSignature::ID id = trace.read_unsigned_integer(stream);
-	if (!trace.has_enumeration_signature(id))
+	auto& registry = trace.get_enumeration_signature_registry();
+	if (!registry.has_signature(id))
 	{
 		EnumerationSignature* s = EnumerationSignature::read(id, trace, stream);
-		trace.register_enumeration_signature(s);
+		registry.register_signature(id, s);
 	}
 
 	return new EnumerationValue(
-		trace.get_enumeration_signature(id), trace.read_value(stream));
+		registry.get_signature(id), trace.read_value(stream));
 }
 
 glurg::BitmaskValue::BitmaskValue(
@@ -381,14 +382,15 @@ glurg::Value* glurg::BitmaskValue::read_bitmask(
 	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
 {
 	BitmaskSignature::ID id = trace.read_unsigned_integer(stream);
-	if (!trace.has_bitmask_signature(id))
+	auto& registry = trace.get_bitmask_signature_registry();
+	if (!registry.get_signature(id))
 	{
 		BitmaskSignature* s = BitmaskSignature::read(id, trace, stream);
-		trace.register_bitmask_signature(s);
+		registry.register_signature(id, s);
 	}
 
 	std::uint32_t v = trace.read_unsigned_integer(stream);
-	return new BitmaskValue(trace.get_bitmask_signature(id), v);
+	return new BitmaskValue(registry.get_signature(id), v);
 }
 
 glurg::ArrayValue::ArrayValue(const Array* array)
@@ -467,13 +469,14 @@ glurg::Value* glurg::StructureValue::read_structure(
 	Type type, TraceFile& trace, FileStream& stream)
 {
 	StructureSignature::ID id = trace.read_unsigned_integer(stream);
-	if (!trace.has_structure_signature(id))
+	auto& registry = trace.get_structure_signature_registry();
+	if (!registry.get_signature(id))
 	{
 		StructureSignature* s = StructureSignature::read(id, trace, stream);
-		trace.register_structure_signature(s);
+		registry.register_signature(id, s);
 	}
 
-	auto signature = trace.get_structure_signature(id);
+	auto signature = registry.get_signature(id);
 	StructureValue* v = new StructureValue(signature);
 	for (std::size_t i = 0; i < signature->get_num_fields(); ++i)
 	{
