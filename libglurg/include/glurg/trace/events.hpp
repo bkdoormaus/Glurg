@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "glurg/trace/call.hpp"
+
 namespace glurg
 {
 	class CallSignature;
@@ -28,11 +30,14 @@ namespace glurg
 			event_leave = 1
 		};
 
-		virtual Type get_type() const = 0;
+		~Event() = default;
 
-	protected:
-		static void skip_backtrace(TraceFile& trace, FileStream& stream);
+		Type get_type() const;
+		Call::Index get_call_index() const;
 
+		static Event* read(TraceFile& trace, FileStream& stream);
+
+	private:
 		enum
 		{
 			call_detail_terminator = 0,
@@ -41,59 +46,15 @@ namespace glurg
 			call_detail_thread = 3,
 			call_detail_backtrace = 4
 		};
-	};
 
-	class EnterCallEvent : public Event
-	{
-	public:
-		typedef std::uint32_t CallIndex;
-		typedef std::uint32_t ArgumentCount;
-		typedef std::uint32_t ArgumentIndex;
-		typedef std::uint32_t Thread;
+		Event() = default;
 
-		~EnterCallEvent() = default;
+		static void skip_backtrace(TraceFile& trace, FileStream& stream);
+		static void parse_call_detail(Call* call, TraceFile& trace, FileStream& stream);
 
-		Thread get_thread() const;
-		const CallSignature* get_call_signature() const;
+		Type type;
 
-		ArgumentCount get_num_arguments() const;
-		const Value* get_argument_at(ArgumentIndex index);
-
-		static EnterCallEvent* read(
-			Type type, TraceFile& trace, FileStream& stream);
-
-		Event::Type get_type() const;
-
-	private:
-		EnterCallEvent() = default;
-
-		const CallSignature* signature;
-
-		Thread thread;
-
-		typedef std::unique_ptr<Value> ValuePointer;
-		std::vector<ValuePointer> arguments;
-	};
-
-	class LeaveCallEvent : public Event
-	{
-	public:
-		typedef std::uint32_t CallIndex;
-
-		~LeaveCallEvent();
-
-		CallIndex get_call_index() const;
-
-		const Value* get_return_value() const;
-
-		static LeaveCallEvent* read(
-			Type type, TraceFile& trace, FileStream& stream);
-		
-		Event::Type get_type() const;
-
-	private:
-		Value* return_value;
-		CallIndex call_index;
+		Call::Index call_index;
 	};
 }
 
