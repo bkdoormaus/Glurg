@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 #include "glurg/trace/bitmaskSignature.hpp"
+#include "glurg/trace/call.hpp"
 #include "glurg/trace/callSignature.hpp"
 #include "glurg/trace/enumerationSignature.hpp"
 #include "glurg/trace/values.hpp"
@@ -47,6 +48,10 @@ namespace glurg
 		void register_backtrace(std::uint32_t id);
 		bool has_backtrace(std::uint32_t id) const;
 
+		Call* create_call(CallSignature::ID id);
+		Call* get_call(Call::Index index);
+		const Call* get_call(Call::Index index) const;
+
 		Value* read_value(FileStream& stream);
 		std::uint32_t read_unsigned_integer(FileStream& stream);
 		std::string read_string(FileStream& stream);
@@ -58,18 +63,24 @@ namespace glurg
 		void register_value_read_function(
 			Value::Type type, Value::ReadFunction func);
 
-		typedef std::unique_ptr<BitmaskSignature> BitmaskPointer;
-		std::unordered_map<BitmaskSignature::ID, BitmaskPointer> bitmasks;
+		typedef std::unique_ptr<BitmaskSignature> BitmaskSignaturePointer;
+		std::unordered_map<BitmaskSignature::ID, BitmaskSignaturePointer>
+			bitmaskSignatures;
 
-		typedef std::unique_ptr<CallSignature> CallPointer;
-		std::unordered_map<CallSignature::ID, CallPointer> calls;
+		typedef std::unique_ptr<CallSignature> CallSignaturePointer;
+		std::unordered_map<CallSignature::ID, CallSignaturePointer>
+			callSignatures;
 
-		typedef std::unique_ptr<EnumerationSignature> EnumerationPointer;
-		std::unordered_map<EnumerationSignature::ID, EnumerationPointer> enumerations;
+		typedef std::unique_ptr<EnumerationSignature> EnumerationSignaturePointer;
+		std::unordered_map<EnumerationSignature::ID, EnumerationSignaturePointer>
+			enumerationSignatures;
 
 		std::vector<std::uint32_t> backtraces;
 
 		std::unordered_map<Value::Type, Value::ReadFunction> read_value_functions;
+
+		typedef std::unique_ptr<Call> CallPointer;
+		std::vector<CallPointer> calls;
 	};
 }
 
