@@ -4,6 +4,7 @@
 //
 // Copyright 2016 [bk]door.maus
 
+#include <algorithm>
 #include "glurg/trace/structureSignature.hpp"
 #include "glurg/trace/traceFile.hpp"
 
@@ -20,6 +21,14 @@ std::size_t glurg::StructureSignature::get_num_fields() const
 std::string glurg::StructureSignature::get_field_name(std::size_t index) const
 {
 	return fields.at(index);
+}
+
+bool glurg::StructureSignature::has_field_name(const std::string& name) const
+{
+	auto begin = this->fields.begin();
+	auto end = this->fields.end();
+	
+	return std::find(begin, end, name) != end;
 }
 
 glurg::StructureSignature* glurg::StructureSignature::read(

@@ -17,6 +17,7 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/trace/bitmaskSignature.hpp"
 	"include/glurg/trace/callSignature.hpp"
 	"include/glurg/trace/enumerationSignature.hpp"
+	"include/glurg/trace/structure.hpp"
 	"include/glurg/trace/structureSignature.hpp"
 	"include/glurg/trace/traceFile.hpp")
 
@@ -30,6 +31,7 @@ set(LIBGLURG_SOURCE_FILES
 	"source/trace/callSignature.cpp"
 	"source/trace/enumerationSignature.cpp"
 	"source/trace/events.cpp"
+	"source/trace/structure.cpp"
 	"source/trace/structureSignature.cpp"
 	"source/trace/traceFile.cpp"
 	"source/trace/values.cpp")

@@ -29,6 +29,7 @@ namespace glurg
 
 		std::size_t get_num_fields() const;
 		std::string get_field_name(std::size_t index) const;
+		bool has_field_name(const std::string& name) const;
 
 		static StructureSignature* read(
 			ID id, TraceFile& trace, FileStream& stream);
