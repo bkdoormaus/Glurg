@@ -25,6 +25,7 @@ set(LIBGLURG_SOURCE_FILES
 	"source/common/simpleFileStream.cpp"
 	"source/common/snappyAdapter.cpp"
 	"source/trace/bitmaskSignature.cpp"
+	"source/trace/call.cpp"
 	"source/trace/callSignature.cpp"
 	"source/trace/enumerationSignature.cpp"
 	"source/trace/events.cpp"
