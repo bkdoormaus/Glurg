@@ -3,7 +3,7 @@ project(glurg)
 
 find_package(PkgConfig REQUIRED)
 
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS iostreams)
 find_package(Snappy REQUIRED)
 pkg_search_module(Sodium REQUIRED libsodium)
 
@@ -12,6 +12,7 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/resources/textureResource.hpp"
 	"include/glurg/common/fileStream.hpp"
 	"include/glurg/common/hash.hpp"
+	"include/glurg/common/process.hpp"
 	"include/glurg/common/simpleFileStream.hpp"
 	"include/glurg/common/snappyAdapter.hpp"
 	"include/glurg/trace/bitmaskSignature.hpp"
@@ -24,6 +25,7 @@ set(LIBGLURG_INCLUDE_FILES
 set(LIBGLURG_SOURCE_FILES
 	"source/resources/textureResource.cpp"
 	"source/common/hash.cpp"
+	"source/common/process.cpp"
 	"source/common/simpleFileStream.cpp"
 	"source/common/snappyAdapter.cpp"
 	"source/trace/bitmaskSignature.cpp"
@@ -56,7 +58,7 @@ target_include_directories(libglurg
 	${Sodium_INCLUDE_DIRS})
 
 target_link_libraries(libglurg PUBLIC
-	${Boost_LIBRARIES} ${Boost_LDFLAGS}
+	${Boost_LIBRARIES} ${Boost_LDFLAGS} ${Boost_iostreams_LIBRARY}
 	${Sodium_LIBRARIES} ${Sodium_LDFLAGS}
 	${Snappy_LIBRARIES} ${Snappy_LDFLAGS})
 
