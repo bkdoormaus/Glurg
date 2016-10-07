@@ -27,7 +27,8 @@ will need to provide some dependencies:
 * [libpng](http://www.libpng.org/pub/png/libpng.html)
 * [Sodium](https://github.com/jedisct1/libsodium)
 * [Snappy](https://github.com/google/snappy)
-* [UbjsonCpp](https://github.com/WhiZTiM/UbjsonCpp)
+* [GLM](https://github.com/g-truc/glm)
+* [JsonCpp](https://github.com/open-source-parsers/jsoncpp)
 
 glretrace
 --------------------------------------------------------------------------------
