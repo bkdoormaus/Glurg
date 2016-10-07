@@ -1,0 +1,49 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+//
+// Copyright 2016 [bk]door.maus
+
+#ifndef LIBGLURG_RESOURCES_RENDER_VALUE_HPP
+#define LIBGLURG_RESOURCES_RENDER_VALUE_HPP
+
+#include <cstdint>
+#include <string>
+#include <vector>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <json/json.h>
+
+namespace glurg
+{
+	class RenderValue
+	{
+	public:
+		typedef std::vector<std::uint8_t> Blob;
+
+		RenderValue(const Json::Value& data);
+		~RenderValue() = default;
+
+		glm::vec2 to_vector2() const;
+		glm::vec3 to_vector3() const;
+		glm::vec4 to_vector4() const;
+
+		int to_integer() const;
+		float to_single() const;
+
+		std::string to_string() const;
+
+		void extract_blob(Blob& blob) const;
+
+		RenderValue* get_field_by_name(const std::string& name) const;
+		RenderValue* get_field_by_name(
+			const std::string& name, std::size_t index) const;
+		RenderValue* get_field_by_index(std::size_t index) const;
+
+	private:
+		Json::Value data;
+	};
+}
+
+#endif

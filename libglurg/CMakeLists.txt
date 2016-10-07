@@ -6,15 +6,19 @@ find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED COMPONENTS iostreams)
 find_package(Snappy REQUIRED)
 pkg_search_module(Sodium REQUIRED libsodium)
+pkg_search_module(JsonCpp REQUIRED jsoncpp)
 
 set(LIBGLURG_INCLUDE_FILES
-	"include/glurg/resources/resource.hpp"
-	"include/glurg/resources/textureResource.hpp"
+	"include/glurg/common/base64.hpp"
 	"include/glurg/common/fileStream.hpp"
 	"include/glurg/common/hash.hpp"
 	"include/glurg/common/process.hpp"
 	"include/glurg/common/simpleFileStream.hpp"
 	"include/glurg/common/snappyAdapter.hpp"
+	"include/glurg/resources/resource.hpp"
+	"include/glurg/resources/renderState.hpp"
+	"include/glurg/resources/renderValue.hpp"
+	"include/glurg/resources/textureResource.hpp"
 	"include/glurg/trace/bitmaskSignature.hpp"
 	"include/glurg/trace/callSignature.hpp"
 	"include/glurg/trace/enumerationSignature.hpp"
@@ -23,11 +27,14 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/trace/traceFile.hpp")
 
 set(LIBGLURG_SOURCE_FILES
-	"source/resources/textureResource.cpp"
+	"source/common/base64.cpp"
 	"source/common/hash.cpp"
 	"source/common/process.cpp"
 	"source/common/simpleFileStream.cpp"
 	"source/common/snappyAdapter.cpp"
+	"source/resources/renderState.cpp"
+	"source/resources/renderValue.cpp"
+	"source/resources/textureResource.cpp"
 	"source/trace/bitmaskSignature.cpp"
 	"source/trace/call.cpp"
 	"source/trace/callSignature.cpp"
@@ -52,15 +59,17 @@ target_include_directories(libglurg
 	${LIBGLURG_INCLUDE_DIRS})
 
 target_include_directories(libglurg
-	PRIVATE
+	PUBLIC
 	${Boost_INCLUDE_DIRS}
 	${Snappy_INCLUDE_DIRS}
-	${Sodium_INCLUDE_DIRS})
+	${Sodium_INCLUDE_DIRS}
+	${JsonCpp_INCLUDE_DIRS})
 
 target_link_libraries(libglurg PUBLIC
 	${Boost_LIBRARIES} ${Boost_LDFLAGS} ${Boost_iostreams_LIBRARY}
+	${Snappy_LIBRARIES} ${Snappy_LDFLAGS}
 	${Sodium_LIBRARIES} ${Sodium_LDFLAGS}
-	${Snappy_LIBRARIES} ${Snappy_LDFLAGS})
+	${JsonCpp_LIBRARIES} ${JsonCpp_LDFLAGS})
 
 target_compile_features(libglurg PUBLIC
 	cxx_nullptr
