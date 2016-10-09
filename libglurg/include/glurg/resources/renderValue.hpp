@@ -26,20 +26,34 @@ namespace glurg
 		~RenderValue() = default;
 
 		glm::vec2 to_vector2() const;
+		glm::vec2 get_vector2(const std::string& name) const;
+
 		glm::vec3 to_vector3() const;
+		glm::vec3 get_vector3(const std::string& name) const;
+
 		glm::vec4 to_vector4() const;
+		glm::vec4 get_vector4(const std::string& name) const;
 
 		int to_integer() const;
+		int get_integer(const std::string& name) const;
+
 		float to_single() const;
+		float get_single(const std::string& name) const;
 
 		std::string to_string() const;
+		std::string get_string(const std::string& name) const;
 
 		void extract_blob(Blob& blob) const;
+		void extract_field_blob(const std::string& name, Blob& blob) const;
 
 		RenderValue* get_field_by_name(const std::string& name) const;
 		RenderValue* get_field_by_name(
 			const std::string& name, std::size_t index) const;
 		RenderValue* get_field_by_index(std::size_t index) const;
+
+		bool has_field(const std::string& name) const;
+		bool has_field(const std::string& name, std::size_t index) const;
+		bool has_field(std::size_t index) const;
 
 	private:
 		Json::Value data;
