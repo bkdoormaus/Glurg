@@ -5,3 +5,4 @@ add_executable(print_trace_funcs
 	"source/print_trace_funcs.cpp")
 target_link_libraries(print_trace_funcs PRIVATE
 	libglurg)
+set_property(TARGET print_trace_funcs PROPERTY CXX_STANDARD 14)

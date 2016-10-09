@@ -7,48 +7,75 @@
 #ifndef LIBGLURG_RESOURCES_RESOURCE_BLOB_BUFFER_HPP
 #define LIBGLURG_RESOURCES_RESOURCE_BLOB_BUFFER_HPP
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <stdexcept>
+#include <vector>
+
 namespace glurg
 {
-	class ResourceBlobWriteBuffer
+	class ResourceBlobBuffer
+	{
+	public:
+		virtual ~ResourceBlobBuffer() = default;
+
+		const std::uint8_t* get_buffer() const;
+		std::size_t get_buffer_size() const;
+
+	protected:
+		std::vector<std::uint8_t> buffer;
+	};
+
+	class ResourceBlobWriteBuffer : public ResourceBlobBuffer
 	{
 	public:
 		ResourceBlobWriteBuffer() = default;
 		~ResourceBlobWriteBuffer() = default;
-
-		const std::uint8_t* get_buffer() const;
-		std::size_t get_buffer_size() const;
 
 		template <typename Type>
 		void push_value(const Type& type);
 
 		void push_data(const std::uint8_t* data, std::size_t size);
 		void push_string(const std::string& string);
-
-	private:
-		std::vector<std::uint8_t> buffer;
-		std::size_t current_size;
 	};
 
-	class ResourceBlobReadBuffer
+	class ResourceBlobReadBuffer : public ResourceBlobBuffer
 	{
 	public:
 		ResourceBlobReadBuffer(const std::uint8_t* data, std::size_t size);
 		~ResourceBlobReadBuffer() = default;
 
-		const std::uint8_t* get_buffer() const;
-		std::size_t get_buffer_size() const;
-
 		template <typename Type>
-		void pop_value(Type& type);
+		Type pop_value();
 
-		void pop_data(std::uint8_t* data, std::size_t size);
-		void pop_string(const std::string& string);
+		const std::uint8_t* pop_data(std::size_t& return_size);
+		std::string pop_string();
 
 	private:
-		std::vector<std::uint8_t> buffer;
-		std::size_t current_size;
 		std::size_t current_offset;
 	};
+}
+
+template <typename Type>
+void glurg::ResourceBlobWriteBuffer::push_value(const Type& type)
+{
+	const std::uint8_t* v = (const std::uint8_t*)&type;
+	this->buffer.insert(this->buffer.end(), v, v + sizeof(Type) + 1);
+}
+
+template <typename Type>
+Type glurg::ResourceBlobReadBuffer::pop_value()
+{
+	std::size_t offset = current_offset;
+	this->current_offset += sizeof(Type);
+
+	if (this->current_offset >= this->buffer.size())
+	{
+		throw std::runtime_error("pop value result too large for buffer");
+	}
+
+	return *((Type*)(&this->buffer.at(offset)));
 }
 
 #endif

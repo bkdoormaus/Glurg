@@ -15,10 +15,11 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/common/process.hpp"
 	"include/glurg/common/simpleFileStream.hpp"
 	"include/glurg/common/snappyAdapter.hpp"
-	"include/glurg/resources/resource.hpp"
+	"include/glurg/resources/resourceBlob.hpp"
+	"include/glurg/resources/resourceBlobBuffer.hpp"
+	"include/glurg/resources/resourceBlobBuilder.hpp"
 	"include/glurg/resources/renderState.hpp"
 	"include/glurg/resources/renderValue.hpp"
-	"include/glurg/resources/textureResource.hpp"
 	"include/glurg/trace/bitmaskSignature.hpp"
 	"include/glurg/trace/callSignature.hpp"
 	"include/glurg/trace/enumerationSignature.hpp"
@@ -34,7 +35,7 @@ set(LIBGLURG_SOURCE_FILES
 	"source/common/snappyAdapter.cpp"
 	"source/resources/renderState.cpp"
 	"source/resources/renderValue.cpp"
-	"source/resources/textureResource.cpp"
+	"source/resources/resourceBlobBuffer.cpp"
 	"source/trace/bitmaskSignature.cpp"
 	"source/trace/call.cpp"
 	"source/trace/callSignature.cpp"
@@ -71,7 +72,4 @@ target_link_libraries(libglurg PUBLIC
 	${Sodium_LIBRARIES} ${Sodium_LDFLAGS}
 	${JsonCpp_LIBRARIES} ${JsonCpp_LDFLAGS})
 
-target_compile_features(libglurg PUBLIC
-	cxx_nullptr
-	cxx_override
-	cxx_defaulted_functions)
+set_property(TARGET libglurg PROPERTY CXX_STANDARD 14)

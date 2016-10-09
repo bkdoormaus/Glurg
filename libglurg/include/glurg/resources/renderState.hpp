@@ -26,18 +26,10 @@ namespace glurg
 		RenderValue* get_parameter(
 			const std::string& name, std::size_t index) const;
 
-		TextureResource* extract_texture(
-			std::size_t index, int type, int level) const;
-
 		template <typename Stream>
 		void populate(Stream& stream);
 
 	private:
-		static std::string get_format_texture_data_key(
-			std::size_t index, int type, int level);
-		static std::string get_gl_texture_target(int type, bool collapse);
-		static int get_pixel_components_enum(const std::string& value);
-
 		Json::Value data;
 	};
 }
