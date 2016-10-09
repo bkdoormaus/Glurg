@@ -4,8 +4,8 @@
 //
 // Copyright 2016 [bk]door.maus
 
-#ifndef LIBGLURG_RESOURCES_RESOURCE_HPP
-#define LIBGLURG_RESOURCES_RESOURCE_HPP
+#ifndef LIBGLURG_RESOURCES_RESOURCE_BLOB_HPP
+#define LIBGLURG_RESOURCES_RESOURCE_BLOB_HPP
 
 #include <cstddef>
 #include <cstdint>
@@ -14,7 +14,7 @@ namespace glurg
 {
 	struct Hash;
 
-	class Resource
+	class ResourceBlob
 	{
 	public:
 		virtual ~Resource() = default;
