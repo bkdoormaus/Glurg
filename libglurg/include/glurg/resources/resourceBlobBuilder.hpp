@@ -8,7 +8,7 @@
 #define LIBGLURG_RESOURCES_RESOURCE_BLOB_BUILDER_HPP
 
 #include <cstddef>
-#include <cstddint>
+#include <cstdint>
 #include <type_traits>
 #include "glurg/resources/resourceBlob.hpp"
 
@@ -17,11 +17,11 @@ namespace glurg
 	class RenderState;
 	class ResourceBlobReadBuffer;
 
-	template <typename Blob>
-	class ResourceBlobBuilder :
-		public std::enable_if<std::is_base_of<glurg::ResourceBlob, Blob>::value, Blob>::type
+	template <typename B>
+	class ResourceBlobBuilder
 	{
 	public:
+		typedef typename std::enable_if<std::is_base_of<glurg::ResourceBlob, B>::value, B>::type Blob;
 		virtual ~ResourceBlobBuilder() = default;
 
 		virtual Blob* build() = 0;
