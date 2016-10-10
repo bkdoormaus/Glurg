@@ -13,92 +13,93 @@
 #include "glurg/trace/traceFile.hpp"
 #include "glurg/trace/values.hpp"
 
-bool glurg::Value::to_boolean() const
+bool glurg::trace::Value::to_boolean() const
 {
 	throw std::runtime_error("invalid conversion to bool");
 }
 
-std::int32_t glurg::Value::to_signed_integer() const
+std::int32_t glurg::trace::Value::to_signed_integer() const
 {
 	throw std::runtime_error("invalid conversion to signed integer");
 }
 
-std::uint32_t glurg::Value::to_unsigned_integer() const
+std::uint32_t glurg::trace::Value::to_unsigned_integer() const
 {
 	throw std::runtime_error("invalid conversion to unsigned integer");
 }
 
-float glurg::Value::to_single() const
+float glurg::trace::Value::to_single() const
 {
 	throw std::runtime_error("invalid conversion to single-precision float");
 }
 
-double glurg::Value::to_double() const
+double glurg::trace::Value::to_double() const
 {
 	throw std::runtime_error("invalid conversion to double-precision float");
 }
 
-std::string glurg::Value::to_string() const
+std::string glurg::trace::Value::to_string() const
 {
 	throw std::runtime_error("invalid conversion to string");
 }
 
-glurg::Blob glurg::Value::to_blob() const
+glurg::trace::Blob glurg::trace::Value::to_blob() const
 {
 	throw std::runtime_error("invalid conversion to blob");
 }
 
-std::uint32_t glurg::Value::to_handle() const
+std::uint32_t glurg::trace::Value::to_handle() const
 {
 	throw std::runtime_error("invalid conversion to handle");
 }
 
-glurg::Enumeration glurg::Value::to_enumeration() const
+glurg::trace::Enumeration glurg::trace::Value::to_enumeration() const
 {
 	throw std::runtime_error("invalid conversion to enumeration");
 }
 
-glurg::Bitmask glurg::Value::to_bitmask() const
+glurg::trace::Bitmask glurg::trace::Value::to_bitmask() const
 {
 	throw std::runtime_error("invalid conversion to bitmask");
 }
 
-const glurg::Array* glurg::Value::to_array() const
+const glurg::trace::Array* glurg::trace::Value::to_array() const
 {
 	throw std::runtime_error("invalid conversion to array");
 }
 
-const glurg::Structure* glurg::Value::to_structure() const
+const glurg::trace::Structure* glurg::trace::Value::to_structure() const
 {
 	throw std::runtime_error("invalid conversion to structure");
 }
 
-std::size_t glurg::Array::get_size() const
+std::size_t glurg::trace::Array::get_size() const
 {
 	return this->values.size();
 }
 
-void glurg::Array::set_size(std::size_t value)
+void glurg::trace::Array::set_size(std::size_t value)
 {
 	this->values.resize(value);
 }
 
-const glurg::Value* glurg::Array::get_value_at(std::size_t index) const
+const glurg::trace::Value* glurg::trace::Array::get_value_at(
+	std::size_t index) const
 {
 	return this->values.at(index).get();
 }
 
-void glurg::Array::set_value_at(std::size_t index, const glurg::Value* value)
+void glurg::trace::Array::set_value_at(std::size_t index, const Value* value)
 {
 	this->values.at(index) = value->clone();
 }
 
-glurg::BoolValue::BoolValue(bool value)
+glurg::trace::BoolValue::BoolValue(bool value)
 {
 	this->value = value;
 }
 
-glurg::Value::Type glurg::BoolValue::get_type() const
+glurg::trace::Value::Type glurg::trace::BoolValue::get_type() const
 {
 	if (value == false)
 	{
@@ -110,34 +111,34 @@ glurg::Value::Type glurg::BoolValue::get_type() const
 	}
 }
 
-std::shared_ptr<glurg::Value> glurg::BoolValue::clone() const
+std::shared_ptr<glurg::trace::Value> glurg::trace::BoolValue::clone() const
 {
 	return std::shared_ptr<Value>(new BoolValue(this->value));
 }
 
-bool glurg::BoolValue::to_boolean() const
+bool glurg::trace::BoolValue::to_boolean() const
 {
 	return this->value;
 }
 
-glurg::Value* glurg::BoolValue::read_false_boolean(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::BoolValue::read_false_boolean(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	return new BoolValue(false);
 }
 
-glurg::Value* glurg::BoolValue::read_true_boolean(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::BoolValue::read_true_boolean(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	return new BoolValue(true);
 }
 
-glurg::IntegerValue::IntegerValue(std::int64_t value)
+glurg::trace::IntegerValue::IntegerValue(std::int64_t value)
 {
 	this->value = value;
 }
 
-glurg::Value::Type glurg::IntegerValue::get_type() const
+glurg::trace::Value::Type glurg::trace::IntegerValue::get_type() const
 {
 	if (value < 0)
 	{
@@ -149,62 +150,64 @@ glurg::Value::Type glurg::IntegerValue::get_type() const
 	}
 }
 
-std::shared_ptr<glurg::Value> glurg::IntegerValue::clone() const
+std::shared_ptr<glurg::trace::Value> glurg::trace::IntegerValue::clone() const
 {
-	return std::shared_ptr<glurg::Value>(new IntegerValue(this->value));
+	return std::shared_ptr<glurg::trace::Value>(new IntegerValue(this->value));
 }
 
-std::int32_t glurg::IntegerValue::to_signed_integer() const
+std::int32_t glurg::trace::IntegerValue::to_signed_integer() const
 {
 	return (std::int32_t)this->value;
 }
 
-std::uint32_t glurg::IntegerValue::to_unsigned_integer() const
+std::uint32_t glurg::trace::IntegerValue::to_unsigned_integer() const
 {
 	return (std::uint32_t)this->value;
 }
 
-glurg::Value* glurg::IntegerValue::read_positive_integer(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::IntegerValue::read_positive_integer(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	return new IntegerValue(trace.read_unsigned_integer(stream));
 }
 
-glurg::Value* glurg::IntegerValue::read_negative_integer(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::IntegerValue::read_negative_integer(
+	Type type, TraceFile& trace, FileStream& stream)
 {
-	return new IntegerValue(-((std::int64_t)trace.read_unsigned_integer(stream)));
+	return new IntegerValue(
+		-((std::int64_t)trace.read_unsigned_integer(stream)));
 }
 
-glurg::FloatingPointValue::FloatingPointValue(Type type, double value)
+glurg::trace::FloatingPointValue::FloatingPointValue(Type type, double value)
 {
 	this->type = type;
 	this->value = value;
 }
 
-glurg::Value::Type glurg::FloatingPointValue::get_type() const
+glurg::trace::Value::Type glurg::trace::FloatingPointValue::get_type() const
 {
 	return this->type;
 }
 
-std::shared_ptr<glurg::Value> glurg::FloatingPointValue::clone() const
+std::shared_ptr<glurg::trace::Value>
+glurg::trace::FloatingPointValue::clone() const
 {
 	return std::shared_ptr<Value>(
 		new FloatingPointValue(this->type, this->value));
 }
 
-float glurg::FloatingPointValue::to_single() const
+float glurg::trace::FloatingPointValue::to_single() const
 {
 	return this->value;
 }
 
-double glurg::FloatingPointValue::to_double() const
+double glurg::trace::FloatingPointValue::to_double() const
 {
 	return this->value;
 }
 
-glurg::Value* glurg::FloatingPointValue::read_single(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::FloatingPointValue::read_single(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	float v;
 	stream.read((std::uint8_t*)&v, sizeof(float));
@@ -212,8 +215,8 @@ glurg::Value* glurg::FloatingPointValue::read_single(
 	return new FloatingPointValue(FLOAT, v);
 }
 
-glurg::Value* glurg::FloatingPointValue::read_double(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::FloatingPointValue::read_double(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	double v;
 	stream.read((std::uint8_t*) &v, sizeof(double));
@@ -221,44 +224,44 @@ glurg::Value* glurg::FloatingPointValue::read_double(
 	return new FloatingPointValue(DOUBLE, v);
 }
 
-glurg::StringValue::StringValue(const std::string& value)
+glurg::trace::StringValue::StringValue(const std::string& value)
 {
 	this->value = value;
 }
 
-glurg::Value::Type glurg::StringValue::get_type() const
+glurg::trace::Value::Type glurg::trace::StringValue::get_type() const
 {
 	return STRING;
 }
 
-std::shared_ptr<glurg::Value> glurg::StringValue::clone() const
+std::shared_ptr<glurg::trace::Value> glurg::trace::StringValue::clone() const
 {
-	return std::shared_ptr<glurg::Value>(new StringValue(this->value));
+	return std::shared_ptr<glurg::trace::Value>(new StringValue(this->value));
 }
 
-std::string glurg::StringValue::to_string() const
+std::string glurg::trace::StringValue::to_string() const
 {
 	return this->value;
 }
 
-glurg::Blob glurg::StringValue::to_blob() const
+glurg::trace::Blob glurg::trace::StringValue::to_blob() const
 {
 	return { (std::uint8_t*)this->value.c_str(), this->value.size() };
 }
 
-glurg::Value* glurg::StringValue::read_string(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::StringValue::read_string(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	return new StringValue(trace.read_string(stream));
 }
 
-glurg::BlobValue::BlobValue(std::size_t length)
+glurg::trace::BlobValue::BlobValue(std::size_t length)
 {
 	this->data = new std::uint8_t[length];
 	this->length = length;
 }
 
-glurg::BlobValue::BlobValue(std::size_t length, const std::uint8_t* data)
+glurg::trace::BlobValue::BlobValue(std::size_t length, const std::uint8_t* data)
 {
 	this->data = new std::uint8_t[length];
 	std::memcpy(this->data, data, length);
@@ -266,12 +269,12 @@ glurg::BlobValue::BlobValue(std::size_t length, const std::uint8_t* data)
 	this->length = length;
 }
 
-glurg::BlobValue::~BlobValue()
+glurg::trace::BlobValue::~BlobValue()
 {
 	delete this->data;
 }
 
-glurg::Value::Type glurg::BlobValue::get_type() const
+glurg::trace::Value::Type glurg::trace::BlobValue::get_type() const
 {
 	if (this->data == nullptr)
 	{
@@ -283,18 +286,18 @@ glurg::Value::Type glurg::BlobValue::get_type() const
 	}
 }
 
-std::shared_ptr<glurg::Value> glurg::BlobValue::clone() const
+std::shared_ptr<glurg::trace::Value> glurg::trace::BlobValue::clone() const
 {
 	return std::shared_ptr<Value>(new BlobValue(this->length, this->data));
 }
 
-glurg::Blob glurg::BlobValue::to_blob() const
+glurg::trace::Blob glurg::trace::BlobValue::to_blob() const
 {
 	return { this->data, this->length };
 }
 
-glurg::Value* glurg::BlobValue::read_blob(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::BlobValue::read_blob(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	std::size_t length = trace.read_unsigned_integer(stream);
 
@@ -304,8 +307,8 @@ glurg::Value* glurg::BlobValue::read_blob(
 	return value;
 }
 
-glurg::Value* glurg::BlobValue::read_null_pointer(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::BlobValue::read_null_pointer(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	BlobValue* value = new BlobValue();
 	value->data = nullptr;
@@ -314,31 +317,32 @@ glurg::Value* glurg::BlobValue::read_null_pointer(
 	return value;
 }
 
-glurg::EnumerationValue::EnumerationValue(
+glurg::trace::EnumerationValue::EnumerationValue(
 	const EnumerationSignature* signature, const std::shared_ptr<Value>& value)
 {
 	this->value.signature = signature;
 	this->value.value = value;
 }
 
-glurg::Value::Type glurg::EnumerationValue::get_type() const
+glurg::trace::Value::Type glurg::trace::EnumerationValue::get_type() const
 {
 	return ENUMERATION;
 }
 
-std::shared_ptr<glurg::Value> glurg::EnumerationValue::clone() const
+std::shared_ptr<glurg::trace::Value>
+glurg::trace::EnumerationValue::clone() const
 {
 	return std::shared_ptr<Value>(new EnumerationValue(
 		this->value.signature, this->value.value->clone()));
 }
 
-glurg::Enumeration glurg::EnumerationValue::to_enumeration() const
+glurg::trace::Enumeration glurg::trace::EnumerationValue::to_enumeration() const
 {
 	return this->value;
 }
 
-glurg::Value* glurg::EnumerationValue::read_enumeration(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::EnumerationValue::read_enumeration(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	EnumerationSignature::ID id = trace.read_unsigned_integer(stream);
 	auto& registry = trace.get_enumeration_signature_registry();
@@ -352,31 +356,31 @@ glurg::Value* glurg::EnumerationValue::read_enumeration(
 		registry.get_signature(id), trace.read_value(stream)->clone());
 }
 
-glurg::BitmaskValue::BitmaskValue(
+glurg::trace::BitmaskValue::BitmaskValue(
 	const BitmaskSignature* signature, std::uint32_t value)
 {
 	this->value.signature = signature;
 	this->value.value = value;
 }
 
-glurg::Value::Type glurg::BitmaskValue::get_type() const
+glurg::trace::Value::Type glurg::trace::BitmaskValue::get_type() const
 {
 	return BITMASK;
 }
 
-std::shared_ptr<glurg::Value> glurg::BitmaskValue::clone() const
+std::shared_ptr<glurg::trace::Value> glurg::trace::BitmaskValue::clone() const
 {
 	return std::shared_ptr<Value>(
 		new BitmaskValue(this->value.signature, this->value.value));
 }
 
-glurg::Bitmask glurg::BitmaskValue::to_bitmask() const
+glurg::trace::Bitmask glurg::trace::BitmaskValue::to_bitmask() const
 {
 	return this->value;
 }
 
-glurg::Value* glurg::BitmaskValue::read_bitmask(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::BitmaskValue::read_bitmask(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	BitmaskSignature::ID id = trace.read_unsigned_integer(stream);
 	auto& registry = trace.get_bitmask_signature_registry();
@@ -390,7 +394,7 @@ glurg::Value* glurg::BitmaskValue::read_bitmask(
 	return new BitmaskValue(registry.get_signature(id), v);
 }
 
-glurg::ArrayValue::ArrayValue(const Array* array)
+glurg::trace::ArrayValue::ArrayValue(const Array* array)
 {
 	this->value.set_size(array->get_size());
 	for (std::size_t i = 0; i < array->get_size(); ++i)
@@ -399,23 +403,23 @@ glurg::ArrayValue::ArrayValue(const Array* array)
 	}
 }
 
-glurg::Value::Type glurg::ArrayValue::get_type() const
+glurg::trace::Value::Type glurg::trace::ArrayValue::get_type() const
 {
 	return ARRAY;
 }
 
-std::shared_ptr<glurg::Value> glurg::ArrayValue::clone() const
+std::shared_ptr<glurg::trace::Value> glurg::trace::ArrayValue::clone() const
 {
 	return std::shared_ptr<Value>(new ArrayValue(&this->value));
 }
 
-const glurg::Array* glurg::ArrayValue::to_array() const
+const glurg::trace::Array* glurg::trace::ArrayValue::to_array() const
 {
 	return &this->value;
 }
 
-glurg::Value* glurg::ArrayValue::read_array(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::ArrayValue::read_array(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	ArrayValue* v = new ArrayValue();
 
@@ -430,17 +434,18 @@ glurg::Value* glurg::ArrayValue::read_array(
 	return v;
 }
 
-glurg::StructureValue::StructureValue(const StructureSignature* signature)
+glurg::trace::StructureValue::StructureValue(
+	const StructureSignature* signature)
 {
 	this->value = StructurePointer(new Structure(signature));
 }
 
-glurg::Value::Type glurg::StructureValue::get_type() const
+glurg::trace::Value::Type glurg::trace::StructureValue::get_type() const
 {
 	return STRUCTURE;
 }
 
-std::shared_ptr<glurg::Value> glurg::StructureValue::clone() const
+std::shared_ptr<glurg::trace::Value> glurg::trace::StructureValue::clone() const
 {
 	auto signature = this->value->get_signature();
 	StructureValue* other = new StructureValue(signature);
@@ -457,12 +462,13 @@ std::shared_ptr<glurg::Value> glurg::StructureValue::clone() const
 	return std::shared_ptr<Value>(other);
 }
 
-const glurg::Structure* glurg::StructureValue::to_structure() const
+const glurg::trace::Structure*
+glurg::trace::StructureValue::to_structure() const
 {
 	return this->value.get();
 }
 
-glurg::Value* glurg::StructureValue::read_structure(
+glurg::trace::Value* glurg::trace::StructureValue::read_structure(
 	Type type, TraceFile& trace, FileStream& stream)
 {
 	StructureSignature::ID id = trace.read_unsigned_integer(stream);
@@ -483,28 +489,28 @@ glurg::Value* glurg::StructureValue::read_structure(
 	return v;
 }
 
-glurg::HandleValue::HandleValue(std::uint32_t value)
+glurg::trace::HandleValue::HandleValue(std::uint32_t value)
 {
 	this->value = value;
 }
 
-glurg::Value::Type glurg::HandleValue::get_type() const
+glurg::trace::Value::Type glurg::trace::HandleValue::get_type() const
 {
 	return HANDLE;
 }
 
-std::shared_ptr<glurg::Value> glurg::HandleValue::clone() const
+std::shared_ptr<glurg::trace::Value> glurg::trace::HandleValue::clone() const
 {
-	return std::shared_ptr<glurg::Value>(new HandleValue(this->value));
+	return std::shared_ptr<glurg::trace::Value>(new HandleValue(this->value));
 }
 
-std::uint32_t glurg::HandleValue::to_handle() const
+std::uint32_t glurg::trace::HandleValue::to_handle() const
 {
 	return this->value;
 }
 
-glurg::Value* glurg::HandleValue::read_handle(
-	Type type, glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Value* glurg::trace::HandleValue::read_handle(
+	Type type, TraceFile& trace, FileStream& stream)
 {
 	return new HandleValue(trace.read_unsigned_integer(stream));
 }

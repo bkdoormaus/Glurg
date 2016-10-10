@@ -8,38 +8,38 @@
 #include "glurg/common/fileStream.hpp"
 #include "glurg/trace/traceFile.hpp"
 
-glurg::TraceFile::TraceFile()
+glurg::trace::TraceFile::TraceFile()
 {
 	this->lifetime_num_calls = 0;
 
 	register_all_value_read_functions();
 }
 
-glurg::BitmaskSignatureRegistry&
-glurg::TraceFile::get_bitmask_signature_registry()
+glurg::trace::BitmaskSignatureRegistry&
+glurg::trace::TraceFile::get_bitmask_signature_registry()
 {
 	return this->bitmaskSignatures;
 }
 
-glurg::CallSignatureRegistry&
-glurg::TraceFile::get_call_signature_registry()
+glurg::trace::CallSignatureRegistry&
+glurg::trace::TraceFile::get_call_signature_registry()
 {
 	return this->callSignatures;
 }
 
-glurg::EnumerationSignatureRegistry&
-glurg::TraceFile::get_enumeration_signature_registry()
+glurg::trace::EnumerationSignatureRegistry&
+glurg::trace::TraceFile::get_enumeration_signature_registry()
 {
 	return this->enumerationSignatures;
 }
 
-glurg::StructureSignatureRegistry&
-glurg::TraceFile::get_structure_signature_registry()
+glurg::trace::StructureSignatureRegistry&
+glurg::trace::TraceFile::get_structure_signature_registry()
 {
 	return this->structureSignatures;
 }
 
-void glurg::TraceFile::register_backtrace(std::uint32_t id)
+void glurg::trace::TraceFile::register_backtrace(std::uint32_t id)
 {
 	if (!has_backtrace(id))
 	{
@@ -47,7 +47,7 @@ void glurg::TraceFile::register_backtrace(std::uint32_t id)
 	}
 }
 
-bool glurg::TraceFile::has_backtrace(std::uint32_t id) const
+bool glurg::trace::TraceFile::has_backtrace(std::uint32_t id) const
 {
 	auto begin = this->backtraces.begin();
 	auto end = this->backtraces.end();
@@ -55,7 +55,7 @@ bool glurg::TraceFile::has_backtrace(std::uint32_t id) const
 	return std::find(begin, end, id) != end;
 }
 
-glurg::Call* glurg::TraceFile::create_call(CallSignature::ID id)
+glurg::trace::Call* glurg::trace::TraceFile::create_call(CallSignature::ID id)
 {
 	auto signature = get_call_signature_registry().get_signature(id);
 	Call* call = new Call(this->lifetime_num_calls, signature);
@@ -66,12 +66,12 @@ glurg::Call* glurg::TraceFile::create_call(CallSignature::ID id)
 	return call;
 }
 
-void glurg::TraceFile::delete_call(glurg::Call* call)
+void glurg::trace::TraceFile::delete_call(Call* call)
 {
 	this->calls.erase(call->get_call_index());
 }
 
-glurg::Call* glurg::TraceFile::get_call(Call::Index index)
+glurg::trace::Call* glurg::trace::TraceFile::get_call(Call::Index index)
 {
 	auto e = this->calls.find(index);
 	if (e != this->calls.end())
@@ -82,7 +82,8 @@ glurg::Call* glurg::TraceFile::get_call(Call::Index index)
 	return nullptr;
 }
 
-const glurg::Call* glurg::TraceFile::get_call(Call::Index index) const
+const glurg::trace::Call* glurg::trace::TraceFile::get_call(
+	Call::Index index) const
 {
 	auto e = this->calls.find(index);
 	if (e != this->calls.end())
@@ -93,8 +94,8 @@ const glurg::Call* glurg::TraceFile::get_call(Call::Index index) const
 	return nullptr;
 }
 
-std::shared_ptr<glurg::Value> glurg::TraceFile::read_value(
-	glurg::FileStream& stream)
+std::shared_ptr<glurg::trace::Value> glurg::trace::TraceFile::read_value(
+	FileStream& stream)
 {
 	std::uint8_t type = 0;
 	stream.read(&type, sizeof(std::uint8_t));
@@ -109,7 +110,8 @@ std::shared_ptr<glurg::Value> glurg::TraceFile::read_value(
 	return std::shared_ptr<Value>(read_func(type, *this, stream));
 }
 
-std::uint32_t glurg::TraceFile::read_unsigned_integer(glurg::FileStream& stream)
+std::uint32_t glurg::trace::TraceFile::read_unsigned_integer(
+	FileStream& stream)
 {
 	std::uint32_t current_value = 0;
 	std::uint8_t current_byte = 0;
@@ -124,7 +126,7 @@ std::uint32_t glurg::TraceFile::read_unsigned_integer(glurg::FileStream& stream)
 	return current_value;
 }
 
-std::string glurg::TraceFile::read_string(glurg::FileStream& stream)
+std::string glurg::trace::TraceFile::read_string(FileStream& stream)
 {
 	std::string result;
 
@@ -142,14 +144,14 @@ std::string glurg::TraceFile::read_string(glurg::FileStream& stream)
 	return result;
 }
 
-bool glurg::TraceFile::verify_is_compatible_version(glurg::FileStream& stream)
+bool glurg::trace::TraceFile::verify_is_compatible_version(FileStream& stream)
 {
 	std::uint32_t version = read_unsigned_integer(stream);
 
 	return version == VERSION;
 }
 
-void glurg::TraceFile::register_all_value_read_functions()
+void glurg::trace::TraceFile::register_all_value_read_functions()
 {
 	register_value_read_function(
 		BoolValue::FALSE_BOOLEAN, BoolValue::read_false_boolean);
@@ -190,7 +192,7 @@ void glurg::TraceFile::register_all_value_read_functions()
 		HandleValue::HANDLE, HandleValue::read_handle);
 }
 
-void glurg::TraceFile::register_value_read_function(
+void glurg::trace::TraceFile::register_value_read_function(
 	Value::Type type, Value::ReadFunction func)
 {
 	this->read_value_functions.insert(std::make_pair(type, func));

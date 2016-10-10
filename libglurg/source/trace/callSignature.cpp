@@ -8,49 +8,50 @@
 #include "glurg/trace/callSignature.hpp"
 #include "glurg/trace/traceFile.hpp"
 
-glurg::CallSignature::ID glurg::CallSignature::get_id() const
+glurg::trace::CallSignature::ID glurg::trace::CallSignature::get_id() const
 {
 	return this->id;
 }
 
-void glurg::CallSignature::set_id(ID value)
+void glurg::trace::CallSignature::set_id(ID value)
 {
 	this->id = value;
 }
 
-const std::string& glurg::CallSignature::get_name() const
+const std::string& glurg::trace::CallSignature::get_name() const
 {
 	return this->name;
 }
 
-void glurg::CallSignature::set_name(const std::string& value)
+void glurg::trace::CallSignature::set_name(const std::string& value)
 {
 	this->name = value;
 }
 
-glurg::CallSignature::ParameterCount
-glurg::CallSignature::get_num_parameters() const
+glurg::trace::CallSignature::ParameterCount
+glurg::trace::CallSignature::get_num_parameters() const
 {
 	return (ParameterCount)this->parameters.size();
 }
 
-void glurg::CallSignature::set_num_parameters(ParameterCount value)
+void glurg::trace::CallSignature::set_num_parameters(ParameterCount value)
 {
 	this->parameters.resize(value);
 }
 
-std::string glurg::CallSignature::get_parameter_at(ParameterIndex index) const
+std::string glurg::trace::CallSignature::get_parameter_at(
+	ParameterIndex index) const
 {
 	return this->parameters.at(index);
 }
 
-void glurg::CallSignature::set_parameter_at(
+void glurg::trace::CallSignature::set_parameter_at(
 	ParameterIndex index, const std::string& value)
 {
 	this->parameters.at(index) = value;
 }
 
-glurg::CallSignature* glurg::CallSignature::read(
+glurg::trace::CallSignature* glurg::trace::CallSignature::read(
 	ID id, TraceFile& trace, FileStream& stream)
 {
 	CallSignature* signature = new CallSignature();

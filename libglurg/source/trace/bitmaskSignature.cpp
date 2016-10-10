@@ -8,17 +8,18 @@
 #include "glurg/trace/bitmaskSignature.hpp"
 #include "glurg/trace/traceFile.hpp"
 
-glurg::BitmaskSignature::ID glurg::BitmaskSignature::get_id() const
+glurg::trace::BitmaskSignature::ID
+glurg::trace::BitmaskSignature::get_id() const
 {
 	return this->id;
 }
 
-void glurg::BitmaskSignature::set_id(ID value)
+void glurg::trace::BitmaskSignature::set_id(ID value)
 {
 	this->id = value;
 }
 
-bool glurg::BitmaskSignature::match(
+bool glurg::trace::BitmaskSignature::match(
 	std::uint32_t value, const std::string& mask) const
 {
 	auto m = this->values.find(mask);
@@ -30,13 +31,13 @@ bool glurg::BitmaskSignature::match(
 	return false;
 }
 
-void glurg::BitmaskSignature::set_mask_by_name(
+void glurg::trace::BitmaskSignature::set_mask_by_name(
 	const std::string& name, std::uint32_t mask)
 {
 	this->values.insert(std::make_pair(name, mask));
 }
 
-glurg::BitmaskSignature* glurg::BitmaskSignature::read(
+glurg::trace::BitmaskSignature* glurg::trace::BitmaskSignature::read(
 	ID id, TraceFile& trace, FileStream& stream)
 {
 	BitmaskSignature* signature = new BitmaskSignature();

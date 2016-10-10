@@ -14,8 +14,12 @@
 
 namespace glurg
 {
-	class CallSignature;
 	class FileStream;
+}
+
+namespace glurg { namespace trace
+{
+	class CallSignature;
 	class TraceFile;
 	class Value;
 
@@ -56,6 +60,6 @@ namespace glurg
 
 		Call::Index call_index;
 	};
-}
+} }
 
 #endif

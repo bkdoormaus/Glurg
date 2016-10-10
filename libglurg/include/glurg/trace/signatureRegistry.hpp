@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace glurg
+namespace glurg { namespace trace
 {
 	template <typename ID, typename Signature>
 	class SignatureRegistry
@@ -28,16 +28,16 @@ namespace glurg
 		typedef std::unique_ptr<Signature> SignaturePointer;
 		std::unordered_map<ID, SignaturePointer> signatures;
 	};
-}
+} }
 
 template <typename ID, typename Signature>
-bool glurg::SignatureRegistry<ID, Signature>::has_signature(ID id) const
+bool glurg::trace::SignatureRegistry<ID, Signature>::has_signature(ID id) const
 {
 	return this->signatures.find(id) != this->signatures.end();
 }
 
 template <typename ID, typename Signature>
-const Signature* glurg::SignatureRegistry<ID, Signature>::get_signature(
+const Signature* glurg::trace::SignatureRegistry<ID, Signature>::get_signature(
 	ID id) const
 {
 	auto e = this->signatures.find(id);
@@ -50,7 +50,7 @@ const Signature* glurg::SignatureRegistry<ID, Signature>::get_signature(
 }
 
 template <typename ID, typename Signature>
-void glurg::SignatureRegistry<ID, Signature>::register_signature(
+void glurg::trace::SignatureRegistry<ID, Signature>::register_signature(
 	ID id, Signature* signature)
 {
 	this->signatures.insert(std::make_pair((id), SignaturePointer(signature)));

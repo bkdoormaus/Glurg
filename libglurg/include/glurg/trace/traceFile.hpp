@@ -22,7 +22,10 @@
 namespace glurg
 {
 	class FileStream;
+}
 
+namespace glurg { namespace trace
+{
 	typedef SignatureRegistry<BitmaskSignature::ID, BitmaskSignature>
 		BitmaskSignatureRegistry;
 	typedef SignatureRegistry<CallSignature::ID, CallSignature>
@@ -78,6 +81,6 @@ namespace glurg
 		std::unordered_map<Call::Index, CallPointer> calls;
 		Call::Index lifetime_num_calls;
 	};
-}
+} }
 
 #endif

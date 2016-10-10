@@ -14,10 +14,14 @@
 
 namespace glurg
 {
+	class FileStream;
+}
+
+namespace glurg { namespace trace
+{
 	class Array;
 	class BitmaskSignature;
 	class EnumerationSignature;
-	class FileStream;
 	class Structure;
 	class StructureSignature;
 	class TraceFile;
@@ -306,6 +310,6 @@ namespace glurg
 	private:
 		std::uint32_t value;
 	};
-}
+} }
 
 #endif

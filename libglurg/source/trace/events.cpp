@@ -13,17 +13,18 @@
 #include "glurg/trace/traceFile.hpp"
 #include "glurg/trace/values.hpp"
 
-glurg::Event::Type glurg::Event::get_type() const
+glurg::trace::Event::Type glurg::trace::Event::get_type() const
 {
 	return this->type;
 }
 
-glurg::Call::Index glurg::Event::get_call_index() const
+glurg::trace::Call::Index glurg::trace::Event::get_call_index() const
 {
 	return this->call_index;
 }
 
-glurg::Event* glurg::Event::read(glurg::TraceFile& trace, glurg::FileStream& stream)
+glurg::trace::Event* glurg::trace::Event::read(
+	TraceFile& trace, FileStream& stream)
 {
 	std::uint8_t type;
 	stream.read(&type, sizeof(std::uint8_t));
@@ -61,8 +62,7 @@ glurg::Event* glurg::Event::read(glurg::TraceFile& trace, glurg::FileStream& str
 	return event;
 }
 
-void glurg::Event::skip_backtrace(
-	glurg::TraceFile& trace, glurg::FileStream& stream)
+void glurg::trace::Event::skip_backtrace(TraceFile& trace, FileStream& stream)
 {
 	std::uint32_t id = trace.read_unsigned_integer(stream);
 	if (!trace.has_backtrace(id))
@@ -106,8 +106,8 @@ void glurg::Event::skip_backtrace(
 	}
 }
 
-void glurg::Event::parse_call_detail(
-	glurg::Call* call, glurg::TraceFile& trace, glurg::FileStream& stream)
+void glurg::trace::Event::parse_call_detail(
+	Call* call, TraceFile& trace, FileStream& stream)
 {
 	std::uint8_t detail_type = 0;
 	do
@@ -131,7 +131,7 @@ void glurg::Event::parse_call_detail(
 			case call_detail_thread:
 				// Eat input argument.
 				//
-				// This type shouldn't even be in the supported trace files, but
+				// This op shouldn't even be in the supported trace format, but
 				// play it safe.
 				trace.read_unsigned_integer(stream);
 				break;

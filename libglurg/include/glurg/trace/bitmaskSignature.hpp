@@ -14,8 +14,12 @@
 
 namespace glurg
 {
-	class Value;
 	class FileStream;
+}
+
+namespace glurg { namespace trace
+{
+	class Value;
 	class TraceFile;
 
 	class BitmaskSignature
@@ -40,6 +44,6 @@ namespace glurg
 		ID id;
 		std::unordered_map<std::string, std::uint32_t> values;
 	};
-}
+} }
 
 #endif

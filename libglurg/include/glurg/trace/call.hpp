@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace glurg
+namespace glurg { namespace trace
 {
 	class CallSignature;
 	class Value;
@@ -49,6 +49,6 @@ namespace glurg
 
 		ValuePointer return_value;
 	};
-}
+} }
 
 #endif

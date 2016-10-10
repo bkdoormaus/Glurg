@@ -14,8 +14,12 @@
 
 namespace glurg
 {
-	class Value;
 	class FileStream;
+}
+
+namespace glurg { namespace trace
+{
+	class Value;
 	class TraceFile;
 
 	class EnumerationSignature
@@ -40,9 +44,9 @@ namespace glurg
 
 		ID id;
 
-		typedef std::shared_ptr<glurg::Value> ValuePointer;
+		typedef std::shared_ptr<Value> ValuePointer;
 		std::unordered_map<std::string, ValuePointer> values;
 	};
-}
+} }
 
 #endif

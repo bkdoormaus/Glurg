@@ -30,26 +30,26 @@ int main(int argc, const char* argv[])
 		glurg::SnappyAdapter<glurg::SimpleFileStream> fileStream;
 		fileStream.open(argv[1], glurg::FileStream::mode_read);
 
-		glurg::TraceFile traceFile;
+		glurg::trace::TraceFile traceFile;
 		traceFile.verify_is_compatible_version(fileStream);
 
 		while (!fileStream.get_is_end_of_file())
 		{
-			glurg::Event* e = glurg::Event::read(traceFile, fileStream);
-			if (e->get_type() == glurg::Event::event_enter)
+			glurg::trace::Event* e = glurg::trace::Event::read(traceFile, fileStream);
+			if (e->get_type() == glurg::trace::Event::event_enter)
 			{
 				std::cout << "enter #" << e->get_call_index();
 			}
-			else if (e->get_type() == glurg::Event::event_leave)
+			else if (e->get_type() == glurg::trace::Event::event_leave)
 			{
 				std::cout << "leave #" << e->get_call_index();
 			}
 			
-			glurg::Call* call = traceFile.get_call(e->get_call_index());
+			glurg::trace::Call* call = traceFile.get_call(e->get_call_index());
 			std::cout << ": " << call->get_call_signature()->get_name();
 			std::cout << std::endl;
 
-			if (e->get_type() == glurg::Event::event_leave)
+			if (e->get_type() == glurg::trace::Event::event_leave)
 			{
 				traceFile.delete_call(traceFile.get_call(e->get_call_index()));
 			}

@@ -15,6 +15,10 @@
 namespace glurg
 {
 	class FileStream;
+}
+
+namespace glurg { namespace trace
+{
 	class TraceFile;
 
 	class StructureSignature
@@ -44,6 +48,6 @@ namespace glurg
 
 		std::vector<std::string> fields;
 	};
-}
+} }
 
 #endif

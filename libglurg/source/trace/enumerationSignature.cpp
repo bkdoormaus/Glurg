@@ -9,17 +9,19 @@
 #include "glurg/trace/enumerationSignature.hpp"
 #include "glurg/trace/traceFile.hpp"
 
-glurg::EnumerationSignature::ID glurg::EnumerationSignature::get_id() const
+glurg::trace::EnumerationSignature::ID
+glurg::trace::EnumerationSignature::get_id() const
 {
 	return this->id;
 }
 
-void glurg::EnumerationSignature::set_id(ID value)
+void glurg::trace::EnumerationSignature::set_id(ID value)
 {
 	this->id = value;
 }
 
-const glurg::Value* glurg::EnumerationSignature::get_value_by_name(
+const glurg::trace::Value*
+glurg::trace::EnumerationSignature::get_value_by_name(
 	const std::string& name) const
 {
 	auto value = this->values.find(name);
@@ -31,13 +33,13 @@ const glurg::Value* glurg::EnumerationSignature::get_value_by_name(
 	return nullptr;
 }
 
-void glurg::EnumerationSignature::set_value_by_name(
+void glurg::trace::EnumerationSignature::set_value_by_name(
 	const std::string& name, std::shared_ptr<Value> value)
 {
 	this->values.insert(std::make_pair(name, value->clone()));
 }
 
-glurg::EnumerationSignature* glurg::EnumerationSignature::read(
+glurg::trace::EnumerationSignature* glurg::trace::EnumerationSignature::read(
 	ID id, TraceFile& trace, FileStream& stream)
 {
 	EnumerationSignature* signature = new EnumerationSignature();

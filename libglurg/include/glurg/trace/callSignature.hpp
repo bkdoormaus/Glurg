@@ -14,6 +14,10 @@
 namespace glurg
 {
 	class FileStream;
+}
+
+namespace glurg { namespace trace
+{
 	class TraceFile;
 
 	class CallSignature
@@ -44,6 +48,6 @@ namespace glurg
 		std::string name;
 		std::vector<std::string> parameters;
 	};
-}
+} }
 
 #endif

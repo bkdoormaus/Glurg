@@ -8,17 +8,18 @@
 #include "glurg/trace/structureSignature.hpp"
 #include "glurg/trace/values.hpp"
 
-glurg::Structure::Structure(const StructureSignature* signature)
+glurg::trace::Structure::Structure(const StructureSignature* signature)
 {
 	this->signature = signature;
 }
 
-const glurg::StructureSignature* glurg::Structure::get_signature() const
+const glurg::trace::StructureSignature*
+glurg::trace::Structure::get_signature() const
 {
 	return this->signature;
 }
 
-const glurg::Value* glurg::Structure::get_field_by_name(
+const glurg::trace::Value* glurg::trace::Structure::get_field_by_name(
 	const std::string& name) const
 {
 	auto value = this->fields.find(name);
@@ -30,15 +31,15 @@ const glurg::Value* glurg::Structure::get_field_by_name(
 	return nullptr;
 }
 
-const glurg::Value* glurg::Structure::get_field_by_index(
+const glurg::trace::Value* glurg::trace::Structure::get_field_by_index(
 	std::size_t index) const
 {
 	auto name = this->signature->get_field_name(index);
 	return get_field_by_name(name);
 }
 
-void glurg::Structure::set_field_by_name(
-	const std::string& name, const glurg::Value* value)
+void glurg::trace::Structure::set_field_by_name(
+	const std::string& name, const Value* value)
 {
 	if (this->signature->has_field_name(name))
 	{
@@ -46,8 +47,8 @@ void glurg::Structure::set_field_by_name(
 	}
 }
 
-void glurg::Structure::set_field_by_index(
-	std::size_t index, const glurg::Value* value)
+void glurg::trace::Structure::set_field_by_index(
+	std::size_t index, const Value* value)
 {
 	auto name = this->signature->get_field_name(index);
 	this->fields.insert(std::make_pair(name, value->clone()));

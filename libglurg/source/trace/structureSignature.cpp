@@ -8,22 +8,25 @@
 #include "glurg/trace/structureSignature.hpp"
 #include "glurg/trace/traceFile.hpp"
 
-glurg::StructureSignature::ID glurg::StructureSignature::get_id() const
+glurg::trace::StructureSignature::ID
+glurg::trace::StructureSignature::get_id() const
 {
 	return this->id;
 }
 
-std::size_t glurg::StructureSignature::get_num_fields() const
+std::size_t glurg::trace::StructureSignature::get_num_fields() const
 {
 	return fields.size();
 }
 
-std::string glurg::StructureSignature::get_field_name(std::size_t index) const
+std::string glurg::trace::StructureSignature::get_field_name(
+	std::size_t index) const
 {
 	return fields.at(index);
 }
 
-bool glurg::StructureSignature::has_field_name(const std::string& name) const
+bool glurg::trace::StructureSignature::has_field_name(
+	const std::string& name) const
 {
 	auto begin = this->fields.begin();
 	auto end = this->fields.end();
@@ -31,7 +34,7 @@ bool glurg::StructureSignature::has_field_name(const std::string& name) const
 	return std::find(begin, end, name) != end;
 }
 
-glurg::StructureSignature* glurg::StructureSignature::read(
+glurg::trace::StructureSignature* glurg::trace::StructureSignature::read(
 	ID id, TraceFile& trace, FileStream& stream)
 {
 	StructureSignature* signature = new StructureSignature();
@@ -49,12 +52,12 @@ glurg::StructureSignature* glurg::StructureSignature::read(
 	return signature;
 }
 
-void glurg::StructureSignature::set_num_fields(std::size_t value)
+void glurg::trace::StructureSignature::set_num_fields(std::size_t value)
 {
 	fields.resize(value);
 }
 
-void glurg::StructureSignature::set_field_name(
+void glurg::trace::StructureSignature::set_field_name(
 	std::size_t index, const std::string& value)
 {
 	fields.at(index) = value;

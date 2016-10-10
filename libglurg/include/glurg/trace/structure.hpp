@@ -12,7 +12,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace glurg
+namespace glurg { namespace trace
 {
 	class StructureSignature;
 	class Value;
@@ -36,6 +36,6 @@ namespace glurg
 		typedef std::shared_ptr<Value> ValuePointer;
 		std::unordered_map<std::string, ValuePointer> fields;
 	};
-}
+} }
 
 #endif
