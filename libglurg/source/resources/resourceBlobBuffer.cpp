@@ -31,6 +31,19 @@ void glurg::ResourceBlobWriteBuffer::push_string(const std::string& string)
 	push_data((const std::uint8_t*)string.c_str(), string.size());
 }
 
+glurg::ResourceBlobReadBuffer::ResourceBlobReadBuffer(
+	const std::uint8_t* data, std::size_t size)
+{
+	this->buffer.insert(this->buffer.end(), data, data + size + 1);
+}
+
+glurg::ResourceBlobReadBuffer::ResourceBlobReadBuffer(
+	ResourceBlobReadBuffer&& other)
+{
+	this->buffer = std::move(other.buffer);
+	this->current_offset = other.current_offset;
+}
+
 const std::uint8_t* glurg::ResourceBlobReadBuffer::pop_data(
 	std::size_t& return_size)
 {

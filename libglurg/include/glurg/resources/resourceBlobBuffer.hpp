@@ -44,6 +44,7 @@ namespace glurg
 	{
 	public:
 		ResourceBlobReadBuffer(const std::uint8_t* data, std::size_t size);
+		ResourceBlobReadBuffer(ResourceBlobReadBuffer&& other);
 		~ResourceBlobReadBuffer() = default;
 
 		template <typename Type>
