@@ -27,6 +27,7 @@ namespace glurg
 		std::vector<std::uint8_t> buffer;
 	};
 
+	class ResourceBlobReadBuffer;
 	class ResourceBlobWriteBuffer : public ResourceBlobBuffer
 	{
 	public:
@@ -38,11 +39,16 @@ namespace glurg
 
 		void push_data(const std::uint8_t* data, std::size_t size);
 		void push_string(const std::string& string);
+
+		void to_read_buffer(ResourceBlobReadBuffer& other);
 	};
 
 	class ResourceBlobReadBuffer : public ResourceBlobBuffer
 	{
+		friend ResourceBlobWriteBuffer;
+
 	public:
+		ResourceBlobReadBuffer() = default;
 		ResourceBlobReadBuffer(const std::uint8_t* data, std::size_t size);
 		ResourceBlobReadBuffer(ResourceBlobReadBuffer&& other);
 		~ResourceBlobReadBuffer() = default;
