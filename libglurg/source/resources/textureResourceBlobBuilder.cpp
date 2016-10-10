@@ -22,25 +22,25 @@ glurg::TextureResourceBlobBuilder::~TextureResourceBlobBuilder()
 }
 
 void glurg::TextureResourceBlobBuilder::set_red_description(
-	const glurg::PixelComponentDescription& value)
+	const PixelComponentDescription& value)
 {
 	this->red_component = value;
 }
 
 void glurg::TextureResourceBlobBuilder::set_green_description(
-	const glurg::PixelComponentDescription& value)
+	const PixelComponentDescription& value)
 {
 	this->green_component = value;
 }
 
 void glurg::TextureResourceBlobBuilder::set_blue_description(
-	const glurg::PixelComponentDescription& value)
+	const PixelComponentDescription& value)
 {
 	this->blue_component = value;
 }
 
 void glurg::TextureResourceBlobBuilder::set_alpha_description(
-	const glurg::PixelComponentDescription& value)
+	const PixelComponentDescription& value)
 {
 	this->alpha_component = value;
 }
@@ -158,8 +158,8 @@ glurg::TextureResourceBlob* glurg::TextureResourceBlobBuilder::build()
 }
 
 void glurg::TextureResourceBlobBuilder::write_pixel_component_description(
-	const glurg::PixelComponentDescription& description,
-	glurg::ResourceBlobWriteBuffer& buffer)
+	const PixelComponentDescription& description,
+	ResourceBlobWriteBuffer& buffer)
 {
 	buffer.push_value(description.swizzle);
 	buffer.push_value(description.storage);

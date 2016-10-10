@@ -152,7 +152,7 @@ glurg::trace::Value::Type glurg::trace::IntegerValue::get_type() const
 
 std::shared_ptr<glurg::trace::Value> glurg::trace::IntegerValue::clone() const
 {
-	return std::shared_ptr<glurg::trace::Value>(new IntegerValue(this->value));
+	return std::shared_ptr<Value>(new IntegerValue(this->value));
 }
 
 std::int32_t glurg::trace::IntegerValue::to_signed_integer() const
@@ -236,7 +236,7 @@ glurg::trace::Value::Type glurg::trace::StringValue::get_type() const
 
 std::shared_ptr<glurg::trace::Value> glurg::trace::StringValue::clone() const
 {
-	return std::shared_ptr<glurg::trace::Value>(new StringValue(this->value));
+	return std::shared_ptr<Value>(new StringValue(this->value));
 }
 
 std::string glurg::trace::StringValue::to_string() const
@@ -501,7 +501,7 @@ glurg::trace::Value::Type glurg::trace::HandleValue::get_type() const
 
 std::shared_ptr<glurg::trace::Value> glurg::trace::HandleValue::clone() const
 {
-	return std::shared_ptr<glurg::trace::Value>(new HandleValue(this->value));
+	return std::shared_ptr<Value>(new HandleValue(this->value));
 }
 
 std::uint32_t glurg::trace::HandleValue::to_handle() const

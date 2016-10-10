@@ -41,7 +41,7 @@ glurg::SnappyAdapterBase::~SnappyAdapterBase()
 }
 
 void glurg::SnappyAdapterBase::snappy_write(
-	glurg::FileStream* stream, const std::uint8_t* data, std::size_t length)
+	FileStream* stream, const std::uint8_t* data, std::size_t length)
 {
 	if (stream->get_mode() & FileStream::mode_read)
 	{
@@ -79,7 +79,7 @@ void glurg::SnappyAdapterBase::snappy_write(
 }
 
 void glurg::SnappyAdapterBase::snappy_read(
-	glurg::FileStream* stream, std::uint8_t* data, std::size_t length)
+	FileStream* stream, std::uint8_t* data, std::size_t length)
 {
 	std::size_t current_offset = 0;
 	while (current_offset < length)
@@ -167,7 +167,7 @@ std::size_t glurg::SnappyAdapterBase::snappy_tell()
 }
 
 void glurg::SnappyAdapterBase::snappy_flush_write_buffer(
-	glurg::FileStream* stream)
+	FileStream* stream)
 {
 	if (this->cur_snappy_write_buffer_size == 0)
 	{
@@ -201,7 +201,7 @@ void glurg::SnappyAdapterBase::snappy_reset_state()
 	this->snappy_current_block_virtual_position = 0;
 }
 
-bool glurg::SnappyAdapterBase::snappy_fetch_read_buffer(glurg::FileStream* stream)
+bool glurg::SnappyAdapterBase::snappy_fetch_read_buffer(FileStream* stream)
 {
 	std::size_t current_header_position = stream->get_position();
 	std::uint32_t header = 0;

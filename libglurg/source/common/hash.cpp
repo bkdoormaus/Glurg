@@ -35,17 +35,17 @@ const std::uint8_t* glurg::Hash::get_bytes() const
 	return this->data;
 }
 
-bool glurg::Hash::operator ==(const glurg::Hash &other) const
+bool glurg::Hash::operator ==(const Hash &other) const
 {
 	return std::memcmp(this->data, other.data, HASH_SIZE) == 0;
 }
 
-bool glurg::Hash::operator !=(const glurg::Hash &other) const
+bool glurg::Hash::operator !=(const Hash &other) const
 {
 	return !((*this) == other);
 }
 
-bool glurg::Hash::operator <(const glurg::Hash &other) const
+bool glurg::Hash::operator <(const Hash &other) const
 {
 	return std::memcmp(this->data, other.data, HASH_SIZE) < 0;
 }

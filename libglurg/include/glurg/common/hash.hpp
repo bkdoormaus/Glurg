@@ -25,9 +25,9 @@ namespace glurg
 		std::string to_string() const;
 		const std::uint8_t* get_bytes() const;
 
-		bool operator ==(const glurg::Hash& other) const;
-		bool operator !=(const glurg::Hash& other) const;
-		bool operator <(const glurg::Hash& other) const;
+		bool operator ==(const Hash& other) const;
+		bool operator !=(const Hash& other) const;
+		bool operator <(const Hash& other) const;
 
 		static glurg::Hash hash(const std::uint8_t* data, std::size_t size);
 

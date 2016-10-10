@@ -130,7 +130,7 @@ std::size_t glurg::TextureResourceBlob::get_size() const
 }
 
 void glurg::TextureResourceBlob::read_pixel_component_description(
-	glurg::PixelComponentDescription& description)
+	PixelComponentDescription& description)
 {
 	description.swizzle = this->buffer.pop_value<int>();
 	description.storage = this->buffer.pop_value<int>();

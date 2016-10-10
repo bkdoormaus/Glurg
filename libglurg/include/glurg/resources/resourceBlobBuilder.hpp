@@ -21,7 +21,7 @@ namespace glurg
 	class ResourceBlobBuilder
 	{
 	public:
-		typedef typename std::enable_if<std::is_base_of<glurg::ResourceBlob, B>::value, B>::type Blob;
+		typedef typename std::enable_if<std::is_base_of<ResourceBlob, B>::value, B>::type Blob;
 		virtual ~ResourceBlobBuilder() = default;
 
 		virtual Blob* build() = 0;

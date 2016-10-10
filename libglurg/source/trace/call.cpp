@@ -45,7 +45,7 @@ const glurg::trace::Value* glurg::trace::Call::get_argument_at(
 }
 
 void glurg::trace::Call::set_argument_at(
-	ArgumentIndex index, const glurg::trace::Value* value)
+	ArgumentIndex index, const Value* value)
 {
 	this->arguments.at(index) = value->clone();
 }
@@ -55,7 +55,7 @@ const glurg::trace::Value* glurg::trace::Call::get_return_value() const
 	return this->return_value.get();
 }
 
-void glurg::trace::Call::set_return_value(const glurg::trace::Value* value)
+void glurg::trace::Call::set_return_value(const Value* value)
 {
 	this->return_value = value->clone();
 }
