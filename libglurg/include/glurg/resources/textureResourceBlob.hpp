@@ -45,6 +45,7 @@ namespace glurg
 	class TextureResourceBlob : public ResourceBlob
 	{
 	public:
+		TextureResourceBlob(ResourceBlobReadBuffer&& buffer);
 		~TextureResourceBlob() = default;
 
 		PixelComponentDescription get_red_description() const;
@@ -104,8 +105,7 @@ namespace glurg
 		const std::uint8_t* get_data() const;
 		std::size_t get_size() const;
 
-	private:
-		TextureResourceBlob(ResourceBlobReadBuffer& buffer);
+	public:
 		void read_pixel_component_description(
 			PixelComponentDescription& description);
 

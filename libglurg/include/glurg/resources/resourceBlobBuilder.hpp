@@ -14,6 +14,7 @@
 
 namespace glurg
 {
+	class RenderState;
 	class ResourceBlobReadBuffer;
 
 	template <typename Blob>
@@ -24,7 +25,7 @@ namespace glurg
 		virtual ~ResourceBlobBuilder() = default;
 
 		virtual Blob* build() = 0;
-		virtual Blob* extract(const ResourceBlobReadBuffer& buffer) = 0;
+		virtual void extract(const RenderState& state) = 0;
 	};
 }
 

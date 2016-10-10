@@ -7,7 +7,7 @@
 #include "glurg/common/hash.hpp"
 #include "glurg/resources/textureResourceBlob.hpp"
 
-glurg::TextureResourceBlob::TextureResourceBlob(ResourceBlobReadBuffer& buffer)
+glurg::TextureResourceBlob::TextureResourceBlob(ResourceBlobReadBuffer&& buffer)
 	: buffer(std::move(buffer))
 {
 	this->hash = Hash::hash(
