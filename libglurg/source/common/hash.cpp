@@ -50,7 +50,7 @@ bool glurg::Hash::operator <(const glurg::Hash &other) const
 	return std::memcmp(this->data, other.data, HASH_SIZE) < 0;
 }
 
-glurg::Hash glurg::Hash::hash(std::uint8_t *data, std::size_t size)
+glurg::Hash glurg::Hash::hash(const std::uint8_t *data, std::size_t size)
 {
 	Hash result;
 	crypto_generichash(
