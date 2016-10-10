@@ -7,6 +7,7 @@
 #ifndef LIBGLURG_RESOURCES_TEXTURE_RESOURCE_BLOB_HPP
 #define LIBGLURG_RESOURCES_TEXTURE_RESOURCE_BLOB_HPP
 
+#include "glurg/common/hash.hpp"
 #include "glurg/resources/resourceBlob.hpp"
 #include "glurg/resources/resourceBlobBuffer.hpp"
 
@@ -96,24 +97,31 @@ namespace glurg
 		int get_depth() const;
 		int get_mipmap_level() const;
 
-		const std::uint8_t* get_pixels();
+		const std::uint8_t* get_pixels() const;
+		std::size_t get_pixels_size() const;
 
 		const Hash& get_hash() const;
 		const std::uint8_t* get_data() const;
-		const std::size_t get_size() const;
+		std::size_t get_size() const;
 
 	private:
-		TextureResourceBlob(ResourceBlobReadBuffer&& buffer);
-
-		PixelComponentDescription red, green, blue, alpha;
-
-		int wrap_mode[MAX_DIMENSIONS];
-		int minification_filter, magnification_filter;
+		TextureResourceBlob(ResourceBlobReadBuffer& buffer);
+		void read_pixel_component_description(
+			PixelComponentDescription& description);
 
 		int texture_type;
 		int width, height, depth, level;
 
+		PixelComponentDescription red_component;
+		PixelComponentDescription green_component;
+		PixelComponentDescription blue_component;
+		PixelComponentDescription alpha_component;
+
+		int wrap_mode[MAX_DIMENSIONS];
+		int minification_filter, magnification_filter;
+
 		const std::uint8_t* pixels;
+		std::size_t pixels_size;
 
 		Hash hash;
 		ResourceBlobReadBuffer buffer;

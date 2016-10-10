@@ -17,12 +17,12 @@ namespace glurg
 	class ResourceBlob
 	{
 	public:
-		virtual ~Resource() = default;
+		virtual ~ResourceBlob() = default;
 
 		virtual const glurg::Hash& get_hash() const = 0;
 
 		virtual const std::uint8_t* get_data() const = 0;
-		virtual const std::size_t get_size() const = 0;
+		virtual std::size_t get_size() const = 0;
 	};
 }
 
