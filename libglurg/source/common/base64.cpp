@@ -37,6 +37,8 @@ std::size_t get_decoded_length(const std::string& string)
 	{
 		result -= string.length() - e;
 	}
+
+	return result;
 }
 
 // Adapted from Wikipedia:
