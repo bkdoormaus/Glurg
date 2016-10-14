@@ -31,6 +31,7 @@ namespace glurg
 		enum
 		{
 			storage_none,
+			storage_disabled,
 			storage_signed_normalized,
 			storage_unsigned_normalized,
 			storage_float,
@@ -55,6 +56,7 @@ namespace glurg
 
 		enum
 		{
+			wrap_none,
 			wrap_border_clamp,
 			wrap_edge_clamp,
 			wrap_repeat,
@@ -67,6 +69,7 @@ namespace glurg
 
 		enum
 		{
+			type_none,
 			type_1d,
 			type_2d,
 			type_3d,
@@ -83,6 +86,7 @@ namespace glurg
 
 		enum
 		{
+			filter_none,
 			filter_nearest,
 			filter_linear,
 			filter_nearest_mipmap_nearest,
@@ -105,7 +109,7 @@ namespace glurg
 		const std::uint8_t* get_data() const;
 		std::size_t get_size() const;
 
-	public:
+	private:
 		void read_pixel_component_description(
 			PixelComponentDescription& description);
 

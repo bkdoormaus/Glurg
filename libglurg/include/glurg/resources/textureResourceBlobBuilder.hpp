@@ -44,6 +44,19 @@ namespace glurg
 		void extract(const RenderState& buffer);
 
 	private:
+		void verify_state();
+		static void verify_texture_type(int texture_type);
+		static void verify_dimensions(int width, int height, int depth);
+		static void verify_mipmap_level(int level);
+		static void verify_pixel_component_description(
+			const PixelComponentDescription& description);
+		static void verify_wrap_modes(
+			const int wrap_modes[], std::size_t count, int texture_type);
+		static void verify_zoom_filters(
+			int minification_filter, int magnification_filter);
+		static void verify_pixel_data(
+			const std::uint8_t* pixels, std::size_t pixels_size);
+
 		int texture_type;
 		int width, height, depth, level;
 
