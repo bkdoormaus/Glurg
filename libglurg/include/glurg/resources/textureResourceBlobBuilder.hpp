@@ -40,6 +40,8 @@ namespace glurg
 
 		void set_pixel_data(const std::uint8_t* pixels, std::size_t size);
 
+		void set_binding_point(int value);
+
 		TextureResourceBlob* build();
 		void extract(const RenderState& buffer);
 
@@ -56,6 +58,7 @@ namespace glurg
 			int minification_filter, int magnification_filter);
 		static void verify_pixel_data(
 			const std::uint8_t* pixels, std::size_t pixels_size);
+		static void verify_binding_point(int binding_point);
 
 		int texture_type;
 		int width, height, depth, level;
@@ -73,6 +76,10 @@ namespace glurg
 
 		const std::uint8_t* pixels;
 		std::size_t pixels_size;
+
+		// Used only during extracting textures; not actually stored in the
+		// resulting glurg::TextureResourceBlob.
+		std::size_t binding_point;
 	};
 }
 

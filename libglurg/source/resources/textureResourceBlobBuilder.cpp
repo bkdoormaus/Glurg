@@ -30,6 +30,8 @@ glurg::TextureResourceBlobBuilder::TextureResourceBlobBuilder()
 
 	this->pixels = nullptr;
 	this->pixels_size = 0;
+
+	this->binding_point = -1;
 }
 
 glurg::TextureResourceBlobBuilder::~TextureResourceBlobBuilder()
@@ -145,6 +147,16 @@ void glurg::TextureResourceBlobBuilder::set_pixel_data(
 	this->pixels_size = size;
 }
 
+void glurg::TextureResourceBlobBuilder::set_binding_point(int value)
+{
+	if (value < 0)
+	{
+		throw std::runtime_error("binding point less than zero");
+	}
+
+	this->binding_point = value;
+}
+
 glurg::TextureResourceBlob* glurg::TextureResourceBlobBuilder::build()
 {
 	verify_state();
@@ -178,6 +190,13 @@ glurg::TextureResourceBlob* glurg::TextureResourceBlobBuilder::build()
 	return new TextureResourceBlob(std::move(final_buffer));
 }
 
+void glurg::TextureResourceBlobBuilder::extract(const RenderState& buffer)
+{
+	verify_texture_type(this->texture_type);
+	verify_mipmap_level(this->level);
+	verify_binding_point(this->binding_point);
+}
+
 void glurg::TextureResourceBlobBuilder::write_pixel_component_description(
 	const PixelComponentDescription& description,
 	ResourceBlobWriteBuffer& buffer)
@@ -203,7 +222,7 @@ void glurg::TextureResourceBlobBuilder::verify_state()
 		this->texture_type);
 	verify_zoom_filters(this->minification_filter, this->magnification_filter);
 
-	verify_pixels(this->pixels, this->pixels_size);
+	verify_pixel_data(this->pixels, this->pixels_size);
 }
 
 void glurg::TextureResourceBlobBuilder::verify_texture_type(int texture_type)
@@ -330,7 +349,6 @@ void glurg::TextureResourceBlobBuilder::verify_wrap_modes(
 			case TextureResourceBlob::wrap_border_clamp:
 			case TextureResourceBlob::wrap_edge_clamp:
 			case TextureResourceBlob::wrap_repeat:
-			case TextureResourceBlob::wrap_mirror_border_clamp:
 			case TextureResourceBlob::wrap_mirror_edge_clamp:
 			case TextureResourceBlob::wrap_mirror_repeat:
 				break;
@@ -377,5 +395,13 @@ void glurg::TextureResourceBlobBuilder::verify_pixel_data(
 	if (pixels_size == 0)
 	{
 		throw std::runtime_error("invalid pixel data size");
+	}
+}
+
+void glurg::TextureResourceBlobBuilder::verify_binding_point(int binding_point)
+{
+	if (binding_point < 0)
+	{
+		throw std::runtime_error("binding point is unset or invalid value");
 	}
 }

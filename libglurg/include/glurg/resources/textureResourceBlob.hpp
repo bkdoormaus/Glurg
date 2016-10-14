@@ -60,7 +60,6 @@ namespace glurg
 			wrap_border_clamp,
 			wrap_edge_clamp,
 			wrap_repeat,
-			wrap_mirror_border_clamp,
 			wrap_mirror_edge_clamp,
 			wrap_mirror_repeat
 		};
