@@ -5,7 +5,7 @@
 // Copyright 2016 [bk]door.maus
 
 #include "glurg/common/hash.hpp"
-#include "glurg/resources/textureResourceBlob.hpp"
+#include "glurg/resources/texture/textureResourceBlob.hpp"
 
 glurg::TextureResourceBlob::TextureResourceBlob(ResourceBlobReadBuffer&& buffer)
 	: buffer(std::move(buffer))

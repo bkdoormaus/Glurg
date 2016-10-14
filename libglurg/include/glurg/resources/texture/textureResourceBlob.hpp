@@ -4,8 +4,8 @@
 //
 // Copyright 2016 [bk]door.maus
 
-#ifndef LIBGLURG_RESOURCES_TEXTURE_RESOURCE_BLOB_HPP
-#define LIBGLURG_RESOURCES_TEXTURE_RESOURCE_BLOB_HPP
+#ifndef LIBGLURG_RESOURCES_TEXTURE_TEXTURE_RESOURCE_BLOB_HPP
+#define LIBGLURG_RESOURCES_TEXTURE_TEXTURE_RESOURCE_BLOB_HPP
 
 #include "glurg/common/hash.hpp"
 #include "glurg/resources/resourceBlob.hpp"

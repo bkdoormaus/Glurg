@@ -4,11 +4,11 @@
 //
 // Copyright 2016 [bk]door.maus
 
-#ifndef LIBGLURG_RESOURCES_TEXTURE_RESOURCE_BLOB_BUILDER_HPP
-#define LIBGLURG_RESOURCES_TEXTURE_RESOURCE_BLOB_BUILDER_HPP
+#ifndef LIBGLURG_RESOURCES_TEXTURE_TEXTURE_RESOURCE_BLOB_BUILDER_HPP
+#define LIBGLURG_RESOURCES_TEXTURE_TEXTURE_RESOURCE_BLOB_BUILDER_HPP
 
 #include "glurg/resources/resourceBlobBuilder.hpp"
-#include "glurg/resources/textureResourceBlob.hpp"
+#include "glurg/resources/texture/textureResourceBlob.hpp"
 
 namespace glurg
 {

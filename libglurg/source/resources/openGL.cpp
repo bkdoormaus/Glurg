@@ -5,7 +5,7 @@
 // Copyright 2016 [bk]door.maus
 
 #include "glurg/resources/openGL.hpp"
-#include "glurg/resources/textureResourceBlob.hpp"
+#include "glurg/resources/texture/textureResourceBlob.hpp"
 
 struct ValueMap
 {

@@ -11,7 +11,7 @@
 #include "glurg/resources/openGL.hpp"
 #include "glurg/resources/renderState.hpp"
 #include "glurg/resources/renderValue.hpp"
-#include "glurg/resources/textureResourceBlobBuilder.hpp"
+#include "glurg/resources/texture/textureResourceBlobBuilder.hpp"
 
 glurg::TextureResourceBlobBuilder::TextureResourceBlobBuilder()
 {
