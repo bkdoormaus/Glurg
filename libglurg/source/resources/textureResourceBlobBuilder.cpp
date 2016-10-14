@@ -4,7 +4,13 @@
 //
 // Copyright 2016 [bk]door.maus
 
+#include <cassert>
 #include <cstring>
+#include "glurg/common/base64.hpp"
+#include "glurg/common/pixelData.hpp"
+#include "glurg/resources/openGL.hpp"
+#include "glurg/resources/renderState.hpp"
+#include "glurg/resources/renderValue.hpp"
 #include "glurg/resources/textureResourceBlobBuilder.hpp"
 
 glurg::TextureResourceBlobBuilder::TextureResourceBlobBuilder()
@@ -190,11 +196,74 @@ glurg::TextureResourceBlob* glurg::TextureResourceBlobBuilder::build()
 	return new TextureResourceBlob(std::move(final_buffer));
 }
 
-void glurg::TextureResourceBlobBuilder::extract(const RenderState& buffer)
+bool glurg::TextureResourceBlobBuilder::extract(const RenderState& state)
 {
 	verify_texture_type(this->texture_type);
 	verify_mipmap_level(this->level);
 	verify_binding_point(this->binding_point);
+	auto texture_name = get_texture_key(
+		this->binding_point,
+		this->texture_type,
+		this->level);
+
+	auto textures = state.get("textures");
+	if (!textures->has_field(texture_name))
+	{
+		return false;
+	}
+
+	auto texture_info = state.get("parameters")
+		->get_field_by_name("GL_TEXTURE", this->binding_point)
+		->get_field_by_name(
+			gl::string_from_texture_blob_texture_type(this->texture_type));
+	auto texture_data = textures->get_field_by_name(texture_name);
+
+	extract_pixel_component_description(
+		red_component,
+		texture_info->get_field_by_name("GL_TEXTURE_SWIZZLE_R"),
+		texture_info->get_field_by_name("GL_TEXTURE_RED_TYPE"),
+		texture_info->get_field_by_name("GL_TEXTURE_RED_SIZE"));
+	extract_pixel_component_description(
+		green_component,
+		texture_info->get_field_by_name("GL_TEXTURE_SWIZZLE_G"),
+		texture_info->get_field_by_name("GL_TEXTURE_GREEN_TYPE"),
+		texture_info->get_field_by_name("GL_TEXTURE_GREEN_SIZE"));
+	extract_pixel_component_description(
+		blue_component,
+		texture_info->get_field_by_name("GL_TEXTURE_SWIZZLE_B"),
+		texture_info->get_field_by_name("GL_TEXTURE_BLUE_TYPE"),
+		texture_info->get_field_by_name("GL_TEXTURE_BLUE_SIZE"));
+	extract_pixel_component_description(
+		alpha_component,
+		texture_info->get_field_by_name("GL_TEXTURE_SWIZZLE_A"),
+		texture_info->get_field_by_name("GL_TEXTURE_ALPHA_TYPE"),
+		texture_info->get_field_by_name("GL_TEXTURE_ALPHA_SIZE"));
+
+	set_wrap_mode(0, gl::to_texture_blob_wrap_mode(
+		texture_info->get_integer("GL_TEXTURE_WRAP_S")));
+	set_wrap_mode(1, gl::to_texture_blob_wrap_mode(
+		texture_info->get_integer("GL_TEXTURE_WRAP_T")));
+	set_wrap_mode(2, gl::to_texture_blob_wrap_mode(
+		texture_info->get_integer("GL_TEXTURE_WRAP_R")));
+
+	set_minification_filter(gl::to_texture_blob_zoom_filter(
+		texture_info->get_string("GL_TEXTURE_MIN_FILTER")));
+	set_magnification_filter(gl::to_texture_blob_zoom_filter(
+		texture_info->get_string("GL_TEXTURE_MAG_FILTER")));
+
+	set_width(texture_info->get_integer("GL_TEXTURE_WIDTH"));
+	set_height(texture_info->get_integer("GL_TEXTURE_HEIGHT"));
+	set_depth(texture_info->get_integer("GL_TEXTURE_DEPTH"));
+
+	PixelDataBuffer encoded_pixel_data;
+	decode_base64(texture_data->get_string("__data__"), encoded_pixel_data);
+
+	PixelDataBuffer raw_pixel_data;
+	read_pixel_data(raw_pixel_data, encoded_pixel_data);
+
+	set_pixel_data(&raw_pixel_data[0], raw_pixel_data.size());
+
+	return true;
 }
 
 void glurg::TextureResourceBlobBuilder::write_pixel_component_description(
@@ -404,4 +473,35 @@ void glurg::TextureResourceBlobBuilder::verify_binding_point(int binding_point)
 	{
 		throw std::runtime_error("binding point is unset or invalid value");
 	}
+}
+
+std::string glurg::TextureResourceBlobBuilder::get_texture_key(
+	int binding_point, int texture_type, int level)
+{
+	std::string result;
+
+	result += "GL_TEXTURE";
+	result += std::to_string(binding_point);
+	result += ", ";
+
+	result += gl::string_from_texture_blob_texture_type(texture_type);
+	result += ", ";
+
+	result += "level = ";
+	result += std::to_string(level);
+
+	return result;
+}
+
+void glurg::TextureResourceBlobBuilder::extract_pixel_component_description(
+	PixelComponentDescription& description,
+	const std::shared_ptr<RenderValue>& swizzle,
+	const std::shared_ptr<RenderValue>& storage,
+	const std::shared_ptr<RenderValue>& bit_size)
+{
+	description.swizzle = gl::to_pixel_component_description_swizzle_mode(
+		swizzle->to_string());
+	description.storage = gl::to_pixel_component_description_storage_type(
+		storage->to_string());
+	description.bit_size = bit_size->to_integer();
 }

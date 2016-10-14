@@ -43,7 +43,7 @@ namespace glurg
 		void set_binding_point(int value);
 
 		TextureResourceBlob* build();
-		void extract(const RenderState& buffer);
+		bool extract(const RenderState& state);
 
 	private:
 		void verify_state();
@@ -59,6 +59,15 @@ namespace glurg
 		static void verify_pixel_data(
 			const std::uint8_t* pixels, std::size_t pixels_size);
 		static void verify_binding_point(int binding_point);
+
+		static std::string get_texture_key(
+			int binding_point, int texture_type, int level);
+
+		static void extract_pixel_component_description(
+			PixelComponentDescription& description,
+			const std::shared_ptr<RenderValue>& swizzle,
+			const std::shared_ptr<RenderValue>& storage,
+			const std::shared_ptr<RenderValue>& bit_size);
 
 		int texture_type;
 		int width, height, depth, level;
