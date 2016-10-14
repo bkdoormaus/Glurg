@@ -22,9 +22,7 @@ namespace glurg
 		RenderState() = default;
 		~RenderState() = default;
 
-		RenderValue* get_parameter(const std::string& name) const;
-		RenderValue* get_parameter(
-			const std::string& name, std::size_t index) const;
+		std::shared_ptr<RenderValue> get(const std::string& name) const;
 
 		template <typename Stream>
 		void populate(Stream& stream);

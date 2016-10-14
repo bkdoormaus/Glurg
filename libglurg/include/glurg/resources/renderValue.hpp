@@ -8,6 +8,7 @@
 #define LIBGLURG_RESOURCES_RENDER_VALUE_HPP
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 #include <glm/vec2.hpp>
@@ -46,10 +47,12 @@ namespace glurg
 		void extract_blob(Blob& blob) const;
 		void extract_field_blob(const std::string& name, Blob& blob) const;
 
-		RenderValue* get_field_by_name(const std::string& name) const;
-		RenderValue* get_field_by_name(
+		std::shared_ptr<RenderValue> get_field_by_name(
+			const std::string& name) const;
+		std::shared_ptr<RenderValue> get_field_by_name(
 			const std::string& name, std::size_t index) const;
-		RenderValue* get_field_by_index(std::size_t index) const;
+		std::shared_ptr<RenderValue> get_field_by_index(
+			std::size_t index) const;
 
 		bool has_field(const std::string& name) const;
 		bool has_field(const std::string& name, std::size_t index) const;

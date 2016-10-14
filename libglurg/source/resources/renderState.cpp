@@ -7,15 +7,8 @@
 #include "glurg/resources/renderState.hpp"
 #include "glurg/resources/renderValue.hpp"
 
-glurg::RenderValue* glurg::RenderState::get_parameter(
+std::shared_ptr<glurg::RenderValue> glurg::RenderState::get(
 	const std::string& name) const
 {
-	return new RenderValue(this->data["parameters"][name]);
-}
-
-glurg::RenderValue* glurg::RenderState::get_parameter(
-	const std::string& name, std::size_t index) const
-{
-	return new RenderValue(
-		this->data["parameters"][name + std::to_string(index)]);
+	return std::make_shared<RenderValue>(this->data[name]);
 }
