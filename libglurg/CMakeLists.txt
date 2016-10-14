@@ -5,6 +5,7 @@ find_package(PkgConfig REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS iostreams)
 find_package(Snappy REQUIRED)
+find_package(PNG REQUIRED)
 pkg_search_module(Sodium REQUIRED libsodium)
 pkg_search_module(JsonCpp REQUIRED jsoncpp)
 
@@ -12,6 +13,7 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/common/base64.hpp"
 	"include/glurg/common/fileStream.hpp"
 	"include/glurg/common/hash.hpp"
+	"include/glurg/common/pixelData.hpp"
 	"include/glurg/common/process.hpp"
 	"include/glurg/common/simpleFileStream.hpp"
 	"include/glurg/common/snappyAdapter.hpp"
@@ -32,6 +34,7 @@ set(LIBGLURG_INCLUDE_FILES
 set(LIBGLURG_SOURCE_FILES
 	"source/common/base64.cpp"
 	"source/common/hash.cpp"
+	"source/common/pixelData.cpp"
 	"source/common/process.cpp"
 	"source/common/simpleFileStream.cpp"
 	"source/common/snappyAdapter.cpp"
@@ -67,13 +70,17 @@ target_include_directories(libglurg
 	PUBLIC
 	${Boost_INCLUDE_DIRS}
 	${Snappy_INCLUDE_DIRS}
+	${PNG_INCLUDE_DIRS}
 	${Sodium_INCLUDE_DIRS}
 	${JsonCpp_INCLUDE_DIRS})
 
 target_link_libraries(libglurg PUBLIC
 	${Boost_LIBRARIES} ${Boost_LDFLAGS} ${Boost_iostreams_LIBRARY}
 	${Snappy_LIBRARIES} ${Snappy_LDFLAGS}
+	${PNG_LIBRARIES}
 	${Sodium_LIBRARIES} ${Sodium_LDFLAGS}
 	${JsonCpp_LIBRARIES} ${JsonCpp_LDFLAGS})
+
+add_definitions(${PNG_DEFINITIONS})
 
 set_property(TARGET libglurg PROPERTY CXX_STANDARD 14)
