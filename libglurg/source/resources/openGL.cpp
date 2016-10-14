@@ -16,10 +16,16 @@ struct ValueMap
 	static bool lookup(
 		const ValueMap map[], std::size_t count,
 		GLenum value, int& result);
-
 	static bool lookup(
 		const ValueMap map[], std::size_t count,
 		const std::string& value, int& result);
+
+	static bool reverse_lookup(
+		const ValueMap map[], std::size_t count,
+		int glurg_value, GLenum& result);
+	static bool reverse_lookup(
+		const ValueMap map[], std::size_t count,
+		int glurg_value, const char*& result);
 };
 
 bool ValueMap::lookup(
@@ -47,6 +53,38 @@ bool ValueMap::lookup(
 		if (value == map[i].gl_string_value)
 		{
 			result = map[i].result;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool ValueMap::reverse_lookup(
+	const ValueMap map[], std::size_t count,
+	int glurg_value, GLenum& result)
+{
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		if (glurg_value == map[i].result)
+		{
+			result = map[i].gl_enum_value;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool ValueMap::reverse_lookup(
+	const ValueMap map[], std::size_t count,
+	int glurg_value, const char*& result)
+{
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		if (glurg_value == map[i].result)
+		{
+			result = map[i].gl_string_value;
 			return true;
 		}
 	}
@@ -174,6 +212,30 @@ int glurg::gl::to_texture_blob_texture_type(const std::string& value)
 		glurg_texture_type, GLURG_GET_SIZE(glurg_texture_type), value, result))
 	{
 		throw std::runtime_error("unrecognized OpenGL swizzle mode");
+	}
+
+	return result;
+}
+
+GLenum glurg::gl::enum_from_texture_blob_texture_type(int value)
+{
+	GLenum result;
+	if (!ValueMap::reverse_lookup(
+		glurg_texture_type, GLURG_GET_SIZE(glurg_texture_type), value, result))
+	{
+		throw std::runtime_error("invalid texture type");
+	}
+
+	return result;
+}
+
+const char* glurg::gl::string_from_texture_blob_texture_type(int value)
+{
+	const char* result;
+	if (!ValueMap::reverse_lookup(
+		glurg_texture_type, GLURG_GET_SIZE(glurg_texture_type), value, result))
+	{
+		throw std::runtime_error("invalid texture type");
 	}
 
 	return result;

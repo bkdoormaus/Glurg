@@ -20,6 +20,8 @@ namespace glurg { namespace gl
 
 	int to_texture_blob_texture_type(GLenum value);
 	int to_texture_blob_texture_type(const std::string& value);
+	GLenum enum_from_texture_blob_texture_type(int value);
+	const char* string_from_texture_blob_texture_type(int value);
 
 	int to_texture_blob_wrap_mode(GLenum value);
 	int to_texture_blob_wrap_mode(const std::string& value);
