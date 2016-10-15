@@ -12,11 +12,17 @@
 
 namespace glurg
 {
+	class TextureBlob;
+
 	class TextureResource
 	{
 	public:
 		TextureResource(const TextureBlob* blob);
-		~TextureBlob() = default;
+		~TextureResource() = default;
+
+		const ResourceBlob* get_blob() const;
+
+		const ResourceFingerprint& get_fingerprint() const;
 	};
 }
 
