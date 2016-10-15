@@ -139,10 +139,17 @@ void glurg::TextureResourceBlobBuilder::set_mipmap_level(int value)
 }
 
 void glurg::TextureResourceBlobBuilder::set_pixel_data(
-	const std::uint8_t* pixels, std::size_t size)
+	const PixelData& pixel_data)
 {
+	if ((int)pixel_data.get_width() != width ||
+		(int)pixel_data.get_height() != height)
+	{
+		throw std::runtime_error("pixel data size mismatch");
+	}
+
+	std::size_t size = pixel_data.get_buffer().size();
 	std::uint8_t* p = new std::uint8_t[size];
-	std::memcpy(p, pixels, size);
+	std::memcpy(p, &pixel_data.get_buffer()[0], size);
 
 	if (this->pixels != nullptr)
 	{
@@ -255,13 +262,13 @@ bool glurg::TextureResourceBlobBuilder::extract(const RenderState& state)
 	set_height(texture_info->get_integer("GL_TEXTURE_HEIGHT"));
 	set_depth(texture_info->get_integer("GL_TEXTURE_DEPTH"));
 
-	PixelDataBuffer encoded_pixel_data;
-	decode_base64(texture_data->get_string("__data__"), encoded_pixel_data);
+	PixelDataBuffer pixel_data_buffer;
+	decode_base64(texture_data->get_string("__data__"), pixel_data_buffer);
 
-	PixelDataBuffer raw_pixel_data;
-	read_pixel_data(raw_pixel_data, encoded_pixel_data);
+	PixelData pixel_data;
+	PixelData::read(pixel_data_buffer, pixel_data);
 
-	set_pixel_data(&raw_pixel_data[0], raw_pixel_data.size());
+	set_pixel_data(pixel_data);
 
 	return true;
 }

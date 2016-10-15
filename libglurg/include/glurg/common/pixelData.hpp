@@ -16,11 +16,39 @@ namespace glurg
 	class ResourceBlobWriteBuffer;
 
 	typedef std::vector<std::uint8_t> PixelDataBuffer;
-	
-	void read_pixel_data(PixelDataBuffer& output_buffer,
-		const PixelDataBuffer& input_buffer);
-	void read_pixel_data(ResourceBlobWriteBuffer& output_buffer, 
-		const PixelDataBuffer& input_buffer);
+
+	class PixelData
+	{
+	public:
+		PixelData();
+		~PixelData() = default;
+
+		enum
+		{
+			format_none,
+			format_integer,
+			format_float
+		};
+		int get_component_format() const;
+
+		const PixelDataBuffer& get_buffer() const;
+
+		std::size_t get_width() const;
+		std::size_t get_height() const;
+		std::size_t get_num_components() const;
+
+		static void read(const PixelDataBuffer& input_buffer, PixelData& data);
+
+	private:
+		void read_png(const glurg::PixelDataBuffer& input_buffer);
+		void read_pnm(const glurg::PixelDataBuffer& input_buffer);
+
+		int format;
+		PixelDataBuffer buffer;
+
+		std::size_t width, height;
+		std::size_t components;
+	};
 }
 
 #endif

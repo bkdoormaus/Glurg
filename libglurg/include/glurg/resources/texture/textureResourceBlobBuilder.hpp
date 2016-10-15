@@ -38,7 +38,7 @@ namespace glurg
 		void set_depth(int value);
 		void set_mipmap_level(int value);
 
-		void set_pixel_data(const std::uint8_t* pixels, std::size_t size);
+		void set_pixel_data(const PixelData& pixel_data);
 
 		void set_binding_point(int value);
 

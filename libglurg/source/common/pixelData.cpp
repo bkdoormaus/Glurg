@@ -6,54 +6,59 @@
 
 #include <stdexcept>
 #include <png.h>
-#include "glurg/common/fileStream.hpp"
 #include "glurg/common/pixelData.hpp"
-#include "glurg/resources/resourceBlobBuffer.hpp"
 
-template <typename OutputBuffer>
-void prepare_output_buffer(OutputBuffer& buffer, std::size_t size);
-
-template <typename OutputBuffer>
-void append_output_buffer(
-	OutputBuffer& buffer,
-	const std::uint8_t* values, std::size_t values_size);
-
-template <>
-void prepare_output_buffer<glurg::PixelDataBuffer>(
-	glurg::PixelDataBuffer& buffer, std::size_t size)
+glurg::PixelData::PixelData()
 {
-	buffer.reserve(size);
+	this->format = format_none;
+
+	this->width = 0;
+	this->height = 0;
+	this->components = 0;
 }
 
-template <>
-void append_output_buffer<glurg::PixelDataBuffer>(
-	glurg::PixelDataBuffer& buffer,
-	const std::uint8_t* values, std::size_t values_size)
+int glurg::PixelData::get_component_format() const
 {
-	buffer.insert(buffer.end(), values, values + values_size + 1);
+	return this->format;
 }
 
-template <>
-void prepare_output_buffer<glurg::ResourceBlobWriteBuffer>(
-	glurg::ResourceBlobWriteBuffer& buffer, std::size_t size)
+const glurg::PixelDataBuffer& glurg::PixelData::get_buffer() const
 {
-	buffer.push_value(size);
+	return this->buffer;
 }
 
-template <>
-void append_output_buffer<glurg::ResourceBlobWriteBuffer>(
-	glurg::ResourceBlobWriteBuffer& buffer,
-	const std::uint8_t* values, std::size_t values_size)
+std::size_t glurg::PixelData::get_width() const
 {
-	for (std::size_t i = 0; i < values_size; ++i)
+	return this->width;
+}
+
+std::size_t glurg::PixelData::get_height() const
+{
+	return this->height;
+}
+
+std::size_t glurg::PixelData::get_num_components() const
+{
+	return this->components;
+}
+
+void glurg::PixelData::read(
+	const glurg::PixelDataBuffer& input_buffer, glurg::PixelData& data)
+{
+	std::uint8_t magic = input_buffer.at(0);
+
+	switch (magic)
 	{
-		buffer.push_value(values[i]);
+		case 0x89:
+			data.read_png(input_buffer);
+			break;
+		case 'P':
+			data.read_pnm(input_buffer);
+			break;
 	}
 }
 
-template <typename OutputBuffer>
-void read_png_pixel_data(
-	OutputBuffer& output_buffer, const glurg::PixelDataBuffer& input_buffer)
+void glurg::PixelData::read_png(const glurg::PixelDataBuffer& input_buffer)
 {
 	png_image image = { 0 };
 	image.version = PNG_IMAGE_VERSION;
@@ -62,6 +67,32 @@ void read_png_pixel_data(
 		&image, &input_buffer[0], input_buffer.size()))
 	{
 		throw std::runtime_error("could not read PNG");
+	}
+
+	std::size_t components = 0;
+	switch (image.format)
+	{
+		case PNG_FORMAT_GRAY:
+			components = 1;
+			break;
+		case PNG_FORMAT_GA:
+		case PNG_FORMAT_AG:
+			components = 2;
+			image.format = PNG_FORMAT_GA;
+			break;
+		case PNG_FORMAT_RGB:
+		case PNG_FORMAT_BGR:
+			components = 3;
+			image.format = PNG_FORMAT_RGB;
+		case PNG_FORMAT_RGBA:
+		case PNG_FORMAT_ARGB:
+		case PNG_FORMAT_BGRA:
+		case PNG_FORMAT_ABGR:
+			components = 4;
+			image.format = PNG_FORMAT_RGBA;
+			break;
+		default:
+			throw std::runtime_error("unhandled PNG image format");
 	}
 
 	auto temp_buffer = std::make_unique<std::uint8_t[]>(PNG_IMAGE_SIZE(image));
@@ -75,52 +106,28 @@ void read_png_pixel_data(
 
 	const std::size_t size_pixels_row =
 		PNG_IMAGE_PIXEL_SIZE(image.format) * image.width;
-	prepare_output_buffer(output_buffer, image.height * size_pixels_row);
+	this->buffer.clear();
+	this->buffer.reserve(size_pixels_row * image.height);
 
 	const std::size_t row_size = PNG_IMAGE_ROW_STRIDE(image);
 	for (std::size_t y = 0; y < image.height; ++y)
 	{
-		append_output_buffer(
-			output_buffer, temp_buffer.get() + y * row_size, row_size);
+		auto begin = temp_buffer.get() + y * row_size;
+		auto end = begin + row_size + 1;
+		this->buffer.insert(this->buffer.end(), begin, end);
 	}
 
 	png_image_free(&image);
+
+	this->format = format_integer;
+	this->width = image.width;
+	this->height = image.height;
+	this->components = components;
 }
 
-template <typename OutputBuffer>
-void read_pnm_pixel_data(
-	OutputBuffer& output_buffer, const glurg::PixelDataBuffer& input_buffer)
+void glurg::PixelData::read_pnm(const glurg::PixelDataBuffer& input_buffer)
 {
 	// TODO
 	// apitrace uses an extended NetPBM format
 	throw std::runtime_error("not yet implemented");
-}
-
-template <typename OutputBuffer>
-void generic_read_pixel_data(OutputBuffer& output_buffer,
-	const glurg::PixelDataBuffer& input_buffer)
-{
-	std::uint8_t magic = input_buffer.at(0);
-
-	switch (magic)
-	{
-		case 0x89:
-			read_png_pixel_data(output_buffer, input_buffer);
-			break;
-		case 'P':
-			read_pnm_pixel_data(output_buffer, input_buffer);
-			break;
-	}
-}
-
-void glurg::read_pixel_data(PixelDataBuffer& output_buffer,
-	const PixelDataBuffer& input_buffer)
-{
-	return generic_read_pixel_data(output_buffer, input_buffer);
-}
-
-void glurg::read_pixel_data(
-	ResourceBlobWriteBuffer& output_buffer, const PixelDataBuffer& input_buffer)
-{
-	return generic_read_pixel_data(output_buffer, input_buffer);
 }
