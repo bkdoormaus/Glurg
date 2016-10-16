@@ -247,11 +247,11 @@ bool glurg::TextureResourceBlobBuilder::extract(const RenderState& state)
 		texture_info->get_field_by_name("GL_TEXTURE_ALPHA_SIZE"));
 
 	set_wrap_mode(0, gl::to_texture_blob_wrap_mode(
-		texture_info->get_integer("GL_TEXTURE_WRAP_S")));
+		texture_info->get_string("GL_TEXTURE_WRAP_S")));
 	set_wrap_mode(1, gl::to_texture_blob_wrap_mode(
-		texture_info->get_integer("GL_TEXTURE_WRAP_T")));
+		texture_info->get_string("GL_TEXTURE_WRAP_T")));
 	set_wrap_mode(2, gl::to_texture_blob_wrap_mode(
-		texture_info->get_integer("GL_TEXTURE_WRAP_R")));
+		texture_info->get_string("GL_TEXTURE_WRAP_R")));
 
 	set_minification_filter(gl::to_texture_blob_zoom_filter(
 		texture_info->get_string("GL_TEXTURE_MIN_FILTER")));
