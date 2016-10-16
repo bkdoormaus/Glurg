@@ -18,7 +18,6 @@ namespace glurg
 		virtual ~Resource() = default;
 
 		virtual const ResourceBlob* get_blob() const = 0;
-		
 		virtual const ResourceFingerprint& get_fingerprint() const = 0;
 	};
 }

@@ -6,6 +6,7 @@ find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED COMPONENTS iostreams)
 find_package(Snappy REQUIRED)
 find_package(PNG REQUIRED)
+find_package(glm REQUIRED)
 pkg_search_module(Sodium REQUIRED libsodium)
 pkg_search_module(JsonCpp REQUIRED jsoncpp)
 
@@ -47,6 +48,7 @@ set(LIBGLURG_SOURCE_FILES
 	"source/resources/renderValue.cpp"
 	"source/resources/resourceBlobBuffer.cpp"
 	"source/resources/resourceFingerprint.cpp"
+	"source/resources/texture/textureResource.cpp"
 	"source/resources/texture/textureResourceBlob.cpp"
 	"source/resources/texture/textureResourceBlobBuilder.cpp"
 	"source/trace/bitmaskSignature.cpp"
@@ -77,6 +79,7 @@ target_include_directories(libglurg
 	${Boost_INCLUDE_DIRS}
 	${Snappy_INCLUDE_DIRS}
 	${PNG_INCLUDE_DIRS}
+	${GLM_INCLUDES_DIRS}
 	${Sodium_INCLUDE_DIRS}
 	${JsonCpp_INCLUDE_DIRS})
 
