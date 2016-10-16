@@ -9,6 +9,11 @@
 #include <stdio.h>
 #include "glurg/common/process.hpp"
 
+glurg::Process::Process()
+{
+	this->handle = nullptr;
+}
+
 glurg::Process::~Process()
 {
 	close();
@@ -108,6 +113,11 @@ bool glurg::Process::is_open() const
 	return this->handle != nullptr;
 }
 
+glurg::Process::Stream& glurg::Process::get_stream()
+{
+	return this->stream;
+}
+
 std::string glurg::Process::escape_string(const std::string& string)
 {
 	std::string result;
@@ -140,6 +150,7 @@ std::string glurg::Process::build_popen_string()
 	std::string result = escape_string(this->program_name);
 	for (auto& argument: this->program_arguments)
 	{
+		result.append(" ");
 		result.append(escape_string(argument));
 	}
 

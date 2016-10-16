@@ -20,8 +20,8 @@ namespace glurg
 	class Process
 	{
 	public:
-		typedef boost::iostreams::stream<boost::iostreams::file_descriptor_sink>
-			ProcessStream;
+		typedef boost::iostreams::stream<boost::iostreams::file_descriptor>
+			Stream;
 
 		enum
 		{
@@ -29,7 +29,7 @@ namespace glurg
 			mode_write
 		};
 
-		Process() = default;
+		Process();
 		~Process();
 
 		std::string get_program_name() const;
@@ -46,14 +46,14 @@ namespace glurg
 		void close();
 		bool is_open() const;
 
-		ProcessStream& get_stream();
+		Stream& get_stream();
 
 	private:
 		static std::string escape_string(const std::string& string);
 		std::string build_popen_string();
 
 		std::FILE* handle;
-		ProcessStream stream;
+		Stream stream;
 
 		std::string program_name;
 		std::vector<std::string> program_arguments;
