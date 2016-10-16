@@ -113,7 +113,7 @@ void glurg::PixelData::read_png(const glurg::PixelDataBuffer& input_buffer)
 	for (std::size_t y = 0; y < image.height; ++y)
 	{
 		auto begin = temp_buffer.get() + y * row_size;
-		auto end = begin + row_size + 1;
+		auto end = begin + row_size;
 		this->buffer.insert(this->buffer.end(), begin, end);
 	}
 
