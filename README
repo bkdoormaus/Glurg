@@ -16,7 +16,7 @@ Glurg's application logic is written in Lua and must be run with LuaJIT.
 However, the native library, libglurg, requires building using your platform's
 C++ compiler.
 
-Glurg also depends on a patched glretrace, from apitrace.
+Glurg also depends on glretrace, from apitrace.
 
 libglurg
 --------------------------------------------------------------------------------
@@ -29,12 +29,6 @@ will need to provide some dependencies:
 * [Snappy](https://github.com/google/snappy)
 * [GLM](https://github.com/g-truc/glm)
 * [JsonCpp](https://github.com/open-source-parsers/jsoncpp)
-
-glretrace
---------------------------------------------------------------------------------
-Glurg requires the patch (misc/apitrace_retrace_main.patch) to be applied. The
-patch works with apitrace 7.1. The custom glretrace executable should be used
-with Glurg.
 
 License
 ================================================================================
