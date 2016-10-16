@@ -48,7 +48,7 @@ namespace glurg
 		friend ResourceBlobWriteBuffer;
 
 	public:
-		ResourceBlobReadBuffer() = default;
+		ResourceBlobReadBuffer();
 		ResourceBlobReadBuffer(const std::uint8_t* data, std::size_t size);
 		ResourceBlobReadBuffer(ResourceBlobReadBuffer&& other);
 		~ResourceBlobReadBuffer() = default;
@@ -68,7 +68,7 @@ template <typename Type>
 void glurg::ResourceBlobWriteBuffer::push_value(const Type& type)
 {
 	const std::uint8_t* v = (const std::uint8_t*)&type;
-	this->buffer.insert(this->buffer.end(), v, v + sizeof(Type) + 1);
+	this->buffer.insert(this->buffer.end(), v, v + sizeof(Type));
 }
 
 template <typename Type>
