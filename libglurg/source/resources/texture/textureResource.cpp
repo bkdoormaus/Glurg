@@ -57,7 +57,7 @@ void glurg::TextureResource::decode_image(
 	auto p = this->blob->get_pixels();
 	for (std::size_t i = 0; i < num_pixels; ++i)
 	{
-		std::copy(p, p + this->pixel_components + 1, temp_pixel_buffer);
+		std::copy(p, p + this->pixel_components, temp_pixel_buffer);
 
 		output_buffer.insert(output_buffer.end(), p, p + output_components);
 		p += this->pixel_components;
@@ -130,6 +130,8 @@ void glurg::TextureResource::generate_fingerprint()
 			++current_feature;
 		}
 	}
+
+	this->fingerprint = fingerprint;
 }
 
 glm::vec4 glurg::TextureResource::fingerprint_region(
@@ -201,8 +203,8 @@ bool glurg::TextureResource::is_compatible_pixel_description(
 {
 	bool is_disabled =
 		(description.storage == PixelComponentDescription::storage_disabled);
-	bool is_integral = 
-		(description.storage == PixelComponentDescription::storage_integral);
+	bool is_integral = (description.storage ==
+		PixelComponentDescription::storage_unsigned_normalized);
 	bool is_byte = (description.bit_size == 8);
 
 	return (is_integral && is_byte) || is_disabled;
