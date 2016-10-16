@@ -21,12 +21,14 @@ const std::uint8_t get_char_index(char c)
 	if (result == end)
 		throw std::runtime_error("invalid base64 character");
 
-	return std::distance(begin, end);
+	return std::distance(begin, result);
 }
 
 void remove_whitespace(std::string& string)
 {
-	string.erase(std::remove_if(string.begin(), string.end(), std::isspace));
+	string.erase(
+		std::remove_if(string.begin(), string.end(), std::isspace),
+		string.end());
 }
 
 std::size_t get_decoded_length(const std::string& string)
@@ -52,6 +54,7 @@ void glurg::decode_base64(std::string input, std::vector<std::uint8_t>& blob)
 	std::size_t index = 0;
 	std::uint8_t bytes[4];
 
+	blob.reserve(decoded_length);
 	for (std::size_t i = 0; i < input.length(); i += 4)
 	{
 		for (std::size_t j = 0; j < 4; ++j)
