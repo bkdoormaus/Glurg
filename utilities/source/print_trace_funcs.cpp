@@ -14,13 +14,12 @@
 #include "glurg/trace/callSignature.hpp"
 #include "glurg/trace/events.hpp"
 #include "glurg/trace/traceFile.hpp"
-#include "glurg/trace/values.hpp"
 
 int main(int argc, const char* argv[])
 {
 	if (argc < 2)
 	{
-		std::cout << argv[1] << " <file.trace>" << std::endl;
+		std::cerr << argv[1] << " <file.trace>" << std::endl;
 
 		return 1;
 	}
@@ -63,4 +62,6 @@ int main(int argc, const char* argv[])
 
 		return 1;
 	}
+
+	return 0;
 }

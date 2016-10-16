@@ -6,3 +6,14 @@ add_executable(print_trace_funcs
 target_link_libraries(print_trace_funcs PRIVATE
 	libglurg)
 set_property(TARGET print_trace_funcs PROPERTY CXX_STANDARD 14)
+
+find_package(PNG REQUIRED)
+
+add_executable(save_image
+	"source/save_image.cpp")
+target_include_directories(save_image PRIVATE
+	${PNG_INCLUDE_DIRS})
+target_link_libraries(save_image PRIVATE
+	${PNG_LIBRARIES}
+	libglurg)
+set_property(TARGET save_image PROPERTY CXX_STANDARD 14)
