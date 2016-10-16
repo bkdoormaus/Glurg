@@ -38,7 +38,7 @@ void glurg::RenderState::populate(Stream& stream)
 	Json::CharReaderBuilder builder;
 	std::string errors;
 	
-	Json::parseFromStream(builder, stream, &this->data, errors);
+	Json::parseFromStream(builder, stream, &this->data, &errors);
 }
 
 #endif
