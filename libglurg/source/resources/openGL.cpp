@@ -151,7 +151,7 @@ int glurg::gl::to_pixel_component_description_storage_type(GLenum value)
 	if (!ValueMap::lookup(
 		glurg_storage_type, GLURG_GET_SIZE(glurg_storage_type), value, result))
 	{
-		throw std::runtime_error("unrecognized OpenGL swizzle mode");
+		throw std::runtime_error("unrecognized OpenGL storage mode");
 	}
 
 	return result;
@@ -164,7 +164,7 @@ int glurg::gl::to_pixel_component_description_storage_type(
 	if (!ValueMap::lookup(
 		glurg_storage_type, GLURG_GET_SIZE(glurg_storage_type), value, result))
 	{
-		throw std::runtime_error("unrecognized OpenGL swizzle mode");
+		throw std::runtime_error("unrecognized OpenGL storage mode");
 	}
 
 	return result;
@@ -199,7 +199,7 @@ int glurg::gl::to_texture_blob_texture_type(GLenum value)
 	if (!ValueMap::lookup(
 		glurg_texture_type, GLURG_GET_SIZE(glurg_texture_type), value, result))
 	{
-		throw std::runtime_error("unrecognized OpenGL swizzle mode");
+		throw std::runtime_error("unrecognized OpenGL texture type");
 	}
 
 	return result;
@@ -211,7 +211,7 @@ int glurg::gl::to_texture_blob_texture_type(const std::string& value)
 	if (!ValueMap::lookup(
 		glurg_texture_type, GLURG_GET_SIZE(glurg_texture_type), value, result))
 	{
-		throw std::runtime_error("unrecognized OpenGL swizzle mode");
+		throw std::runtime_error("unrecognized OpenGL texture type");
 	}
 
 	return result;
@@ -261,7 +261,7 @@ int glurg::gl::to_texture_blob_wrap_mode(GLenum value)
 	if (!ValueMap::lookup(
 		glurg_wrap_mode, GLURG_GET_SIZE(glurg_wrap_mode), value, result))
 	{
-		throw std::runtime_error("unrecognized OpenGL swizzle mode");
+		throw std::runtime_error("unrecognized OpenGL wrap mode");
 	}
 
 	return result;
@@ -271,9 +271,9 @@ int glurg::gl::to_texture_blob_wrap_mode(const std::string& value)
 {
 	int result;
 	if (!ValueMap::lookup(
-		glurg_storage_type, GLURG_GET_SIZE(glurg_storage_type), value, result))
+		glurg_wrap_mode, GLURG_GET_SIZE(glurg_wrap_mode), value, result))
 	{
-		throw std::runtime_error("unrecognized OpenGL swizzle mode");
+		throw std::runtime_error("unrecognized OpenGL wrap mode");
 	}
 
 	return result;
@@ -299,7 +299,7 @@ int glurg::gl::to_texture_blob_zoom_filter(GLenum value)
 	if (!ValueMap::lookup(
 		glurg_zoom_filter, GLURG_GET_SIZE(glurg_zoom_filter), value, result))
 	{
-		throw std::runtime_error("unrecognized OpenGL swizzle mode");
+		throw std::runtime_error("unrecognized OpenGL zoom filter");
 	}
 
 	return result;
@@ -311,7 +311,7 @@ int glurg::gl::to_texture_blob_zoom_filter(const std::string& value)
 	if (!ValueMap::lookup(
 		glurg_zoom_filter, GLURG_GET_SIZE(glurg_zoom_filter), value, result))
 	{
-		throw std::runtime_error("unrecognized OpenGL swizzle mode");
+		throw std::runtime_error("unrecognized OpenGL zoom filter");
 	}
 
 	return result;
