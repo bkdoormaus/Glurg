@@ -44,7 +44,7 @@ namespace glurg
 
 		void open(int mode);
 		void close();
-		bool is_open() const;
+		bool get_is_open() const;
 
 		Stream& get_stream();
 

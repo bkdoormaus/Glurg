@@ -26,7 +26,7 @@ std::string glurg::Process::get_program_name() const
 
 void glurg::Process::set_program_name(std::string value)
 {
-	if (is_open())
+	if (get_is_open())
 	{
 		throw std::runtime_error("cannot change program name during exeuction");
 	}
@@ -47,7 +47,7 @@ std::string glurg::Process::get_program_argument_at(std::size_t index) const
 void glurg::Process::set_program_argument_at(
 	std::size_t index, const std::string& value)
 {
-	if (is_open())
+	if (get_is_open())
 	{
 		throw std::runtime_error("cannot set program arguments during execution");
 	}
@@ -57,7 +57,7 @@ void glurg::Process::set_program_argument_at(
 
 void glurg::Process::remove_program_argument_at(std::size_t index)
 {
-	if (is_open())
+	if (get_is_open())
 	{
 		throw std::runtime_error("cannot set program arguments during execution");
 	}
@@ -67,7 +67,7 @@ void glurg::Process::remove_program_argument_at(std::size_t index)
 
 void glurg::Process::push_program_argument(const std::string& value)
 {
-	if (is_open())
+	if (get_is_open())
 	{
 		throw std::runtime_error("cannot set program arguments during execution");
 	}
@@ -108,7 +108,7 @@ void glurg::Process::close()
 	}
 }
 
-bool glurg::Process::is_open() const
+bool glurg::Process::get_is_open() const
 {
 	return this->handle != nullptr;
 }
