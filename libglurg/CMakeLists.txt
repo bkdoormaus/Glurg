@@ -7,6 +7,7 @@ find_package(Boost REQUIRED COMPONENTS iostreams)
 find_package(Snappy REQUIRED)
 find_package(PNG REQUIRED)
 find_package(glm REQUIRED)
+find_package(Lua51 REQUIRED)
 pkg_search_module(Sodium REQUIRED libsodium)
 pkg_search_module(JsonCpp REQUIRED jsoncpp)
 
@@ -14,6 +15,7 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/common/base64.hpp"
 	"include/glurg/common/fileStream.hpp"
 	"include/glurg/common/hash.hpp"
+	"include/glurg/common/lua.hpp"
 	"include/glurg/common/pixelData.hpp"
 	"include/glurg/common/process.hpp"
 	"include/glurg/common/simpleFileStream.hpp"
@@ -40,6 +42,7 @@ set(LIBGLURG_INCLUDE_FILES
 set(LIBGLURG_SOURCE_FILES
 	"source/common/base64.cpp"
 	"source/common/hash.cpp"
+	"source/common/lua.cpp"
 	"source/common/pixelData.cpp"
 	"source/common/process.cpp"
 	"source/common/simpleFileStream.cpp"
@@ -82,6 +85,7 @@ target_include_directories(libglurg
 	${Snappy_INCLUDE_DIRS}
 	${PNG_INCLUDE_DIRS}
 	${GLM_INCLUDES_DIRS}
+	${LUA_INCLUDE_DIR}
 	${Sodium_INCLUDE_DIRS}
 	${JsonCpp_INCLUDE_DIRS})
 
@@ -89,6 +93,7 @@ target_link_libraries(libglurg PUBLIC
 	${Boost_LIBRARIES} ${Boost_LDFLAGS} ${Boost_iostreams_LIBRARY}
 	${Snappy_LIBRARIES} ${Snappy_LDFLAGS}
 	${PNG_LIBRARIES}
+	${LUA_LIBRARIES}
 	${Sodium_LIBRARIES} ${Sodium_LDFLAGS}
 	${JsonCpp_LIBRARIES} ${JsonCpp_LDFLAGS})
 

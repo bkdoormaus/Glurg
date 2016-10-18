@@ -12,9 +12,8 @@ Building
 Currently, Glurg is in very early stages of development. Not much is done. See
 'develop' branch for WIP progress.
 
-Glurg's application logic is written in Lua and must be run with LuaJIT.
-However, the native library, libglurg, requires building using your platform's
-C++ compiler.
+Glurg's application logic is written in Lua. However, the native library,
+libglurg, requires building using your platform's C++ compiler.
 
 Glurg also depends on glretrace, from apitrace.
 
@@ -29,6 +28,7 @@ will need to provide some dependencies:
 * [Snappy](https://github.com/google/snappy)
 * [GLM](https://github.com/g-truc/glm)
 * [JsonCpp](https://github.com/open-source-parsers/jsoncpp)
+* [Sol](https://github.com/ThePhD/sol2/)
 
 License
 ================================================================================
