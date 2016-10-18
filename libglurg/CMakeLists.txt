@@ -69,17 +69,17 @@ set(LIBGLURG_SOURCE_FILES
 set(LIBGLURG_INCLUDE_DIRS
 	"include")
 
-add_library(libglurg SHARED
+add_library(glurg SHARED
 	${LIBGLURG_INCLUDE_FILES}
 	${LIBGLURG_SOURCE_FILES})
 
-set_target_properties(libglurg PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(glurg PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(libglurg
+target_include_directories(glurg
 	PUBLIC
 	${LIBGLURG_INCLUDE_DIRS})
 
-target_include_directories(libglurg
+target_include_directories(glurg
 	PUBLIC
 	${Boost_INCLUDE_DIRS}
 	${Snappy_INCLUDE_DIRS}
@@ -89,7 +89,7 @@ target_include_directories(libglurg
 	${Sodium_INCLUDE_DIRS}
 	${JsonCpp_INCLUDE_DIRS})
 
-target_link_libraries(libglurg PUBLIC
+target_link_libraries(glurg PUBLIC
 	${Boost_LIBRARIES} ${Boost_LDFLAGS} ${Boost_iostreams_LIBRARY}
 	${Snappy_LIBRARIES} ${Snappy_LDFLAGS}
 	${PNG_LIBRARIES}
@@ -99,4 +99,4 @@ target_link_libraries(libglurg PUBLIC
 
 add_definitions(${PNG_DEFINITIONS})
 
-set_property(TARGET libglurg PROPERTY CXX_STANDARD 14)
+set_property(TARGET glurg PROPERTY CXX_STANDARD 14)
