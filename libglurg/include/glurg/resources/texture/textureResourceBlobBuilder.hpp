@@ -7,6 +7,7 @@
 #ifndef LIBGLURG_RESOURCES_TEXTURE_TEXTURE_RESOURCE_BLOB_BUILDER_HPP
 #define LIBGLURG_RESOURCES_TEXTURE_TEXTURE_RESOURCE_BLOB_BUILDER_HPP
 
+#include "glurg/resources/openGL.hpp"
 #include "glurg/resources/resourceBlobBuilder.hpp"
 #include "glurg/resources/texture/textureResourceBlob.hpp"
 
@@ -44,8 +45,21 @@ namespace glurg
 
 		TextureResourceBlob* build();
 		bool extract(const RenderState& state);
+		bool extract(
+			GLenum data_format, GLenum data_type, const std::uint8_t* data);
 
 	private:
+		bool extract_unpacked_pixels(
+			std::size_t num_components, std::size_t component_size,
+			const std::uint8_t* data,
+			std::uint8_t* output_pixels, bool swap_red_blue);
+		bool extract_packed_pixels(
+			std::size_t num_components, std::size_t component_size,
+			GLenum data_format, const std::uint8_t* data,
+			std::uint8_t* output_pixels, bool swap_red_blue);
+		void set_uniform_pixel_component_descriptions(
+			std::size_t count, int storage, std::size_t bit_size);
+
 		void verify_state();
 		static void verify_texture_type(int texture_type);
 		static void verify_dimensions(int width, int height, int depth);

@@ -11,6 +11,7 @@
 #include "glurg/resources/openGL.hpp"
 #include "glurg/resources/renderState.hpp"
 #include "glurg/resources/renderValue.hpp"
+#include "glurg/resources/texture/pixelUnpacker.hpp"
 #include "glurg/resources/texture/textureResourceBlobBuilder.hpp"
 
 glurg::TextureResourceBlobBuilder::TextureResourceBlobBuilder()
@@ -273,6 +274,288 @@ bool glurg::TextureResourceBlobBuilder::extract(const RenderState& state)
 	return true;
 }
 
+bool glurg::TextureResourceBlobBuilder::extract(
+	GLenum data_format, GLenum data_type, const std::uint8_t* data)
+{
+	verify_texture_type(this->texture_type);
+	verify_dimensions(this->width, this->height, this->depth);
+	verify_mipmap_level(this->level);
+
+	std::size_t num_components = 0;
+	bool is_bgr = false;
+	bool is_integer = false;
+	switch (data_format)
+	{
+		case GL_RED_INTEGER:
+			is_integer = true;
+		case GL_RED:
+			num_components = 1;
+			break;
+		case GL_RG_INTEGER:
+			is_integer = true;
+		case GL_RG:
+			num_components = 2;
+			break;
+		case GL_BGR_INTEGER:
+			is_integer = true;
+		case GL_BGR:
+			is_bgr = true;
+		case GL_RGB_INTEGER:
+			is_integer = true;
+		case GL_RGB:
+			num_components = 3;
+			break;
+		case GL_BGRA_INTEGER:
+			is_integer = true;
+		case GL_BGRA:
+			is_bgr = true;
+		case GL_RGBA_INTEGER:
+			is_integer = true;
+		case GL_RGBA:
+			num_components = 4;
+			break;
+	}
+	if (num_components == 0)
+	{
+		return false;
+	}
+
+	bool is_packed = false;
+	std::size_t component_size = 0;
+	bool is_signed = false;
+	bool is_float = false;
+	switch (data_type)
+	{
+		case GL_BYTE:
+			is_signed = true;
+		case GL_UNSIGNED_BYTE:
+			component_size = 1;
+			break;
+		case GL_SHORT:
+			is_signed = true;
+		case GL_UNSIGNED_SHORT:
+			component_size = 2;
+			break;
+		case GL_INT:
+			is_signed = true;
+		case GL_FLOAT:
+			is_float = true;
+		case GL_UNSIGNED_INT:
+			component_size = 4;
+			break;
+		default:
+			is_packed = true;
+			component_size = 1;
+			break;
+	}
+
+	const std::size_t pixel_size = num_components * component_size;
+	const std::size_t plane_size = pixel_size * this->width * this->height;
+	const std::size_t data_size = plane_size * this->depth;
+	auto d = std::make_unique<std::uint8_t[]>(data_size);
+
+	bool extract_pixels_result;
+	if (is_packed)
+	{
+		extract_pixels_result = extract_packed_pixels(
+			num_components, component_size,
+			data_format, data,
+			d.get(), is_bgr);
+	}
+	else
+	{
+		extract_pixels_result = extract_unpacked_pixels(
+			num_components, component_size,
+			data,
+			d.get(), is_bgr);
+	}
+
+	if (!extract_pixels_result)
+	{
+		return false;
+	}
+
+	this->pixels = d.release();
+	this->pixels_size = data_size;
+
+	int storage_type = PixelComponentDescription::storage_none;
+	if (is_float)
+	{
+		storage_type = PixelComponentDescription::storage_float;
+	}
+	else
+	{
+		if (is_signed)
+		{
+			if (is_integer)
+			{
+				storage_type =
+					PixelComponentDescription::storage_signed_integral;
+			}
+			else
+			{
+				storage_type =
+					PixelComponentDescription::storage_signed_normalized;
+			}
+		}
+		else
+		{
+			if (is_integer)
+			{
+				storage_type =
+					PixelComponentDescription::storage_unsigned_integral;
+			}
+			else
+			{
+				storage_type =
+					PixelComponentDescription::storage_unsigned_normalized;
+			}
+		}
+	}
+	const std::size_t component_bits = component_size * 8;
+
+	set_uniform_pixel_component_descriptions(
+		num_components, storage_type, component_bits);
+
+	return true;
+}
+
+bool glurg::TextureResourceBlobBuilder::extract_unpacked_pixels(
+	std::size_t num_components, std::size_t component_size,
+	const std::uint8_t* data,
+	std::uint8_t* output_pixels, bool swap_red_blue)
+{
+	const std::size_t pixel_size = num_components * component_size;
+	const std::size_t row_size = pixel_size * this->width;
+	const std::size_t plane_size = row_size * this->height;
+
+	const std::size_t red_index = swap_red_blue ? 0 : 2;
+	const std::size_t green_index = 1;
+	const std::size_t blue_index = swap_red_blue ? 2 : 0;
+	const std::size_t alpha_index = 4;
+
+	for (std::size_t z = 0; z < this->depth; ++z)
+	{
+		auto plane = data + plane_size * z;
+		for (std::size_t y = 0; y < this->height; ++y)
+		{
+			auto row = plane + row_size * y;
+			for (std::size_t x = 0; x < this->height; ++x)
+			{
+				auto pixel = row + pixel_size * x;
+				for (std::size_t i = 0; i < component_size; ++i)
+				{
+					switch (num_components)
+					{
+						case 4:
+							output_pixels[3 * component_size + i] =
+								pixel[alpha_index * component_size + i];
+						case 3:
+							output_pixels[2 * component_size + i] =
+								pixel[blue_index * component_size + i];
+						case 2:
+							output_pixels[1 * component_size + i] =
+								pixel[green_index * component_size + i];
+						case 1:
+							output_pixels[0 * component_size + i] = 
+								pixel[red_index * component_size + i];
+							break;
+						default:
+							assert(false);
+					}
+				}
+				output_pixels += num_components;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool glurg::TextureResourceBlobBuilder::extract_packed_pixels(
+	std::size_t num_components, std::size_t component_size,
+	GLenum data_format, const std::uint8_t* data,
+	std::uint8_t* output_pixels, bool swap_red_blue)
+{
+	const PixelUnpacker* unpacker =
+		PixelUnpacker::get_pixel_fetcher(data_format);
+	if (unpacker == nullptr)
+	{
+		return false;
+	}
+
+	for (std::size_t z = 0; z < this->depth; ++z)
+	{
+		for (std::size_t y = 0; y < this->height; ++y)
+		{
+			auto row = unpacker->fetch_row(data, this->width, y);
+			for (std::size_t x = 0; x < this->width; ++x)
+			{
+				glurg::UnpackedPixel current_pixel;
+				unpacker->fetch_pixel(row, x, current_pixel);
+
+				switch (num_components)
+				{
+					case 4:
+						output_pixels[3] = current_pixel.alpha;
+					case 3:
+						output_pixels[2] = swap_red_blue ?
+							current_pixel.red : current_pixel.blue;
+					case 2:
+						output_pixels[1] = current_pixel.green;
+					case 1:
+						output_pixels[0] = swap_red_blue ?
+							current_pixel.blue : current_pixel.red;
+						break;
+					default:
+						assert(false);
+				}
+
+				output_pixels += num_components;
+			}
+		}
+	}
+
+	return true;
+}
+
+void
+glurg::TextureResourceBlobBuilder::set_uniform_pixel_component_descriptions(
+	std::size_t count, int storage, std::size_t bit_size)
+{
+	this->red_component.swizzle = PixelComponentDescription::swizzle_red;
+	this->red_component.storage = PixelComponentDescription::storage_disabled;
+	this->red_component.bit_size = 0;
+	this->green_component.swizzle = PixelComponentDescription::swizzle_green;
+	this->green_component.storage = PixelComponentDescription::storage_disabled;
+	this->green_component.bit_size = 0;
+	this->blue_component.swizzle = PixelComponentDescription::swizzle_blue;
+	this->blue_component.storage = PixelComponentDescription::storage_disabled;
+	this->blue_component.bit_size = 0;
+	this->alpha_component.swizzle = PixelComponentDescription::swizzle_alpha;
+	this->alpha_component.storage = PixelComponentDescription::storage_disabled;
+	this->alpha_component.bit_size = 0;
+
+	switch (count)
+	{
+		case 4:
+			this->alpha_component.bit_size = bit_size;
+			this->alpha_component.storage = storage;
+		case 3:
+			this->blue_component.bit_size = bit_size;
+			this->blue_component.storage = storage;
+		case 2:
+			this->green_component.bit_size = bit_size;
+			this->green_component.storage = storage;
+		case 1:
+			this->red_component.bit_size = bit_size;
+			this->red_component.storage = storage;
+			break;
+		default:
+			assert(false);
+	}
+}
+
 void glurg::TextureResourceBlobBuilder::write_pixel_component_description(
 	const PixelComponentDescription& description,
 	ResourceBlobWriteBuffer& buffer)
@@ -371,7 +654,7 @@ void glurg::TextureResourceBlobBuilder::verify_pixel_component_description(
 		case PixelComponentDescription::storage_signed_normalized:
 		case PixelComponentDescription::storage_unsigned_normalized:
 		case PixelComponentDescription::storage_float:
-		case PixelComponentDescription::storage_integral:
+		case PixelComponentDescription::storage_signed_integral:
 		case PixelComponentDescription::storage_unsigned_integral:
 			break;
 		default:
