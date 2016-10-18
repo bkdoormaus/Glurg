@@ -204,7 +204,7 @@ const ValueMap glurg_storage_type[] =
 		glurg::PixelComponentDescription::storage_unsigned_normalized),
 	GLURG_EMIT_ENTRY(GL_FLOAT, glurg::PixelComponentDescription::storage_float),
 	GLURG_EMIT_ENTRY(GL_INT,
-		glurg::PixelComponentDescription::storage_integral),
+		glurg::PixelComponentDescription::storage_signed_integral),
 	GLURG_EMIT_ENTRY(GL_UNSIGNED_INT,
 		glurg::PixelComponentDescription::storage_unsigned_integral)
 };

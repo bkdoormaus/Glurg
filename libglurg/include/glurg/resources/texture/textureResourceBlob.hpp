@@ -35,7 +35,7 @@ namespace glurg
 			storage_signed_normalized,
 			storage_unsigned_normalized,
 			storage_float,
-			storage_integral,
+			storage_signed_integral,
 			storage_unsigned_integral
 		};
 		int storage;
