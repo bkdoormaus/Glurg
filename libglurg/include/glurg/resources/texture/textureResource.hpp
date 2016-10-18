@@ -18,7 +18,7 @@ namespace glurg
 	class PixelComponentDescription;
 	class TextureResourceBlob;
 
-	class TextureResource
+	class TextureResource : public glurg::Resource
 	{
 	public:
 		static const std::uint8_t FINGERPRINT_ID = 0x01;
