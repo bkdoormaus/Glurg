@@ -4,11 +4,20 @@
 //
 // Copyright 2016 [bk]door.maus
 
-#include "glurg/common/lua.hpp"
 #include <sol.hpp>
+#include <glm/vec4.hpp>
+#include "glurg/common/lua.hpp"
 #include "glurg/common/fileStream.hpp"
+#include "glurg/common/hash.hpp"
+#include "glurg/common/process.hpp"
 #include "glurg/common/simpleFileStream.hpp"
 #include "glurg/common/snappyAdapter.hpp"
+#include "glurg/resources/renderState.hpp"
+#include "glurg/resources/resourceBlob.hpp"
+#include "glurg/resources/resourceFingerprint.hpp"
+#include "glurg/resources/texture/textureResource.hpp"
+#include "glurg/resources/texture/textureResourceBlob.hpp"
+#include "glurg/resources/texture/textureResourceBlobBuilder.hpp"
 #include "glurg/trace/bitmaskSignature.hpp"
 #include "glurg/trace/call.hpp"
 #include "glurg/trace/callSignature.hpp"
@@ -22,9 +31,10 @@
 extern "C" int luaopen_glurg(lua_State* L)
 {
 	sol::state_view state(L);
-	sol::table glurg = state.create_named_table("glurg");
+	sol::table glurg = state.create_table();
 
 	sol::table common = glurg.create_named("common");
+	common["hash_data"] = &glurg::Hash::hash;
 	common.new_usertype<glurg::FileStream>(
 		"FileStream",
 		"write", &glurg::FileStream::write,
@@ -33,6 +43,30 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"is_end_of_file", sol::readonly_property(&glurg::FileStream::get_is_end_of_file),
 		"get_mode", sol::readonly_property(&glurg::FileStream::get_mode),
 		"close", &glurg::FileStream::close);
+	common.new_usertype<glurg::Hash>(
+		"Hash",
+		"to_string", &glurg::Hash::to_string,
+		"get_bytes", &glurg::Hash::get_bytes);
+	common.new_usertype<glm::ivec4>(
+		"Pixel",
+		sol::constructors<sol::types<>>(),
+		"r", &glm::ivec4::x,
+		"g", &glm::ivec4::y,
+		"b", &glm::ivec4::z,
+		"a", &glm::ivec4::a);
+	common.new_usertype<glurg::Process>(
+		"Process",
+		sol::constructors<sol::types<>>(),
+		"program_name", sol::property(&glurg::Process::get_program_name, &glurg::Process::set_program_name),
+		"num_arguments", sol::readonly_property(&glurg::Process::get_num_program_arguments),
+		"get_program_argument_at", &glurg::Process::get_program_argument_at,
+		"set_program_argument_at", &glurg::Process::set_program_argument_at,
+		"remove_program_argument_at", &glurg::Process::remove_program_argument_at,
+		"push_program_argument", &glurg::Process::push_program_argument,
+		"open", &glurg::Process::open,
+		"close", &glurg::Process::close,
+		"is_open", &glurg::Process::get_is_open,
+		"stream", &glurg::Process::get_stream);
 	common.new_usertype<glurg::SimpleFileStream>(
 		"SimpleFileStream",
 		sol::constructors<sol::types<>>(),
@@ -44,6 +78,107 @@ extern "C" int luaopen_glurg(lua_State* L)
 		sol::constructors<sol::types<>>(),
 		sol::base_classes, sol::bases<glurg::SimpleFileStream, glurg::FileStream>());
 
+	sol::table resources = glurg.create_named("resources");
+	resources["is_compatible_texture_blob"] = &glurg::TextureResource::is_compatible_texture_blob;
+	resources.new_usertype<glurg::RenderState>(
+		"RenderState",
+		sol::constructors<sol::types<>>(),
+		"get", &glurg::RenderState::get,
+		"populate", &glurg::RenderState::populate<glurg::Process::Stream>);
+	resources.new_usertype<glurg::Resource>(
+		"Resource",
+		"blob", sol::readonly_property(&glurg::Resource::get_blob),
+		"fingerprint", sol::readonly_property(&glurg::Resource::get_fingerprint));
+	resources.new_usertype<glurg::ResourceFingerprint>(
+		"Fingerprint",
+		sol::constructors<sol::types<>>(),
+		"to_string", &glurg::ResourceFingerprint::to_string,
+		"from_string", &glurg::ResourceFingerprint::from_string,
+		"id", sol::readonly_property(&glurg::ResourceFingerprint::get_id),
+		"features", sol::readonly_property(&glurg::ResourceFingerprint::get_num_features));
+	resources.new_usertype<glurg::TextureResource>(
+		"Texture",
+		sol::constructors<sol::types<const glurg::TextureResourceBlob*>>(),
+		"fetch_pixel", &glurg::TextureResource::fetch_pixel,
+		"blob", sol::readonly_property(&glurg::Resource::get_blob),
+		"fingerprint", sol::readonly_property(&glurg::Resource::get_fingerprint));
+	resources.new_usertype<glurg::TextureResourceBlob>(
+		"TextureBlob",
+		"red_description", sol::readonly_property(&glurg::TextureResourceBlob::get_red_description),
+		"green_description", sol::readonly_property(&glurg::TextureResourceBlob::get_green_description),
+		"blue_description", sol::readonly_property(&glurg::TextureResourceBlob::get_blue_description),
+		"alpha_description", sol::readonly_property(&glurg::TextureResourceBlob::get_alpha_description),
+		"get_wrap_mode", &glurg::TextureResourceBlob::get_wrap_mode,
+		"type", sol::readonly_property(&glurg::TextureResourceBlob::get_texture_type),
+		"minification_filter", sol::readonly_property(&glurg::TextureResourceBlob::get_minification_filter),
+		"magnification_filter", sol::readonly_property(&glurg::TextureResourceBlob::get_magnification_filter),
+		"width", sol::readonly_property(&glurg::TextureResourceBlob::get_width),
+		"height", sol::readonly_property(&glurg::TextureResourceBlob::get_height),
+		"depth", sol::readonly_property(&glurg::TextureResourceBlob::get_depth),
+		"mipmap_level", sol::readonly_property(&glurg::TextureResourceBlob::get_mipmap_level),
+		"pixels", sol::readonly_property(&glurg::TextureResourceBlob::get_pixels),
+		"pixels_size", sol::readonly_property(&glurg::TextureResourceBlob::get_pixels_size),
+		"hash", sol::readonly_property(&glurg::TextureResourceBlob::get_hash),
+		"data", sol::readonly_property(&glurg::TextureResourceBlob::get_data),
+		"size", sol::readonly_property(&glurg::TextureResourceBlob::get_size));
+	resources.new_usertype<glurg::TextureResourceBlobBuilder>(
+		"TextureBlobBuilder",
+		"set_red_description", &glurg::TextureResourceBlobBuilder::set_red_description,
+		"set_green_description", &glurg::TextureResourceBlobBuilder::set_green_description,
+		"set_blue_description", &glurg::TextureResourceBlobBuilder::set_blue_description,
+		"set_alpha_description", &glurg::TextureResourceBlobBuilder::set_alpha_description,
+		"set_set_wrap_mode", &glurg::TextureResourceBlobBuilder::set_wrap_mode,
+		"set_type", &glurg::TextureResourceBlobBuilder::set_texture_type,
+		"set_minification_filter", &glurg::TextureResourceBlobBuilder::set_minification_filter,
+		"set_magnification_filter", &glurg::TextureResourceBlobBuilder::set_magnification_filter,
+		"set_width", &glurg::TextureResourceBlobBuilder::set_width,
+		"set_height", &glurg::TextureResourceBlobBuilder::set_height,
+		"set_depth", &glurg::TextureResourceBlobBuilder::set_depth,
+		"set_mipmap_level", &glurg::TextureResourceBlobBuilder::set_mipmap_level,
+		"set_pixel_data", &glurg::TextureResourceBlobBuilder::set_pixel_data,
+		"set_binding_point", &glurg::TextureResourceBlobBuilder::set_binding_point,
+		"build", &glurg::TextureResourceBlobBuilder::build,
+		"extract_from_state", (bool (glurg::TextureResourceBlobBuilder::*)(const glurg::RenderState&))(&glurg::TextureResourceBlobBuilder::extract),
+		"extract_from_call_args", (bool (glurg::TextureResourceBlobBuilder::*)(GLenum, GLenum, const std::uint8_t*))(&glurg::TextureResourceBlobBuilder::extract));
+	sol::table texture = resources.create_named("texture");
+	texture["swizzle_red"] = glurg::PixelComponentDescription::swizzle_red;
+	texture["swizzle_green"] = glurg::PixelComponentDescription::swizzle_green;
+	texture["swizzle_blue"] = glurg::PixelComponentDescription::swizzle_blue;
+	texture["swizzle_alpha"] = glurg::PixelComponentDescription::swizzle_alpha;
+	texture["swizzle_zero"] = glurg::PixelComponentDescription::swizzle_zero;
+	texture["swizzle_one"] = glurg::PixelComponentDescription::swizzle_one;
+	texture["storage_none"] = glurg::PixelComponentDescription::storage_none;
+	texture["storage_disabled"] = glurg::PixelComponentDescription::storage_disabled;
+	texture["storage_signed_normalized"] = glurg::PixelComponentDescription::storage_signed_normalized;
+	texture["storage_unsigned_normalized"] = glurg::PixelComponentDescription::storage_unsigned_normalized;
+	texture["storage_float"] = glurg::PixelComponentDescription::storage_float;
+	texture["storage_signed_integral"] = glurg::PixelComponentDescription::storage_signed_integral;
+	texture["storage_unsigned_integral"] = glurg::PixelComponentDescription::storage_unsigned_integral;
+	texture["wrap_none"] = glurg::TextureResourceBlob::wrap_none;
+	texture["wrap_border_clamp"] = glurg::TextureResourceBlob::wrap_border_clamp;
+	texture["wrap_edge_clamp"] = glurg::TextureResourceBlob::wrap_edge_clamp;
+	texture["wrap_repeat"] = glurg::TextureResourceBlob::wrap_repeat;
+	texture["wrap_mirror_edge_clamp"] = glurg::TextureResourceBlob::wrap_mirror_edge_clamp;
+	texture["wrap_mirror_repeat"] = glurg::TextureResourceBlob::wrap_mirror_repeat;
+	texture["type_none"] = glurg::TextureResourceBlob::type_none;
+	texture["type_1d"] = glurg::TextureResourceBlob::type_1d;
+	texture["type_2d"] = glurg::TextureResourceBlob::type_2d;
+	texture["type_3d"] = glurg::TextureResourceBlob::type_3d;
+	texture["type_cube_map_positive_x"] = glurg::TextureResourceBlob::type_cube_map_positive_x;
+	texture["type_cube_map_negative_x"] = glurg::TextureResourceBlob::type_cube_map_negative_x;
+	texture["type_cube_map_positive_y"] = glurg::TextureResourceBlob::type_cube_map_positive_y;
+	texture["type_cube_map_negative_y"] = glurg::TextureResourceBlob::type_cube_map_negative_y;
+	texture["type_cube_map_positive_z"] = glurg::TextureResourceBlob::type_cube_map_positive_z;
+	texture["type_cube_map_negative_z"] = glurg::TextureResourceBlob::type_cube_map_negative_z;
+	texture["type_1d_array"] = glurg::TextureResourceBlob::type_1d_array;
+	texture["type_2d_array"] = glurg::TextureResourceBlob::type_2d_array;
+	texture["filter_none"] = glurg::TextureResourceBlob::filter_none;
+	texture["filter_nearest"] = glurg::TextureResourceBlob::filter_nearest;
+	texture["filter_linear"] = glurg::TextureResourceBlob::filter_linear;
+	texture["filter_nearest_mipmap_nearest"] = glurg::TextureResourceBlob::filter_nearest_mipmap_nearest;
+	texture["filter_linear_mipmap_nearest"] = glurg::TextureResourceBlob::filter_linear_mipmap_nearest;
+	texture["filter_nearest_mipmap_linear"] = glurg::TextureResourceBlob::filter_nearest_mipmap_linear;
+	texture["filter_linear_mipmap_linear"] = glurg::TextureResourceBlob::filter_linear_mipmap_linear;
 
 	sol::table trace = glurg.create_named("trace");
 	trace["read_event"] = &glurg::trace::Event::read;
@@ -121,5 +256,7 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"size", sol::readonly_property(&glurg::trace::Array::get_size),
 		"get_value_at", &glurg::trace::Array::get_value_at);
 
-	return 0;
+	sol::stack::push(L, glurg);
+
+	return 1;
 }
