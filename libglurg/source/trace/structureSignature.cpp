@@ -14,6 +14,11 @@ glurg::trace::StructureSignature::get_id() const
 	return this->id;
 }
 
+std::string glurg::trace::StructureSignature::get_name() const
+{
+	return this->name;
+}
+
 std::size_t glurg::trace::StructureSignature::get_num_fields() const
 {
 	return fields.size();
