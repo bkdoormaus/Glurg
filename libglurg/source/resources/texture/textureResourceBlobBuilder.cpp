@@ -289,11 +289,13 @@ bool glurg::TextureResourceBlobBuilder::extract(
 		case GL_RED_INTEGER:
 			is_integer = true;
 		case GL_RED:
+		case GL_ALPHA:
 			num_components = 1;
 			break;
 		case GL_RG_INTEGER:
 			is_integer = true;
 		case GL_RG:
+		case GL_LUMINANCE_ALPHA:
 			num_components = 2;
 			break;
 		case GL_BGR_INTEGER:
