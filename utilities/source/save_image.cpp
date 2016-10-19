@@ -55,7 +55,7 @@ int main(int argc, const char* argv[])
 		std::cout << "image fingerprint: " << fingerprint << std::endl;
 
 		glurg::PixelDataBuffer buffer;
-		resource.decode_image(4, buffer);
+		resource.decode_image(buffer);
 
 		png_image image = { 0 };
 		image.version = PNG_IMAGE_VERSION;
