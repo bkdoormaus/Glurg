@@ -95,6 +95,12 @@ extern "C" int luaopen_glurg(lua_State* L)
 
 	sol::table resources = glurg.create_named("resources");
 	resources["is_compatible_texture_blob"] = &glurg::TextureResource::is_compatible_texture_blob;
+	resources.new_usertype<glurg::PixelComponentDescription>(
+		"PixelComponentDescription",
+		sol::constructors<sol::types<>>(),
+		"swizzle", &glurg::PixelComponentDescription::swizzle,
+		"storage", &glurg::PixelComponentDescription::storage,
+		"bit_size", &glurg::PixelComponentDescription::bit_size);
 	resources.new_usertype<glurg::RenderState>(
 		"RenderState",
 		sol::constructors<sol::types<>>(),

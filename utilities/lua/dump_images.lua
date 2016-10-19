@@ -27,7 +27,7 @@ local function extract_texture(call)
 	local GL_TEXTURE_2D =
 		target.signature:get_value_by_name("GL_TEXTURE_2D"):to_integer()
 	if target.value:to_integer() ~= GL_TEXTURE_2D then
-		return false
+		return false, "not texture 2D"
 	end
 
 	local textureBuilder = glurg.resources.TextureBlobBuilder.new()
@@ -56,19 +56,25 @@ local function extract_texture(call)
 			local pixelBuffer = glurg.common.PixelDataBuffer.new()
 			local outputPng = glurg.common.PixelDataBuffer.new()
 
-			textureResource:decode_image(4, pixelBuffer)
+			textureResource:decode_image(pixelBuffer)
 			glurg.common.pixel_data_buffer_to_png(
 				pixelBuffer, textureBlob.width, textureBlob.height, 4,
 				outputPng)
 
 			local fileStream = glurg.common.SimpleFileStream.new()
-			fileStream:open(
-				args[2] .. "/" .. hash .. ".png",
-				glurg.common.file_mode_write)
+			local filename = args[2] .. "/" .. hash .. ".png"
+			fileStream:open(filename, glurg.common.file_mode_write)
 			fileStream:write(outputPng.data, outputPng.size)
+			fileStream:close()
+
+			print("saved:", filename)
 
 			textures[hash] = true
+		else
+			return false, "already saved image"
 		end
+	else
+		return false, "contains non-pixel data"
 	end
 
 	return true
@@ -79,8 +85,12 @@ while not stream.is_end_of_file do
 	if event.type == glurg.trace.event_leave then
 		local call = trace:get_call(event.call_index)
 		if call.signature.name == "glTexImage2D" then
-			if extract_texture(call) then
-				print("texture at call:", event.call_index)
+			local r, m = extract_texture(call)
+			if r then
+				print("extracted texture at call:", event.call_index)
+			else
+				print("couldn't extract texture at call:", event.call_index)
+				print("reason:", m)
 			end
 		end
 		trace:delete_call(call)
