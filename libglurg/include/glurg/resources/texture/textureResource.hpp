@@ -30,8 +30,8 @@ namespace glurg
 
 		glm::ivec4 fetch_pixel(std::size_t x, std::size_t y);
 
-		void decode_image(
-			std::size_t output_components, PixelDataBuffer& output_buffer);
+		// Decodes to RGBA.
+		void decode_image(PixelDataBuffer& output_buffer);
 
 		const ResourceBlob* get_blob() const;
 		const ResourceFingerprint& get_fingerprint() const;

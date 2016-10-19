@@ -41,25 +41,39 @@ glm::ivec4 glurg::TextureResource::fetch_pixel(std::size_t x, std::size_t y)
 	return result;
 }
 
-void glurg::TextureResource::decode_image(
-	std::size_t output_components, PixelDataBuffer& output_buffer)
+void glurg::TextureResource::decode_image(PixelDataBuffer& output_buffer)
 {
-	if (output_components > 4)
-	{
-		throw std::runtime_error("invalid number of output components");
-	}
+	const std::size_t output_components = 4;
 
 	const std::size_t num_pixels =
 		this->blob->get_width() * this->blob->get_height();
 	output_buffer.reserve(num_pixels * output_components);
 
-	std::uint8_t temp_pixel_buffer[4] = { 0, 0, 0, 255 };
 	auto p = this->blob->get_pixels();
 	for (std::size_t i = 0; i < num_pixels; ++i)
 	{
-		std::copy(p, p + this->pixel_components, temp_pixel_buffer);
+		switch (this->pixel_components)
+		{
+			case 1:
+				output_buffer.push_back(p[0]);
+				output_buffer.push_back(p[0]);
+				output_buffer.push_back(p[0]);
+				output_buffer.push_back(255);
+				break;
+			case 2:
+				output_buffer.insert(output_buffer.end(), p, p + 2);
+				output_buffer.push_back(0);
+				output_buffer.push_back(255);
+				break;
+			case 3:
+				output_buffer.insert(output_buffer.end(), p, p + 3);
+				output_buffer.push_back(255);
+				break;
+			case 4:
+				output_buffer.insert(output_buffer.end(), p, p + 4);
+				break;
+		}
 
-		output_buffer.insert(output_buffer.end(), p, p + output_components);
 		p += this->pixel_components;
 	}
 }
