@@ -302,6 +302,8 @@ bool glurg::TextureResourceBlobBuilder::extract(
 			is_integer = true;
 		case GL_BGR:
 			is_bgr = true;
+			num_components = 3;
+			break;
 		case GL_RGB_INTEGER:
 			is_integer = true;
 		case GL_RGB:
@@ -311,6 +313,8 @@ bool glurg::TextureResourceBlobBuilder::extract(
 			is_integer = true;
 		case GL_BGRA:
 			is_bgr = true;
+			num_components = 4;
+			break;
 		case GL_RGBA_INTEGER:
 			is_integer = true;
 		case GL_RGBA:
@@ -428,23 +432,19 @@ bool glurg::TextureResourceBlobBuilder::extract_unpacked_pixels(
 	std::uint8_t* output_pixels, bool swap_red_blue)
 {
 	const std::size_t pixel_size = num_components * component_size;
-	const std::size_t row_size = pixel_size * this->width;
-	const std::size_t plane_size = row_size * this->height;
 
-	const std::size_t red_index = swap_red_blue ? 0 : 2;
+	const std::size_t red_index = swap_red_blue ? 2 : 0;
 	const std::size_t green_index = 1;
-	const std::size_t blue_index = swap_red_blue ? 2 : 0;
-	const std::size_t alpha_index = 4;
+	const std::size_t blue_index = swap_red_blue ? 0 : 2;
+	const std::size_t alpha_index = 3;
 
+	auto pixel = data;
 	for (std::size_t z = 0; z < this->depth; ++z)
 	{
-		auto plane = data + plane_size * z;
 		for (std::size_t y = 0; y < this->height; ++y)
 		{
-			auto row = plane + row_size * y;
-			for (std::size_t x = 0; x < this->height; ++x)
+			for (std::size_t x = 0; x < this->width; ++x)
 			{
-				auto pixel = row + pixel_size * x;
 				for (std::size_t i = 0; i < component_size; ++i)
 				{
 					switch (num_components)
@@ -466,7 +466,8 @@ bool glurg::TextureResourceBlobBuilder::extract_unpacked_pixels(
 							assert(false);
 					}
 				}
-				output_pixels += num_components;
+				pixel += pixel_size;
+				output_pixels += pixel_size;
 			}
 		}
 	}
