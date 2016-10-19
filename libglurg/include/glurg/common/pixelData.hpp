@@ -39,6 +39,12 @@ namespace glurg
 
 		static void read(const PixelDataBuffer& input_buffer, PixelData& data);
 
+		// Expects input_buffer to be equivalent to format_integer.
+		static bool to_png(
+			const PixelDataBuffer& input_buffer,
+			std::size_t width, std::size_t height, std::size_t num_components,
+			PixelDataBuffer& output_buffer);
+
 	private:
 		void read_png(const glurg::PixelDataBuffer& input_buffer);
 		void read_pnm(const glurg::PixelDataBuffer& input_buffer);

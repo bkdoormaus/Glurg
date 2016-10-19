@@ -58,6 +58,47 @@ void glurg::PixelData::read(
 	}
 }
 
+bool glurg::PixelData::to_png(
+	const PixelDataBuffer& input_buffer,
+	std::size_t width, std::size_t height, std::size_t num_components,
+	PixelDataBuffer& output_buffer)
+{
+	png_image image = { 0 };
+	image.version = PNG_IMAGE_VERSION;
+	image.width = width;
+	image.height = height;
+	switch (num_components)
+	{
+		case 4:
+			image.format = PNG_FORMAT_RGBA;
+			break;
+		case 3:
+			image.format = PNG_FORMAT_RGB;
+			break;
+		case 2:
+			image.format = PNG_FORMAT_GA;
+			break;
+		case 1:
+			image.format = PNG_FORMAT_GRAY;
+			break;
+		default:
+			return false;
+	}
+
+	std::size_t bytes = 0;
+	if (!png_image_write_to_memory(
+		&image, nullptr, &bytes, 
+		false, &input_buffer[0], num_components * width, nullptr))
+	{
+		return false;
+	}
+
+	output_buffer.resize(bytes);
+	return png_image_write_to_memory(
+		&image, &output_buffer[0], &bytes,
+		false, &input_buffer[0], num_components * width, nullptr);
+}
+
 void glurg::PixelData::read_png(const glurg::PixelDataBuffer& input_buffer)
 {
 	png_image image = { 0 };
