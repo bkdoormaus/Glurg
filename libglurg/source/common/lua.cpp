@@ -9,6 +9,7 @@
 #include "glurg/common/lua.hpp"
 #include "glurg/common/fileStream.hpp"
 #include "glurg/common/hash.hpp"
+#include "glurg/common/pixelData.hpp"
 #include "glurg/common/process.hpp"
 #include "glurg/common/simpleFileStream.hpp"
 #include "glurg/common/snappyAdapter.hpp"
@@ -28,6 +29,12 @@
 #include "glurg/trace/traceFile.hpp"
 #include "glurg/trace/values.hpp"
 
+const std::uint8_t* get_pixel_data_buffer_data(
+	const glurg::PixelDataBuffer& buffer)
+{
+	return &buffer.at(0);
+}
+
 extern "C" int luaopen_glurg(lua_State* L)
 {
 	sol::state_view state(L);
@@ -35,6 +42,9 @@ extern "C" int luaopen_glurg(lua_State* L)
 
 	sol::table common = glurg.create_named("common");
 	common["hash_data"] = &glurg::Hash::hash;
+	common["file_mode_read"] = glurg::FileStream::mode_read;
+	common["file_mode_write"] = glurg::FileStream::mode_write;
+	common["pixel_data_buffer_to_png"] = &glurg::PixelData::to_png;
 	common.new_usertype<glurg::FileStream>(
 		"FileStream",
 		"write", &glurg::FileStream::write,
@@ -54,6 +64,11 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"g", &glm::ivec4::y,
 		"b", &glm::ivec4::z,
 		"a", &glm::ivec4::a);
+	common.new_usertype<glurg::PixelDataBuffer>(
+		"PixelDataBuffer",
+		sol::constructors<sol::types<>>(),
+		"data", sol::readonly_property(&get_pixel_data_buffer_data),
+		"size", sol::readonly_property(&glurg::PixelDataBuffer::size));
 	common.new_usertype<glurg::Process>(
 		"Process",
 		sol::constructors<sol::types<>>(),
@@ -100,6 +115,7 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"Texture",
 		sol::constructors<sol::types<const glurg::TextureResourceBlob*>>(),
 		"fetch_pixel", &glurg::TextureResource::fetch_pixel,
+		"decode_image", &glurg::TextureResource::decode_image,
 		"blob", sol::readonly_property(&glurg::Resource::get_blob),
 		"fingerprint", sol::readonly_property(&glurg::Resource::get_fingerprint));
 	resources.new_usertype<glurg::TextureResourceBlob>(
@@ -127,8 +143,8 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"set_green_description", &glurg::TextureResourceBlobBuilder::set_green_description,
 		"set_blue_description", &glurg::TextureResourceBlobBuilder::set_blue_description,
 		"set_alpha_description", &glurg::TextureResourceBlobBuilder::set_alpha_description,
-		"set_set_wrap_mode", &glurg::TextureResourceBlobBuilder::set_wrap_mode,
-		"set_type", &glurg::TextureResourceBlobBuilder::set_texture_type,
+		"set_wrap_mode", &glurg::TextureResourceBlobBuilder::set_wrap_mode,
+		"set_texture_type", &glurg::TextureResourceBlobBuilder::set_texture_type,
 		"set_minification_filter", &glurg::TextureResourceBlobBuilder::set_minification_filter,
 		"set_magnification_filter", &glurg::TextureResourceBlobBuilder::set_magnification_filter,
 		"set_width", &glurg::TextureResourceBlobBuilder::set_width,
@@ -182,6 +198,8 @@ extern "C" int luaopen_glurg(lua_State* L)
 
 	sol::table trace = glurg.create_named("trace");
 	trace["read_event"] = &glurg::trace::Event::read;
+	trace["event_enter"] = glurg::trace::Event::event_enter;
+	trace["event_leave"] = glurg::trace::Event::event_leave;
 	trace.new_usertype<glurg::trace::BitmaskSignature>(
 		"BitmaskSignature",
 		"id", sol::readonly_property(&glurg::trace::BitmaskSignature::get_id),
