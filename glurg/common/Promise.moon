@@ -16,7 +16,7 @@ class TypePromise
 		return @\get_value_type! == @name
 
 	check: =>
-		return get_match!, "expected '#{@name}', got #{@get_value_type!}"
+		return @\get_match!, "expected '#{@name}', got #{@get_value_type!}"
 
 Promise = {}
 Promise.IsNumber = class extends TypePromise
@@ -44,7 +44,7 @@ Promise.IsUserdata = class extends TypePromise
 		@name = "userdata"
 		@value = value
 
-Promise.IsObject = class extends TypePromise
+Promise.IsClass = class extends TypePromise
 	new: (value, object) =>
 		@value = value
 		@name = object.__name
@@ -63,7 +63,7 @@ Promise.keep = (message, ...) ->
 	for i = 1, args.n
 		promise_kept, reason = check_promise(args[i])
 		if not promise_kept
-			error "#{message}: #{reason}"
+			error "#{message}: #{reason}", 2
 
 Promise.keep_any = (message, ...) ->
 	args = { n: select("#", ...), ... }
@@ -71,6 +71,6 @@ Promise.keep_any = (message, ...) ->
 		promise_kept, reason = check_promise(args[i])
 		if promise_kept
 			return
-	error "#{message}: no promises kept"
+	error "#{message}: no promises kept", 2
 
 return Promise
