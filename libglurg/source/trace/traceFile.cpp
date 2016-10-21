@@ -41,18 +41,12 @@ glurg::trace::TraceFile::get_structure_signature_registry()
 
 void glurg::trace::TraceFile::register_backtrace(std::uint32_t id)
 {
-	if (!has_backtrace(id))
-	{
-		this->backtraces.push_back(id);
-	}
+	this->backtraces.insert(id);
 }
 
 bool glurg::trace::TraceFile::has_backtrace(std::uint32_t id) const
 {
-	auto begin = this->backtraces.begin();
-	auto end = this->backtraces.end();
-
-	return std::find(begin, end, id) != end;
+	return this->backtraces.find(id) != this->backtraces.end();
 }
 
 glurg::trace::Call* glurg::trace::TraceFile::create_call(CallSignature::ID id)

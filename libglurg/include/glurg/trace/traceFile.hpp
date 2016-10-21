@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include "glurg/trace/bitmaskSignature.hpp"
 #include "glurg/trace/call.hpp"
@@ -73,7 +74,7 @@ namespace glurg { namespace trace
 		EnumerationSignatureRegistry enumerationSignatures;
 		StructureSignatureRegistry structureSignatures;
 
-		std::vector<std::uint32_t> backtraces;
+		std::unordered_set<std::uint32_t> backtraces;
 
 		std::unordered_map<Value::Type, Value::ReadFunction> read_value_functions;
 
