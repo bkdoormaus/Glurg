@@ -15,7 +15,6 @@
 #include "glurg/common/snappyAdapter.hpp"
 #include "glurg/resources/renderState.hpp"
 #include "glurg/resources/resourceBlob.hpp"
-#include "glurg/resources/resourceFingerprint.hpp"
 #include "glurg/resources/texture/textureResource.hpp"
 #include "glurg/resources/texture/textureResourceBlob.hpp"
 #include "glurg/resources/texture/textureResourceBlobBuilder.hpp"
@@ -108,22 +107,13 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"populate", &glurg::RenderState::populate<glurg::Process::Stream>);
 	resources.new_usertype<glurg::Resource>(
 		"Resource",
-		"blob", sol::readonly_property(&glurg::Resource::get_blob),
-		"fingerprint", sol::readonly_property(&glurg::Resource::get_fingerprint));
-	resources.new_usertype<glurg::ResourceFingerprint>(
-		"Fingerprint",
-		sol::constructors<sol::types<>>(),
-		"to_string", &glurg::ResourceFingerprint::to_string,
-		"from_string", &glurg::ResourceFingerprint::from_string,
-		"id", sol::readonly_property(&glurg::ResourceFingerprint::get_id),
-		"features", sol::readonly_property(&glurg::ResourceFingerprint::get_num_features));
+		"blob", sol::readonly_property(&glurg::Resource::get_blob));
 	resources.new_usertype<glurg::TextureResource>(
 		"Texture",
 		sol::constructors<sol::types<const glurg::TextureResourceBlob*>>(),
 		"fetch_pixel", &glurg::TextureResource::fetch_pixel,
 		"decode_image", &glurg::TextureResource::decode_image,
-		"blob", sol::readonly_property(&glurg::Resource::get_blob),
-		"fingerprint", sol::readonly_property(&glurg::Resource::get_fingerprint));
+		"blob", sol::readonly_property(&glurg::Resource::get_blob));
 	resources.new_usertype<glurg::TextureResourceBlob>(
 		"TextureBlob",
 		"red_description", sol::readonly_property(&glurg::TextureResourceBlob::get_red_description),

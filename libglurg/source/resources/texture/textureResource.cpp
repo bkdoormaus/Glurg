@@ -8,7 +8,6 @@
 #include <cassert>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/color_space.hpp>
-#include "glurg/resources/resourceFingerprint.hpp"
 #include "glurg/resources/texture/textureResource.hpp"
 #include "glurg/resources/texture/textureResourceBlob.hpp"
 
@@ -21,8 +20,6 @@ glurg::TextureResource::TextureResource(const TextureResourceBlob* blob)
 
 	this->blob = blob;
 	this->pixel_components = get_num_components(blob);
-
-	generate_fingerprint();
 }
 
 glm::ivec4 glurg::TextureResource::fetch_pixel(std::size_t x, std::size_t y)
@@ -83,12 +80,6 @@ const glurg::ResourceBlob* glurg::TextureResource::get_blob() const
 	return this->blob;
 }
 
-const glurg::ResourceFingerprint&
-glurg::TextureResource::get_fingerprint() const
-{
-	return this->fingerprint;
-}
-
 bool glurg::TextureResource::is_compatible_texture_blob(
 	const TextureResourceBlob* blob)
 {
@@ -109,76 +100,6 @@ bool glurg::TextureResource::is_compatible_texture_blob(
 		(r && !g && !b && !a);
 
 	return is_compatible && is_linear_layout;
-}
-
-void glurg::TextureResource::generate_fingerprint()
-{
-	ResourceFingerprint fingerprint(
-		FINGERPRINT_ID, FINGERPRINT_REGIONS_X * FINGERPRINT_REGIONS_Y);
-
-	const std::size_t region_width =
-		this->blob->get_width() / FINGERPRINT_REGIONS_X;
-	const std::size_t region_height =
-		this->blob->get_height() / FINGERPRINT_REGIONS_Y;
-	std::size_t current_feature = 0;
-	for (std::size_t i = 0; i < FINGERPRINT_REGIONS_X; ++i)
-	{
-		for (std::size_t j = 0; j < FINGERPRINT_REGIONS_Y; ++j)
-		{
-			glm::vec4 result = fingerprint_region(
-				i * region_width, j * region_height,
-				region_width, region_height);
-
-			ResourceFingerprint::Feature feature;
-			auto p = glm::value_ptr(result);
-			std::uint64_t shift = 0;
-			for (std::size_t k = 0; k < 4; ++k)
-			{
-				feature.integer |=
-					((std::uint64_t)(p[k] * FINGERPRINT_COLOR_MAX_VALUE)) <<
-					shift;
-				shift += FINGERPRINT_COLOR_BITS;
-			}
-
-			fingerprint.set_feature(current_feature, feature);
-			++current_feature;
-		}
-	}
-
-	this->fingerprint = fingerprint;
-}
-
-glm::vec4 glurg::TextureResource::fingerprint_region(
-	std::size_t x, std::size_t y,
-	std::size_t width, std::size_t height)
-{
-	const std::size_t row_length =
-		this->pixel_components * this->blob->get_width();
-	const double num_pixels_reciprocal = 1.0 / (width * height);
-
-	glm::dvec3 average_hsv(0.0, 0.0, 0.0);
-	double average_alpha = 0.0;
-	for (std::size_t j = 0; j < height; ++j)
-	{
-		auto row = this->blob->get_pixels() + (row_length * j);
-		for (std::size_t i = 0; i < width; ++i)
-		{
-			glm::dvec4 pixel(0.0, 0.0, 0.0, 0.0);
-			auto p = glm::value_ptr(pixel);
-
-			for (std::size_t k = 0; k < this->pixel_components; ++k)
-			{
-				p[k] = *(row++) * (1.0 / 255.0);
-			}
-
-			auto hsv = glm::hsvColor(glm::dvec3(pixel.r, pixel.g, pixel.b));
-			average_hsv += hsv * num_pixels_reciprocal;
-			average_alpha += pixel.a * num_pixels_reciprocal;
-		}
-	}
-
-	return
-		glm::vec4(average_hsv.x, average_hsv.y, average_hsv.z, average_alpha);
 }
 
 std::size_t glurg::TextureResource::get_num_components(

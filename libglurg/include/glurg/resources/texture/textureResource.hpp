@@ -21,10 +21,6 @@ namespace glurg
 	class TextureResource : public glurg::Resource
 	{
 	public:
-		static const std::uint8_t FINGERPRINT_ID = 0x01;
-		static const std::size_t FINGERPRINT_REGIONS_X = 4;
-		static const std::size_t FINGERPRINT_REGIONS_Y = 4;
-
 		TextureResource(const TextureResourceBlob* blob);
 		~TextureResource() = default;
 
@@ -34,19 +30,10 @@ namespace glurg
 		void decode_image(PixelDataBuffer& output_buffer);
 
 		const ResourceBlob* get_blob() const;
-		const ResourceFingerprint& get_fingerprint() const;
 
 		static bool is_compatible_texture_blob(const TextureResourceBlob* blob);
 
 	private:
-		static const std::size_t FINGERPRINT_COLOR_BITS = 16;
-		static const std::size_t FINGERPRINT_COLOR_MAX_VALUE =
-			(1 << FINGERPRINT_COLOR_BITS) - 1;
-		void generate_fingerprint();
-		glm::vec4 fingerprint_region(
-			std::size_t x, std::size_t y,
-			std::size_t width, std::size_t height);
-
 		static std::size_t get_num_components(const TextureResourceBlob* blob);
 		static bool is_compatible_pixel_description(
 			const PixelComponentDescription& description);
@@ -55,7 +42,6 @@ namespace glurg
 
 		std::size_t pixel_components;
 		const TextureResourceBlob* blob;
-		ResourceFingerprint fingerprint;
 	};
 }
 

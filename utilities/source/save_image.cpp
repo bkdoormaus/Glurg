@@ -13,7 +13,6 @@
 #include "glurg/common/pixelData.hpp"
 #include "glurg/common/process.hpp"
 #include "glurg/resources/renderState.hpp"
-#include "glurg/resources/resourceFingerprint.hpp"
 #include "glurg/resources/texture/textureResource.hpp"
 #include "glurg/resources/texture/textureResourceBlob.hpp"
 #include "glurg/resources/texture/textureResourceBlobBuilder.hpp"
@@ -51,8 +50,8 @@ int main(int argc, const char* argv[])
 		auto blob = builder.build();
 		glurg::TextureResource resource(blob);
 
-		auto fingerprint = resource.get_fingerprint().to_string();
-		std::cout << "image fingerprint: " << fingerprint << std::endl;
+		auto hash = blob->get_hash().to_string();
+		std::cout << "image hash: " << hash << std::endl;
 
 		glurg::PixelDataBuffer buffer;
 		resource.decode_image(buffer);
