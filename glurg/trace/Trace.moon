@@ -23,12 +23,18 @@ class Trace
 		e = glurg.trace.read_event(@_traceFile, @_fileStream)
 		@is_end_of_file = @_fileStream.is_end_of_file
 
-		return Event(e)
+		return Event(e, @\get_call(e.call_index + 1))
 
 	get_call: (call_index) =>
 		Promise.keep("call_index", Promise.IsNumber(call_index))
 		Promise.keep("call_index", call_index >= 1)
 
 		return @_traceFile\get_call(call_index - 1)
+
+	delete_call: (call_index) =>
+		Promise.keep("call_index", Promise.IsNumber(call_index))
+		Promise.keep("call_index", call_index >= 1)
+
+		@_traceFile\delete_call(@_traceFile\get_call(call_index - 1))
 
 return Trace
