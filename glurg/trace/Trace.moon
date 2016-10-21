@@ -5,7 +5,7 @@
 -- Copyright 2016 [bk]door.maus
 
 glurg = require "glurg"
---local Event = require "glurg.trace.Event"
+Event = require "glurg.trace.Event"
 Types = require "glurg.common.Types"
 
 class Trace
@@ -23,11 +23,11 @@ class Trace
 		e = glurg.trace.read_event(@_traceFile, @_fileStream)
 		@is_end_of_file = @_fileStream.is_end_of_file
 
-		return e
+		return Event(e)
 
-	get_call: (call_no) =>
-		Types.match("call_no", Types.Number(call_no))
+	get_call: (call_index) =>
+		Types.match("call_index", Types.Number(call_index))
 
-		return @_traceFile\get_call(call_no)
+		return @_traceFile\get_call(call_index)
 
 return Trace

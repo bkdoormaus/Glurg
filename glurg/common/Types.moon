@@ -33,6 +33,11 @@ Types.Table = class extends BaseType
 		@name = "table"
 		@value = value
 
+Types.Userdata = class extends BaseType
+	new: (value) =>
+		@name = "userdata"
+		@value = value
+
 Types.Object = class extends BaseType
 	new: (value, object) =>
 		@value = value
@@ -46,5 +51,12 @@ Types.match = (message, ...) ->
 	for i = 1, args.n
 		if args[i].match == false then
 			error "#{message}: expected '#{args[i].name}', got #{type(args[i].value)}"
+
+Types.any = (message, ...) ->
+	args = { n: select("#", ...), ... }
+	for i = 1, args.n
+		if args[i].match then
+			return
+	error "#{message}: type mismatch"
 
 return Types
