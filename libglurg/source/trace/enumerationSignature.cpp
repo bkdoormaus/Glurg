@@ -33,6 +33,20 @@ glurg::trace::EnumerationSignature::get_value_by_name(
 	return nullptr;
 }
 
+std::string glurg::trace::EnumerationSignature::get_name_by_value(
+	const Value* value) const
+{
+	for (auto& i: this->values)
+	{
+		if (i.second.get()->is_equal(*value))
+		{
+			return i.first;
+		}
+	}
+
+	throw std::runtime_error("value not represented by enumeration");
+}
+
 void glurg::trace::EnumerationSignature::set_value_by_name(
 	const std::string& name, std::shared_ptr<Value> value)
 {

@@ -217,7 +217,8 @@ extern "C" int luaopen_glurg(lua_State* L)
 	trace.new_usertype<glurg::trace::EnumerationSignature>(
 		"EnumerationSignature",
 		"id", sol::readonly_property(&glurg::trace::EnumerationSignature::get_id),
-		"get_value_by_name", &glurg::trace::EnumerationSignature::get_value_by_name);
+		"get_value_by_name", &glurg::trace::EnumerationSignature::get_value_by_name,
+		"get_name_by_value", &glurg::trace::EnumerationSignature::get_name_by_value);
 	trace.new_usertype<glurg::trace::Event>(
 		"Event",
 		"type", sol::readonly_property(&glurg::trace::Event::get_type),

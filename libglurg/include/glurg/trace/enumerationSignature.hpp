@@ -33,6 +33,7 @@ namespace glurg { namespace trace
 		ID get_id() const;
 
 		const Value* get_value_by_name(const std::string& name) const;
+		std::string get_name_by_value(const Value* value) const;
 
 		static EnumerationSignature* read(
 			ID id, TraceFile& trace, FileStream& stream);
