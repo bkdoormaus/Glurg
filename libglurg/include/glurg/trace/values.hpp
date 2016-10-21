@@ -74,6 +74,10 @@ namespace glurg { namespace trace
 		virtual const Structure* to_structure() const;
 
 		virtual std::shared_ptr<Value> clone() const = 0;
+
+		virtual bool is_equal(const Value& value) const = 0;
+		bool operator ==(const Value& other) const;
+		bool operator !=(const Value& other) const;
 	};
 
 	class Array
@@ -101,6 +105,7 @@ namespace glurg { namespace trace
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;
+		bool is_equal(const Value& value) const override;
 
 		bool to_boolean() const override;
 
@@ -124,6 +129,7 @@ namespace glurg { namespace trace
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;
+		bool is_equal(const Value& value) const override;
 		
 		std::int32_t to_signed_integer() const override;
 		std::uint32_t to_unsigned_integer() const override;
@@ -148,6 +154,7 @@ namespace glurg { namespace trace
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;
+		bool is_equal(const Value& value) const override;
 		
 		float to_single() const override;
 		double to_double() const override;
@@ -172,6 +179,7 @@ namespace glurg { namespace trace
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;
+		bool is_equal(const Value& value) const override;
 		
 		std::string to_string() const override;
 		Blob to_blob() const override;
@@ -196,6 +204,7 @@ namespace glurg { namespace trace
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;
+		bool is_equal(const Value& value) const override;
 
 		Blob to_blob() const override;
 
@@ -221,6 +230,7 @@ namespace glurg { namespace trace
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;
+		bool is_equal(const Value& value) const override;
 
 		Enumeration to_enumeration() const override;
 
@@ -241,6 +251,7 @@ namespace glurg { namespace trace
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;
+		bool is_equal(const Value& value) const override;
 
 		Bitmask to_bitmask() const override;
 
@@ -261,6 +272,7 @@ namespace glurg { namespace trace
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;
+		bool is_equal(const Value& value) const override;
 
 		const Array* to_array() const override;
 
@@ -280,6 +292,7 @@ namespace glurg { namespace trace
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;
+		bool is_equal(const Value& value) const override;
 
 		const Structure* to_structure() const override;
 
@@ -298,6 +311,7 @@ namespace glurg { namespace trace
 
 		HandleValue() = default;
 		explicit HandleValue(std::uint32_t value);
+		bool is_equal(const Value& value) const override;
 
 		Type get_type() const override;
 		std::shared_ptr<Value> clone() const override;

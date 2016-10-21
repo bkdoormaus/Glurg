@@ -88,6 +88,16 @@ const glurg::trace::Structure* glurg::trace::Value::to_structure() const
 	throw std::runtime_error("invalid conversion to structure");
 }
 
+bool glurg::trace::Value::operator ==(const Value& other) const
+{
+	return this->is_equal(other);
+}
+
+bool glurg::trace::Value::operator !=(const Value& other) const
+{
+	return !(*this == other);
+}
+
 std::size_t glurg::trace::Array::get_size() const
 {
 	return this->values.size();
@@ -131,6 +141,13 @@ std::shared_ptr<glurg::trace::Value> glurg::trace::BoolValue::clone() const
 	return std::shared_ptr<Value>(new BoolValue(this->value));
 }
 
+bool glurg::trace::BoolValue::is_equal(const Value& value) const
+{
+	// Since 'true'/'false' are encoded in the type, comparing types is
+	// equivalent to comparing the value.
+	return value.get_type() == this->get_type();
+}
+
 bool glurg::trace::BoolValue::to_boolean() const
 {
 	return this->value;
@@ -170,6 +187,15 @@ std::shared_ptr<glurg::trace::Value> glurg::trace::IntegerValue::clone() const
 	return std::shared_ptr<Value>(new IntegerValue(this->value));
 }
 
+bool glurg::trace::IntegerValue::is_equal(const Value& value) const
+{
+	return this->get_type() == value.get_type() &&
+		((this->get_type() == POSITIVE_NUMBER &&
+			this->to_unsigned_integer() == value.to_unsigned_integer()) ||
+		(this->get_type() == NEGATIVE_NUMBER &&
+			this->to_signed_integer() == value.to_signed_integer()));
+}
+
 std::int32_t glurg::trace::IntegerValue::to_signed_integer() const
 {
 	return (std::int32_t)this->value;
@@ -197,6 +223,12 @@ glurg::trace::FloatingPointValue::FloatingPointValue(Type type, double value)
 {
 	this->type = type;
 	this->value = value;
+}
+
+bool glurg::trace::FloatingPointValue::is_equal(const Value& value) const
+{
+	return this->get_type() == value.get_type() &&
+		this->to_double() == value.to_double();
 }
 
 glurg::trace::Value::Type glurg::trace::FloatingPointValue::get_type() const
@@ -254,6 +286,12 @@ std::shared_ptr<glurg::trace::Value> glurg::trace::StringValue::clone() const
 	return std::shared_ptr<Value>(new StringValue(this->value));
 }
 
+bool glurg::trace::StringValue::is_equal(const Value& value) const
+{
+	return this->get_type() == value.get_type() &&
+		this->to_string() == value.to_string();
+}
+
 std::string glurg::trace::StringValue::to_string() const
 {
 	return this->value;
@@ -306,6 +344,29 @@ std::shared_ptr<glurg::trace::Value> glurg::trace::BlobValue::clone() const
 	return std::shared_ptr<Value>(new BlobValue(this->length, this->data));
 }
 
+bool glurg::trace::BlobValue::is_equal(const Value& value) const
+{
+	if (this->get_type() == value.get_type())
+	{
+		if (this->get_type() == NULL_POINTER)
+		{
+			return true;
+		}
+		else
+		{
+			auto b1 = this->to_blob();
+			auto b2 = value.to_blob();
+
+			return b1.length == b2.length &&
+				std::memcmp(b1.data, b2.data, b1.length) == 0;
+		}
+	}
+	else
+	{
+		return false;
+	}
+}
+
 glurg::trace::Blob glurg::trace::BlobValue::to_blob() const
 {
 	return { this->data, this->length };
@@ -337,6 +398,20 @@ glurg::trace::EnumerationValue::EnumerationValue(
 {
 	this->value.signature = signature;
 	this->value.value = value;
+}
+
+bool glurg::trace::EnumerationValue::is_equal(const Value& value) const
+{
+	if (this->get_type() == value.get_type())
+	{
+		auto o = value.to_enumeration();
+		return this->value.signature->get_id() == o.signature->get_id() &&
+			this->value.value->is_equal(*o.value.get());
+	}
+	else
+	{
+		return false;
+	}
 }
 
 glurg::trace::Value::Type glurg::trace::EnumerationValue::get_type() const
@@ -389,6 +464,21 @@ std::shared_ptr<glurg::trace::Value> glurg::trace::BitmaskValue::clone() const
 		new BitmaskValue(this->value.signature, this->value.value));
 }
 
+bool glurg::trace::BitmaskValue::is_equal(const Value& value) const
+{
+	if (this->get_type() == value.get_type())
+	{
+		auto o = value.to_bitmask();
+
+		return this->value.signature->get_id() == o.signature->get_id() &&
+			this->value.value == o.value;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 glurg::trace::Bitmask glurg::trace::BitmaskValue::to_bitmask() const
 {
 	return this->value;
@@ -426,6 +516,29 @@ glurg::trace::Value::Type glurg::trace::ArrayValue::get_type() const
 std::shared_ptr<glurg::trace::Value> glurg::trace::ArrayValue::clone() const
 {
 	return std::shared_ptr<Value>(new ArrayValue(&this->value));
+}
+
+bool glurg::trace::ArrayValue::is_equal(const Value& value) const
+{
+	if (this->get_type() == value.get_type())
+	{
+		auto o = value.to_array();
+		if (o->get_size() == this->value.get_size())
+		{
+			for (std::size_t i = 0; i < this->value.get_size(); ++i)
+			{
+				if (!this->value.get_value_at(i)->is_equal(
+					*this->value.get_value_at(i)))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 const glurg::trace::Array* glurg::trace::ArrayValue::to_array() const
@@ -477,6 +590,34 @@ std::shared_ptr<glurg::trace::Value> glurg::trace::StructureValue::clone() const
 	return std::shared_ptr<Value>(other);
 }
 
+bool glurg::trace::StructureValue::is_equal(const Value& value) const
+{
+	if (this->get_type() == value.get_type())
+	{
+		auto o = value.to_structure();
+		if (this->value->get_signature()->get_id() ==
+			o->get_signature()->get_id())
+		{
+			const std::size_t num_fields =
+				this->value->get_signature()->get_num_fields();
+			for (std::size_t i = 0; i < num_fields; ++i)
+			{
+				auto f1 = this->value->get_field_by_index(i);
+				auto f2 = o->get_field_by_index(i);
+
+				if ((f1 == nullptr && f2 != nullptr) || !f1->is_equal(*f2))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 const glurg::trace::Structure*
 glurg::trace::StructureValue::to_structure() const
 {
@@ -507,6 +648,12 @@ glurg::trace::Value* glurg::trace::StructureValue::read_structure(
 glurg::trace::HandleValue::HandleValue(std::uint32_t value)
 {
 	this->value = value;
+}
+
+bool glurg::trace::HandleValue::is_equal(const Value& value) const
+{
+	return this->get_type() == value.get_type() && 
+		this->to_handle() == value.to_handle();
 }
 
 glurg::trace::Value::Type glurg::trace::HandleValue::get_type() const
