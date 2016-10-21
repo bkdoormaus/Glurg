@@ -12,7 +12,7 @@ Building
 Currently, Glurg is in very early stages of development. Not much is done. See
 'develop' branch for WIP progress.
 
-Glurg's application logic is written in Lua. However, the native library,
+Glurg's application logic is written in MoonScript. However, the native library,
 libglurg, requires building using your platform's C++ compiler.
 
 Glurg also depends on glretrace, from apitrace.
@@ -28,6 +28,8 @@ will need to provide some dependencies:
 * [Snappy](https://github.com/google/snappy)
 * [GLM](https://github.com/g-truc/glm)
 * [JsonCpp](https://github.com/open-source-parsers/jsoncpp)
+* [MoonScript](https://github.com/leafo/moonscript)
+* [Lua 5.1](https://www.lua.org/versions.html#5.1) or [LuaJIT](http://luajit.org/)
 * [Sol](https://github.com/ThePhD/sol2/)
 
 License
