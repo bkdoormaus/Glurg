@@ -13,6 +13,21 @@
 #include "glurg/trace/traceFile.hpp"
 #include "glurg/trace/values.hpp"
 
+const glurg::trace::Value::Type glurg::trace::BoolValue::FALSE_BOOLEAN;
+const glurg::trace::Value::Type glurg::trace::BoolValue::TRUE_BOOLEAN;
+const glurg::trace::Value::Type glurg::trace::IntegerValue::NEGATIVE_NUMBER;
+const glurg::trace::Value::Type glurg::trace::IntegerValue::POSITIVE_NUMBER;
+const glurg::trace::Value::Type glurg::trace::FloatingPointValue::FLOAT;
+const glurg::trace::Value::Type glurg::trace::FloatingPointValue::DOUBLE;
+const glurg::trace::Value::Type glurg::trace::StringValue::STRING;
+const glurg::trace::Value::Type glurg::trace::BlobValue::NULL_POINTER;
+const glurg::trace::Value::Type glurg::trace::BlobValue::BLOB;
+const glurg::trace::Value::Type glurg::trace::EnumerationValue::ENUMERATION;
+const glurg::trace::Value::Type glurg::trace::BitmaskValue::BITMASK;
+const glurg::trace::Value::Type glurg::trace::ArrayValue::ARRAY;
+const glurg::trace::Value::Type glurg::trace::StructureValue::STRUCTURE;
+const glurg::trace::Value::Type glurg::trace::HandleValue::HANDLE;
+
 bool glurg::trace::Value::to_boolean() const
 {
 	throw std::runtime_error("invalid conversion to bool");
