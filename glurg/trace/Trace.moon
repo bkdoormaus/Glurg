@@ -6,7 +6,7 @@
 
 glurg = require "glurg"
 Event = require "glurg.trace.Event"
-Types = require "glurg.common.Types"
+Promise = require "glurg.common.Promise"
 
 class Trace
 	new: (filename) =>
@@ -26,8 +26,9 @@ class Trace
 		return Event(e)
 
 	get_call: (call_index) =>
-		Types.match("call_index", Types.Number(call_index))
+		Promise.keep("call_index", Promise.IsNumber(call_index))
+		Promise.keep("call_index", call_index >= 1)
 
-		return @_traceFile\get_call(call_index)
+		return @_traceFile\get_call(call_index - 1)
 
 return Trace
