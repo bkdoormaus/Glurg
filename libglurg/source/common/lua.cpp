@@ -279,7 +279,7 @@ extern "C" int luaopen_glurg(lua_State* L)
 	values["float"] = glurg::trace::FloatingPointValue::FLOAT;
 	values["double"] = glurg::trace::FloatingPointValue::DOUBLE;
 	values["string"] = glurg::trace::StringValue::STRING;
-	values["blob"] = glurg::trace::BlobValue::NULL_POINTER;
+	values["null_pointer"] = glurg::trace::BlobValue::NULL_POINTER;
 	values["blob"] = glurg::trace::BlobValue::BLOB;
 	values["enumeration"] = glurg::trace::EnumerationValue::ENUMERATION;
 	values["bitmask"] = glurg::trace::BitmaskValue::BITMASK;
