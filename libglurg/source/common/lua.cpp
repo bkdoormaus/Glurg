@@ -264,11 +264,28 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"to_bitmask", &glurg::trace::Value::to_bitmask,
 		"to_array", &glurg::trace::Value::to_array,
 		"to_structure", &glurg::trace::Value::to_structure,
+		"to_handle", &glurg::trace::Value::to_structure,
 		"clone", &glurg::trace::Value::clone);
 	trace.new_usertype<glurg::trace::Array>(
 		"Array",
 		"size", sol::readonly_property(&glurg::trace::Array::get_size),
 		"get_value_at", &glurg::trace::Array::get_value_at);
+
+	sol::table values = trace.create_named("values");
+	values["false_boolean"] = glurg::trace::BoolValue::FALSE_BOOLEAN;
+	values["true_boolean"] = glurg::trace::BoolValue::TRUE_BOOLEAN;
+	values["negative_integer"] = glurg::trace::IntegerValue::NEGATIVE_NUMBER;
+	values["positive_integer"] = glurg::trace::IntegerValue::POSITIVE_NUMBER;
+	values["float"] = glurg::trace::FloatingPointValue::FLOAT;
+	values["double"] = glurg::trace::FloatingPointValue::DOUBLE;
+	values["string"] = glurg::trace::StringValue::STRING;
+	values["blob"] = glurg::trace::BlobValue::NULL_POINTER;
+	values["blob"] = glurg::trace::BlobValue::BLOB;
+	values["enumeration"] = glurg::trace::EnumerationValue::ENUMERATION;
+	values["bitmask"] = glurg::trace::BitmaskValue::BITMASK;
+	values["array"] = glurg::trace::ArrayValue::ARRAY;
+	values["structure"] = glurg::trace::StructureValue::STRUCTURE;
+	values["handle"] = glurg::trace::HandleValue::HANDLE;
 
 	sol::stack::push(L, glurg);
 
