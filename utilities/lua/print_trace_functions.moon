@@ -8,7 +8,7 @@ Trace = require "glurg.trace.Trace"
 
 Args = { ... }
 if #Args < 2
-	io.stderr\write("print_trace_functions.moon <file.trace> <function>\n")
+	io.stderr\write("print_trace_functions.moon <file.trace> <functions...>\n")
 
 	return 1
 
@@ -30,9 +30,13 @@ print_call = (call, comment) ->
 		io.stdout\write(" // #{comment}")
 	io.stdout\write("\n")
 
+Funcs = {}
+for i = 2, #Args
+	Funcs[Args[i]] = true
+
 trace = Trace(Args[1])
 while not trace.is_end_of_file
 	event = trace\next_event!
-	if event.type == 'leave' and event.call.signature.name == Args[2]
+	if event.type == 'leave' and Funcs[event.call.signature.name]
 		print_call(event.call, event.call_index)
 		trace\delete_call(event.call_index)
