@@ -33,6 +33,8 @@ namespace glurg { namespace trace
 		ID get_id() const;
 
 		const Value* get_value_by_name(const std::string& name) const;
+
+		bool has_value(const Value* value) const;
 		std::string get_name_by_value(const Value* value) const;
 
 		static EnumerationSignature* read(

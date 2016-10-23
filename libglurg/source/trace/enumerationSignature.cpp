@@ -33,6 +33,20 @@ glurg::trace::EnumerationSignature::get_value_by_name(
 	return nullptr;
 }
 
+bool glurg::trace::EnumerationSignature::has_value(
+	const Value* value) const
+{
+	for (auto& i: this->values)
+	{
+		if (i.second.get()->is_equal(*value))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 std::string glurg::trace::EnumerationSignature::get_name_by_value(
 	const Value* value) const
 {
