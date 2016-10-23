@@ -50,6 +50,11 @@ class EnumerationSignature
 		
 		return Value(@_signature\get_value_by_name(name))
 
+	has_value: (value) =>
+		Promise.keep("value", Promise.IsClass(value, Value))
+
+		return @_signature\has_value(value._value)
+
 	get_name_by_value: (value) =>
 		Promise.keep("value", Promise.IsClass(value, Value))
 
@@ -62,7 +67,8 @@ class Enumeration
 		@_enumeration = enumeration
 		@signature = EnumerationSignature(enumeration.signature)
 		@value = Value(enumeration.value)
-		@value_name = @signature\get_name_by_value(@value)
+		if @signature\has_value(@value)
+			@value_name = @signature\get_name_by_value(@value)
 
 class Array
 	new: (array) =>
@@ -108,6 +114,22 @@ class Value
 			when 'structure' then error "not yet implemented"
 			when 'handle' then @_value\to_handle!
 			else assert(false, "value type is invalid")
+
+	to_string: =>
+		query = @\query!
+		result = switch @type
+			when 'nil' then "NULL"
+			when 'blob' then "ubyte[#{query.length}]"
+			when 'enumeration' 
+				if not query.value_name then
+					tostring(query.value\query!)
+				else
+					query.value_name
+			when 'bitmask' then string.format("0x%08x", query.value)
+			when 'array' then string.format('object[%d]', #query)
+			when 'structure' then 'struct {}'
+			else tostring(query)
+		return result
 
 	clone: =>
 		return Value(@_value\clone!)

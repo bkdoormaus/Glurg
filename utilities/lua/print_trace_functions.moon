@@ -20,19 +20,7 @@ print_call = (call, comment) ->
 		io.stdout\write(" = ")
 
 		value = call\get_argument_by_index(i)
-		local result
-		switch value.type
-			when 'nil' then result = "NULL"
-			when 'blob' then result = "char[#{value\query!.length}]"
-			when 'enumeration'
-				result = value\query!.value_name
-			when 'bitmask'
-				result = string.format("0x%08x", value\query!.value)
-			when 'array'
-				result = string.format('object[%d]', #value\query!)
-			when 'structure' then result = 'struct'
-			else result = value\query!
-		io.stdout\write(tostring(result))
+		io.stdout\write(value\to_string!)
 
 		if i != call.num_arguments
 			io.stdout\write(", ")
