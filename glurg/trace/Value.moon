@@ -76,7 +76,7 @@ class Array
 
 		@_array = array
 		for i = 1, array.size
-			@[i] = Value(array)
+			@[i] = Value(array\get_value_at(i - 1))
 
 class Value
 	new: (value) =>
@@ -126,7 +126,8 @@ class Value
 				else
 					query.value_name
 			when 'bitmask' then string.format("0x%08x", query.value)
-			when 'array' then string.format('object[%d]', #query)
+			when 'array'
+				"[%s]"\format(table.concat([i\to_string! for i in *query], ", "))
 			when 'structure' then 'struct {}'
 			else tostring(query)
 		return result
