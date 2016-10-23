@@ -140,7 +140,7 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"set_blue_description", &glurg::TextureResourceBlobBuilder::set_blue_description,
 		"set_alpha_description", &glurg::TextureResourceBlobBuilder::set_alpha_description,
 		"set_wrap_mode", &glurg::TextureResourceBlobBuilder::set_wrap_mode,
-		"set_texture_type", &glurg::TextureResourceBlobBuilder::set_texture_type,
+		"set_type", &glurg::TextureResourceBlobBuilder::set_texture_type,
 		"set_minification_filter", &glurg::TextureResourceBlobBuilder::set_minification_filter,
 		"set_magnification_filter", &glurg::TextureResourceBlobBuilder::set_magnification_filter,
 		"set_width", &glurg::TextureResourceBlobBuilder::set_width,
@@ -151,7 +151,7 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"set_binding_point", &glurg::TextureResourceBlobBuilder::set_binding_point,
 		"build", &glurg::TextureResourceBlobBuilder::build,
 		"extract_from_state", (bool (glurg::TextureResourceBlobBuilder::*)(const glurg::RenderState&))(&glurg::TextureResourceBlobBuilder::extract),
-		"extract_from_call_args", (bool (glurg::TextureResourceBlobBuilder::*)(GLenum, GLenum, const std::uint8_t*))(&glurg::TextureResourceBlobBuilder::extract));
+		"extract_from_call", (bool (glurg::TextureResourceBlobBuilder::*)(GLenum, GLenum, const std::uint8_t*))(&glurg::TextureResourceBlobBuilder::extract));
 	sol::table texture = resources.create_named("texture");
 	texture["swizzle_red"] = glurg::PixelComponentDescription::swizzle_red;
 	texture["swizzle_green"] = glurg::PixelComponentDescription::swizzle_green;
