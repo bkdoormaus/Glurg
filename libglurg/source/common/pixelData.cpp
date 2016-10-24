@@ -4,8 +4,11 @@
 //
 // Copyright 2016 [bk]door.maus
 
+#include <cassert>
+#include <cstdio>
 #include <stdexcept>
 #include <png.h>
+#include <glm/gtc/type_ptr.hpp>
 #include "glurg/common/pixelData.hpp"
 
 glurg::PixelData::PixelData()
@@ -14,7 +17,7 @@ glurg::PixelData::PixelData()
 
 	this->width = 0;
 	this->height = 0;
-	this->components = 0;
+	this->num_components = 0;
 }
 
 int glurg::PixelData::get_component_format() const
@@ -39,11 +42,12 @@ std::size_t glurg::PixelData::get_height() const
 
 std::size_t glurg::PixelData::get_num_components() const
 {
-	return this->components;
+	return this->num_components;
 }
 
 void glurg::PixelData::read(
-	const glurg::PixelDataBuffer& input_buffer, glurg::PixelData& data)
+	const glurg::PixelDataBuffer& input_buffer, glurg::PixelData& data,
+	bool normalize)
 {
 	std::uint8_t magic = input_buffer.at(0);
 
@@ -53,7 +57,7 @@ void glurg::PixelData::read(
 			data.read_png(input_buffer);
 			break;
 		case 'P':
-			data.read_pnm(input_buffer);
+			data.read_pnm(input_buffer, normalize);
 			break;
 	}
 }
@@ -163,12 +167,152 @@ void glurg::PixelData::read_png(const glurg::PixelDataBuffer& input_buffer)
 	this->format = format_integer;
 	this->width = image.width;
 	this->height = image.height;
-	this->components = components;
+	this->num_components = components;
 }
 
-void glurg::PixelData::read_pnm(const glurg::PixelDataBuffer& input_buffer)
+void glurg::PixelData::read_pnm_pixel(
+	const std::uint8_t* input, std::size_t count, glm::vec4& pixel)
 {
-	// TODO
-	// apitrace uses an extended NetPBM format
-	throw std::runtime_error("not yet implemented");
+	assert(count >= 1 && count <= 4);
+
+	pixel.r = 0.0f;
+	pixel.g = 0.0f;
+	pixel.b = 0.0f;
+	pixel.a = 0.0f;
+
+	auto p = glm::value_ptr(pixel);
+	auto d = (float*)input;
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		p[i] = d[i];
+	}
+}
+
+void glurg::PixelData::read_pnm_pixel(
+	const std::uint8_t* input, std::size_t count, glm::ivec4& pixel)
+{
+	assert(count >= 1 && count <= 4);
+
+	pixel.r = 0;
+	pixel.g = 0;
+	pixel.b = 0;
+	pixel.a = 0;
+
+	auto p = glm::value_ptr(pixel);
+	for (std::size_t i = 0; i < count; ++i)
+	{
+		p[i] = input[i];
+	}
+}
+
+void glurg::PixelData::pnm_next_line(const std::uint8_t*& input)
+{
+	while (*input++ != '\n')
+		continue;
+
+	++input;
+}
+
+const std::uint8_t* glurg::PixelData::read_pnm_header(
+	const glurg::PixelDataBuffer& input_buffer)
+{
+	switch (input_buffer.at(1))
+	{
+		case '5':
+			this->num_components = 1;
+			this->format = format_integer;
+			break;
+		case '6':
+			this->num_components = 3;
+			this->format = format_integer;
+			break;
+		case 'f':
+			this->num_components = 1;
+			this->format = format_float;
+			break;
+		case 'F':
+			this->num_components = 3;
+			this->format = format_float;
+			break;
+		case 'X':
+			this->num_components = 4;
+			this->format = format_float;
+			break;
+		default:
+			throw std::runtime_error("invalid PNM header");
+	}
+
+	const std::uint8_t* pnm_data = &input_buffer[0];
+
+	pnm_next_line(pnm_data);
+	if (*pnm_data == '#')
+	{
+		pnm_next_line(pnm_data);
+	}
+
+	unsigned width, height;
+	if (std::sscanf((const char*)pnm_data, "%d %d", &width, &height) != 2)
+	{
+		throw std::runtime_error("couldn't read width and height");
+	}
+	else
+	{
+		this->width = width;
+		this->height = height;
+	}
+	pnm_next_line(pnm_data);
+
+	// This line contains the 'max value', which is 255 of format_integer and
+	// 1.0 for format_float.
+	pnm_next_line(pnm_data);
+
+	return pnm_data;
+}
+
+void glurg::PixelData::read_pnm(
+	const glurg::PixelDataBuffer& input_buffer, bool normalize)
+{
+	const std::uint8_t* pixel_data = read_pnm_header(input_buffer);
+
+	buffer.clear();
+	for (std::size_t y = 0; y < this->width; ++y)
+	{
+		for (std::size_t x = 0; x < this->height; ++x)
+		{
+			if (this->format == format_integer)
+			{
+				glm::ivec4 pixel;
+				read_pnm_pixel(pixel_data, this->num_components, pixel);
+
+				auto p = glm::value_ptr(pixel);
+				for (std::size_t i = 0; i < this->num_components; ++i)
+				{
+					this->buffer.push_back(p[i]);
+				}
+
+				pixel_data += this->num_components;
+			}
+			else if (this->format == format_float)
+			{
+				glm::vec4 pixel;
+				read_pnm_pixel(pixel_data, this->num_components, pixel);
+
+				auto p = glm::value_ptr(pixel);
+				for (std::size_t i = 0; i < this->num_components; ++i)
+				{
+					if (normalize)
+					{
+						this->buffer.push_back((std::uint8_t)(p[i] * 255));
+					}
+					else
+					{
+						this->buffer.insert(
+							this->buffer.end(), p, p + sizeof(float));
+					}
+				}
+
+				pixel_data += this->num_components * sizeof(float);
+			}
+		}
+	}
 }

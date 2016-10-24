@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <glm/vec4.hpp>
 
 namespace glurg
 {
@@ -37,7 +38,10 @@ namespace glurg
 		std::size_t get_height() const;
 		std::size_t get_num_components() const;
 
-		static void read(const PixelDataBuffer& input_buffer, PixelData& data);
+		static void read(
+			const PixelDataBuffer& input_buffer,
+			PixelData& data,
+			bool normalize = true);
 
 		// Expects input_buffer to be equivalent to format_integer.
 		static bool to_png(
@@ -47,13 +51,22 @@ namespace glurg
 
 	private:
 		void read_png(const glurg::PixelDataBuffer& input_buffer);
-		void read_pnm(const glurg::PixelDataBuffer& input_buffer);
+
+		static void read_pnm_pixel(
+			const std::uint8_t* input, std::size_t count, glm::vec4& pixel);
+		static void read_pnm_pixel(
+			const std::uint8_t* input, std::size_t count, glm::ivec4& pixel);
+		static void pnm_next_line(const std::uint8_t*& input);
+		const std::uint8_t* read_pnm_header(
+			const glurg::PixelDataBuffer& input_buffer);
+		void read_pnm(
+			const glurg::PixelDataBuffer& input_buffer, bool normalize);
 
 		int format;
 		PixelDataBuffer buffer;
 
 		std::size_t width, height;
-		std::size_t components;
+		std::size_t num_components;
 	};
 }
 
