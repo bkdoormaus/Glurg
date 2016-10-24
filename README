@@ -15,7 +15,8 @@ Currently, Glurg is in very early stages of development. Not much is done. See
 Glurg's application logic is written in MoonScript. However, the native library,
 libglurg, requires building using your platform's C++ compiler.
 
-Glurg also depends on glretrace, from apitrace.
+Glurg also depends on a patched glretrace (a tool from apitrace) for certain
+features, such as dumping framebuffer contents.
 
 libglurg
 --------------------------------------------------------------------------------
@@ -28,9 +29,22 @@ will need to provide some dependencies:
 * [Snappy](https://github.com/google/snappy)
 * [GLM](https://github.com/g-truc/glm)
 * [JsonCpp](https://github.com/open-source-parsers/jsoncpp)
-* [MoonScript](https://github.com/leafo/moonscript)
 * [Lua 5.1](https://www.lua.org/versions.html#5.1) or [LuaJIT](http://luajit.org/)
 * [Sol](https://github.com/ThePhD/sol2/)
+
+Glurg
+--------------------------------------------------------------------------------
+Glurg logic is written in MoonScript, and thus has the following dependency:
+
+* [MoonScript](https://github.com/leafo/moonscript)
+
+It can be installed via LuaRocks easily enough, if you have that.
+
+glretrace
+--------------------------------------------------------------------------------
+In order to dump the state of many calls, a patched glretrace with such a
+feature must be used with Glurg. The patch is located at misc/retrace_main.patch
+and applies cleanly to the apitrace 7.1 tag.
 
 License
 ================================================================================

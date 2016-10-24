@@ -1,0 +1,82 @@
+diff --git a/retrace/retrace_main.cpp b/retrace/retrace_main.cpp
+index ec49a16..19e25f2 100644
+--- a/retrace/retrace_main.cpp
++++ b/retrace/retrace_main.cpp
+@@ -30,6 +30,7 @@
+ #include <limits.h> // for CHAR_MAX
+ #include <iostream>
+ #include <getopt.h>
++#include <unordered_set>
+ #ifndef _WIN32
+ #include <unistd.h> // for isatty()
+ #endif
+@@ -59,7 +60,7 @@ static enum {
+ static trace::CallSet snapshotFrequency;
+ static unsigned snapshotInterval = 0;
+ 
+-static unsigned dumpStateCallNo = ~0;
++static std::unordered_set<unsigned> dumpStateCallNos;
+ 
+ retrace::Retracer retracer;
+ 
+@@ -241,12 +242,16 @@ retraceCall(trace::Call *call) {
+         }
+     }
+ 
+-    if (call->no >= dumpStateCallNo &&
+-        dumper->canDump()) {
+-        StateWriter *writer = stateWriterFactory(std::cout);
+-        dumper->dumpState(*writer);
+-        delete writer;
+-        exit(0);
++    auto hasCallNo = dumpStateCallNos.find(call->no);
++    if (hasCallNo != dumpStateCallNos.end()) {
++        if (dumper->canDump()) {
++            StateWriter *writer = stateWriterFactory(std::cout);
++            dumper->dumpState(*writer);
++            delete writer;
++            if (dumpStateCallNos.empty())
++                exit(0);
++        }
++        dumpStateCallNos.erase(hasCallNo);
+     }
+ }
+ 
+@@ -612,7 +617,7 @@ usage(const char *argv0) {
+         "  -S, --snapshot=CALLSET  calls to snapshot (default is every frame)\n"
+         "      --snapshot-interval=N    specify a frame interval when generating snaphots (default is 0)\n"
+         "  -v, --verbose           increase output verbosity\n"
+-        "  -D, --dump-state=CALL   dump state at specific call no\n"
++        "  -D, --dump-state=CALL,[CALL2,...]  dump state at specific call nos\n"
+         "      --dump-format=FORMAT dump state format (`json` or `ubjson`)\n"
+         "  -w, --wait              waitOnFinish on final frame\n"
+         "      --loop[=N]          loop N times (N<0 continuously) replaying final frame.\n"
+@@ -679,6 +684,19 @@ static void exceptionCallback(void)
+ }
+ 
+ 
++static void parseDumpCallNos(const char* calls)
++{
++    do
++    {
++        unsigned call = std::atoi(calls);
++        dumpStateCallNos.insert(call);
++        calls = std::strchr(calls, ',');
++        if (calls)
++            ++calls;
++    } while (calls != NULL);
++}
++
++
+ extern "C"
+ int main(int argc, char **argv)
+ {
+@@ -707,7 +725,7 @@ int main(int argc, char **argv)
+             useCallNos = trace::boolOption(optarg);
+             break;
+         case 'D':
+-            dumpStateCallNo = atoi(optarg);
++            parseDumpCallNos(optarg);
+             dumpingState = true;
+             retrace::verbosity = -2;
+             break;
