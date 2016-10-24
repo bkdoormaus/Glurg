@@ -6,6 +6,7 @@
 
 glurg = require "glurg"
 Promise = require "glurg.common.Promise"
+Retrace = require "glurg.common.Retrace"
 TextureBlob = require "glurg.resources.TextureBlob"
 Call = require "glurg.trace.Call"
 
@@ -26,7 +27,7 @@ marshal_description = (description) ->
 	Promise.keep("description.storage", Promise.IsString(description.storage))
 	Promise.keep("description.bit_size", Promise.IsNumber(description.bit_size))
 
-	result = glurg.resources.PixelComponentDescription.new()
+	result = glurg.resources.PixelComponentDescription.new!
 	result.swizzle = marshal_texture_enumeration('swizzle', description.swizzle)
 	result.storage = marshal_texture_enumeration('storage', description.storage)
 	result.bit_size = description.bit_size
@@ -122,6 +123,22 @@ class TextureBlobBuilder
 		@has_pixel_data = @_builder\extract_from_call(pixel_format,
 			pixel_type,
 			pixel_data.data)
+
+		return @has_pixel_data
+
+	extract_framebuffer_attachment: (render_state, attachment_type, attachment_index) =>
+		Promise.keep("render_state", Promise.IsUserdata(render_state))
+		Promise.keep("attachment_type", Promise.IsString(attachment_type))
+
+		@has_pixel_data = switch attachment_type
+			when 'depth'
+				@_builder\extract_framebuffer_from_state(render_state, -1)
+			when 'color'
+				Promise.keep("attachment_index", Promise.IsNumber(attachment_index))
+				Promise.keep("attachment_index >= 1", attachment_index >= 1)
+				@_builder\extract_framebuffer_from_state(render_state, attachment_index - 1)
+			else
+				error "invalid attachment type"
 
 		return @has_pixel_data
 

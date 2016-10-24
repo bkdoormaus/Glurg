@@ -17,15 +17,15 @@ class Texture
 	save_png: (filename) =>
 		Promise.keep("filename", Promise.IsString(filename))
 
-		decodedPixelBuffer = glurg.common.PixelDataBuffer.new()
-		outputImagePixelBuffer = glurg.common.PixelDataBuffer.new()
+		decodedPixelBuffer = glurg.common.PixelDataBuffer.new!
+		outputImagePixelBuffer = glurg.common.PixelDataBuffer.new!
 
 		@_texture\decode_image(decodedPixelBuffer)
 		glurg.common.pixel_data_buffer_to_png(decodedPixelBuffer, 
 			@blob.width, @blob.height, 4,
 			outputImagePixelBuffer)
 
-		fileStream = glurg.common.SimpleFileStream.new()
+		fileStream = glurg.common.SimpleFileStream.new!
 		fileStream\open(filename, glurg.common.file_mode_write)
 		fileStream\write(outputImagePixelBuffer.data,
 			outputImagePixelBuffer.size)
