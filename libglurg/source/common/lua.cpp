@@ -43,6 +43,8 @@ extern "C" int luaopen_glurg(lua_State* L)
 	common["hash_data"] = &glurg::Hash::hash;
 	common["file_mode_read"] = glurg::FileStream::mode_read;
 	common["file_mode_write"] = glurg::FileStream::mode_write;
+	common["process_mode_read"] = glurg::Process::mode_read;
+	common["process_mode_write"] = glurg::Process::mode_write;
 	common["pixel_data_buffer_to_png"] = &glurg::PixelData::to_png;
 	common.new_usertype<glurg::FileStream>(
 		"FileStream",
@@ -80,7 +82,7 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"open", &glurg::Process::open,
 		"close", &glurg::Process::close,
 		"is_open", &glurg::Process::get_is_open,
-		"stream", &glurg::Process::get_stream);
+		"stream", sol::readonly_property(&glurg::Process::get_stream));
 	common.new_usertype<glurg::SimpleFileStream>(
 		"SimpleFileStream",
 		sol::constructors<sol::types<>>(),
@@ -151,6 +153,7 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"set_binding_point", &glurg::TextureResourceBlobBuilder::set_binding_point,
 		"build", &glurg::TextureResourceBlobBuilder::build,
 		"extract_from_state", &glurg::TextureResourceBlobBuilder::extract_from_state,
+		"extract_framebuffer_from_state", &glurg::TextureResourceBlobBuilder::extract_framebuffer_from_state,
 		"extract_from_call", &glurg::TextureResourceBlobBuilder::extract_from_call);
 	sol::table texture = resources.create_named("texture");
 	texture["swizzle_red"] = glurg::PixelComponentDescription::swizzle_red;
