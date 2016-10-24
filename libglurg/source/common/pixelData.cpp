@@ -209,8 +209,6 @@ void glurg::PixelData::pnm_next_line(const std::uint8_t*& input)
 {
 	while (*input++ != '\n')
 		continue;
-
-	++input;
 }
 
 const std::uint8_t* glurg::PixelData::read_pnm_header(
@@ -251,7 +249,7 @@ const std::uint8_t* glurg::PixelData::read_pnm_header(
 	}
 
 	unsigned width, height;
-	if (std::sscanf((const char*)pnm_data, "%d %d", &width, &height) != 2)
+	if (std::sscanf((const char*)pnm_data, "%u %u", &width, &height) != 2)
 	{
 		throw std::runtime_error("couldn't read width and height");
 	}
