@@ -25,7 +25,6 @@ namespace glurg
 		virtual ~ResourceBlobBuilder() = default;
 
 		virtual Blob* build() = 0;
-		virtual bool extract(const RenderState& state) = 0;
 	};
 }
 
