@@ -309,7 +309,14 @@ bool glurg::TextureResourceBlobBuilder::extract_framebuffer_from_state(
 	PixelData pixel_data;
 	PixelData::read(pixel_data_buffer, pixel_data);
 
-	set_pixel_data(pixel_data);
+	this->red_component.swizzle = PixelComponentDescription::swizzle_red;
+	this->red_component.storage = PixelComponentDescription::storage_disabled;
+	this->green_component.swizzle = PixelComponentDescription::swizzle_green;
+	this->green_component.storage = PixelComponentDescription::storage_disabled;
+	this->blue_component.swizzle = PixelComponentDescription::swizzle_blue;
+	this->blue_component.storage = PixelComponentDescription::storage_disabled;
+	this->alpha_component.swizzle = PixelComponentDescription::swizzle_alpha;
+	this->alpha_component.storage = PixelComponentDescription::storage_disabled;
 
 	PixelComponentDescription description = {};
 	description.storage =
@@ -318,16 +325,12 @@ bool glurg::TextureResourceBlobBuilder::extract_framebuffer_from_state(
 	switch (pixel_data.get_num_components())
 	{
 		case 4:
-			description.swizzle = PixelComponentDescription::swizzle_alpha;
 			set_alpha_description(description);
 		case 3:
-			description.swizzle = PixelComponentDescription::swizzle_blue;
 			set_blue_description(description);
 		case 2:
-			description.swizzle = PixelComponentDescription::swizzle_green;
 			set_green_description(description);
 		case 1:
-			description.swizzle = PixelComponentDescription::swizzle_red;
 			set_red_description(description);
 	}
 
@@ -340,6 +343,8 @@ bool glurg::TextureResourceBlobBuilder::extract_framebuffer_from_state(
 	set_width(pixel_data.get_width());
 	set_height(pixel_data.get_height());
 	set_depth(1);
+
+	set_pixel_data(pixel_data);
 
 	return true;
 }
