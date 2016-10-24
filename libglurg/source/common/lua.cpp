@@ -150,8 +150,8 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"set_pixel_data", &glurg::TextureResourceBlobBuilder::set_pixel_data,
 		"set_binding_point", &glurg::TextureResourceBlobBuilder::set_binding_point,
 		"build", &glurg::TextureResourceBlobBuilder::build,
-		"extract_from_state", (bool (glurg::TextureResourceBlobBuilder::*)(const glurg::RenderState&))(&glurg::TextureResourceBlobBuilder::extract),
-		"extract_from_call", (bool (glurg::TextureResourceBlobBuilder::*)(GLenum, GLenum, const std::uint8_t*))(&glurg::TextureResourceBlobBuilder::extract));
+		"extract_from_state", &glurg::TextureResourceBlobBuilder::extract_from_state,
+		"extract_from_call", &glurg::TextureResourceBlobBuilder::extract_from_call);
 	sol::table texture = resources.create_named("texture");
 	texture["swizzle_red"] = glurg::PixelComponentDescription::swizzle_red;
 	texture["swizzle_green"] = glurg::PixelComponentDescription::swizzle_green;

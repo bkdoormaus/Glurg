@@ -44,8 +44,12 @@ namespace glurg
 		void set_binding_point(int value);
 
 		TextureResourceBlob* build();
-		bool extract(const RenderState& state);
-		bool extract(
+		bool extract_from_state(const RenderState& state);
+
+		static const int DEPTH_ATTACHMENT = -1;
+		bool extract_framebuffer_from_state(
+			const RenderState& state, int color_attachment);
+		bool extract_from_call(
 			GLenum data_format, GLenum data_type, const std::uint8_t* data);
 
 	private:

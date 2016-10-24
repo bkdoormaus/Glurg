@@ -14,6 +14,8 @@
 #include "glurg/resources/texture/pixelUnpacker.hpp"
 #include "glurg/resources/texture/textureResourceBlobBuilder.hpp"
 
+const int glurg::TextureResourceBlobBuilder::DEPTH_ATTACHMENT;
+
 glurg::TextureResourceBlobBuilder::TextureResourceBlobBuilder()
 {
 	this->texture_type = TextureResourceBlob::type_none;
@@ -204,7 +206,8 @@ glurg::TextureResourceBlob* glurg::TextureResourceBlobBuilder::build()
 	return new TextureResourceBlob(std::move(final_buffer));
 }
 
-bool glurg::TextureResourceBlobBuilder::extract(const RenderState& state)
+bool glurg::TextureResourceBlobBuilder::extract_from_state(
+	const RenderState& state)
 {
 	verify_texture_type(this->texture_type);
 	verify_mipmap_level(this->level);
@@ -274,7 +277,74 @@ bool glurg::TextureResourceBlobBuilder::extract(const RenderState& state)
 	return true;
 }
 
-bool glurg::TextureResourceBlobBuilder::extract(
+bool glurg::TextureResourceBlobBuilder::extract_framebuffer_from_state(
+	const RenderState& state, int color_attachment)
+{
+	set_texture_type(glurg::TextureResourceBlob::type_2d);
+	set_mipmap_level(0);
+
+	auto framebuffer = state.get("framebuffer");
+	std::shared_ptr<glurg::RenderValue> attachment;
+	if (color_attachment == DEPTH_ATTACHMENT)
+	{
+		if (!framebuffer->has_field("GL_DEPTH_ATTACHMENT"))
+		{
+			return false;
+		}
+		attachment = framebuffer->get_field_by_name("GL_DEPTH_ATTACHMENT");
+	}
+	else
+	{
+		if (!framebuffer->has_field("GL_COLOR_ATTACHMENT", color_attachment))
+		{
+			return false;
+		}
+		attachment = framebuffer->get_field_by_name(
+			"GL_COLOR_ATTACHMENT", color_attachment);
+	}
+
+	PixelDataBuffer pixel_data_buffer;
+	decode_base64(attachment->get_string("__data__"), pixel_data_buffer);
+
+	PixelData pixel_data;
+	PixelData::read(pixel_data_buffer, pixel_data);
+
+	set_pixel_data(pixel_data);
+
+	PixelComponentDescription description = {};
+	description.storage =
+		PixelComponentDescription::storage_unsigned_normalized;
+	description.bit_size = 8;
+	switch (pixel_data.get_num_components())
+	{
+		case 4:
+			description.swizzle = PixelComponentDescription::swizzle_alpha;
+			set_alpha_description(description);
+		case 3:
+			description.swizzle = PixelComponentDescription::swizzle_blue;
+			set_blue_description(description);
+		case 2:
+			description.swizzle = PixelComponentDescription::swizzle_green;
+			set_green_description(description);
+		case 1:
+			description.swizzle = PixelComponentDescription::swizzle_red;
+			set_red_description(description);
+	}
+
+	set_wrap_mode(0, TextureResourceBlob::wrap_edge_clamp);
+	set_wrap_mode(1, TextureResourceBlob::wrap_edge_clamp);
+
+	set_minification_filter(TextureResourceBlob::filter_nearest);
+	set_magnification_filter(TextureResourceBlob::filter_nearest);
+
+	set_width(pixel_data.get_width());
+	set_height(pixel_data.get_height());
+	set_depth(1);
+
+	return true;
+}
+
+bool glurg::TextureResourceBlobBuilder::extract_from_call(
 	GLenum data_format, GLenum data_type, const std::uint8_t* data)
 {
 	verify_texture_type(this->texture_type);
