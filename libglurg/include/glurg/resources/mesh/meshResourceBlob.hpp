@@ -30,14 +30,20 @@ namespace glurg
 
 		int num_components;
 
-		bool normalized;
+		enum
+		{
+			normalization_none,
+			normalization_disabled,
+			normalization_enabled
+		};
+		int normalized;
 
 		int stride;
 
 		int offset;
 	};
 
-	class MeshResourceBlob
+	class MeshResourceBlob : public ResourceBlob
 	{
 	public:
 		MeshResourceBlob(ResourceBlobReadBuffer&& buffer);
