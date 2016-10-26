@@ -8,6 +8,8 @@
 #define LIBGLURG_RESOURCES_RENDER_STATE_HPP
 
 #include <memory>
+#include <cctype>
+#include <sstream>
 #include <string>
 #include <json/json.h>
 
@@ -35,10 +37,36 @@ namespace glurg
 template <typename Stream>
 void glurg::RenderState::populate(Stream& stream)
 {
+	std::string input_string;
+	int depth = 0;
+
+	{
+		char c = stream.get();
+		while (std::isspace(c))
+		{
+			c = stream.get();
+		}
+
+		do
+		{
+			if (c == '{')
+			{
+				++depth;
+			}
+			else if (c == '}')
+			{
+				--depth;
+			}
+
+			input_string.push_back(c);
+			c = stream.get();
+		} while(depth > 0);
+	}
+
+	std::stringstream input_stream(input_string, std::ios::in);
 	Json::CharReaderBuilder builder;
 	std::string errors;
-	
-	Json::parseFromStream(builder, stream, &this->data, &errors);
+	Json::parseFromStream(builder, input_stream, &this->data, &errors);
 }
 
 #endif
