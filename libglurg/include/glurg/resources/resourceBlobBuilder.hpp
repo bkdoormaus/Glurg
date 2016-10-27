@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <type_traits>
 #include "glurg/resources/resourceBlob.hpp"
 
@@ -24,7 +25,7 @@ namespace glurg
 		typedef typename std::enable_if<std::is_base_of<ResourceBlob, B>::value, B>::type Blob;
 		virtual ~ResourceBlobBuilder() = default;
 
-		virtual Blob* build() = 0;
+		virtual std::shared_ptr<Blob> build() = 0;
 	};
 }
 

@@ -52,7 +52,7 @@ void glurg::MeshResourceBlobBuilder::set_vertex_data(
 	std::memcpy(this->vertex_data.get(), vertex_data, size);
 }
 
-glurg::MeshResourceBlob* glurg::MeshResourceBlobBuilder::build()
+std::shared_ptr<glurg::MeshResourceBlob> glurg::MeshResourceBlobBuilder::build()
 {
 	ResourceBlobWriteBuffer buffer;
 	buffer.push_value(this->vertex_description.format);
@@ -65,5 +65,5 @@ glurg::MeshResourceBlob* glurg::MeshResourceBlobBuilder::build()
 	ResourceBlobReadBuffer result;
 	buffer.to_read_buffer(result);
 
-	return new MeshResourceBlob(std::move(result));
+	return std::make_shared<glurg::MeshResourceBlob>(std::move(result));
 }

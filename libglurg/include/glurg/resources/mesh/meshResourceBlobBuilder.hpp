@@ -28,7 +28,7 @@ namespace glurg
 
 		void set_vertex_data(const std::uint8_t* vertex_data, std::size_t size);
 
-		MeshResourceBlob* build();
+		std::shared_ptr<MeshResourceBlob> build();
 
 	private:
 		static void verify_vertex_description(

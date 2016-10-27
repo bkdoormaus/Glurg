@@ -43,7 +43,7 @@ namespace glurg
 
 		void set_binding_point(int value);
 
-		TextureResourceBlob* build();
+		std::shared_ptr<TextureResourceBlob> build();
 		bool extract_from_state(const RenderState& state);
 
 		static const int DEPTH_ATTACHMENT = -1;

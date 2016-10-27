@@ -173,7 +173,8 @@ void glurg::TextureResourceBlobBuilder::set_binding_point(int value)
 	this->binding_point = value;
 }
 
-glurg::TextureResourceBlob* glurg::TextureResourceBlobBuilder::build()
+std::shared_ptr<glurg::TextureResourceBlob>
+glurg::TextureResourceBlobBuilder::build()
 {
 	verify_state();
 
@@ -203,7 +204,7 @@ glurg::TextureResourceBlob* glurg::TextureResourceBlobBuilder::build()
 	ResourceBlobReadBuffer final_buffer;
 	buffer.to_read_buffer(final_buffer);
 
-	return new TextureResourceBlob(std::move(final_buffer));
+	return std::make_shared<glurg::TextureResourceBlob>(std::move(final_buffer));
 }
 
 bool glurg::TextureResourceBlobBuilder::extract_from_state(
