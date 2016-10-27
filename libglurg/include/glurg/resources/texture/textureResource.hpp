@@ -18,7 +18,7 @@ namespace glurg
 	class PixelComponentDescription;
 	class TextureResourceBlob;
 
-	class TextureResource : public glurg::Resource
+	class TextureResource : public Resource
 	{
 	public:
 		TextureResource(const TextureResourceBlob* blob);
