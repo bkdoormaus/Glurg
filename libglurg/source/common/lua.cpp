@@ -4,6 +4,8 @@
 //
 // Copyright 2016 [bk]door.maus
 
+#include <cstdint>
+#include <vector>
 #include <sol.hpp>
 #include <glm/vec4.hpp>
 #include "glurg/common/lua.hpp"
@@ -28,8 +30,9 @@
 #include "glurg/trace/traceFile.hpp"
 #include "glurg/trace/values.hpp"
 
-const std::uint8_t* get_pixel_data_buffer_data(
-	const glurg::PixelDataBuffer& buffer)
+typedef std::vector<std::uint8_t> DataBuffer;
+const std::uint8_t* get_data_buffer_data(
+	const DataBuffer& buffer)
 {
 	return &buffer.at(0);
 }
@@ -65,11 +68,11 @@ extern "C" int luaopen_glurg(lua_State* L)
 		"g", &glm::ivec4::y,
 		"b", &glm::ivec4::z,
 		"a", &glm::ivec4::a);
-	common.new_usertype<glurg::PixelDataBuffer>(
-		"PixelDataBuffer",
+	common.new_usertype<DataBuffer>(
+		"DataBuffer",
 		sol::constructors<sol::types<>>(),
-		"data", sol::readonly_property(&get_pixel_data_buffer_data),
-		"size", sol::readonly_property(&glurg::PixelDataBuffer::size));
+		"data", sol::readonly_property(&get_data_buffer_data),
+		"size", sol::readonly_property(&DataBuffer::size));
 	common.new_usertype<glurg::Process>(
 		"Process",
 		sol::constructors<sol::types<>>(),

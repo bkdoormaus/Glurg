@@ -17,8 +17,8 @@ class Texture
 	save_png: (filename) =>
 		Promise.keep("filename", Promise.IsString(filename))
 
-		decodedPixelBuffer = glurg.common.PixelDataBuffer.new!
-		outputImagePixelBuffer = glurg.common.PixelDataBuffer.new!
+		decodedPixelBuffer = glurg.common.DataBuffer.new!
+		outputImagePixelBuffer = glurg.common.DataBuffer.new!
 
 		@_texture\decode_image(decodedPixelBuffer)
 		glurg.common.pixel_data_buffer_to_png(decodedPixelBuffer, 
