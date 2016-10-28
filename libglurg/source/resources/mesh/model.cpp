@@ -4,7 +4,15 @@
 //
 // Copyright 2016 [bk]door.maus
 
+#include <cstring>
+#include <stdexcept>
 #include "glurg/resources/mesh/model.hpp"
+
+glurg::Model::Model()
+{
+	this->index_data_type = index_format_none;
+	this->index_data_count = 0;
+}
 
 const glurg::MeshResource* glurg::Model::get_mesh_positions() const
 {
@@ -87,4 +95,53 @@ void glurg::Model::set_mesh_colors(
 	std::size_t index, std::shared_ptr<MeshResource> value)
 {
 	this->colors.at(index) = value;
+}
+
+int glurg::Model::get_index_data_type() const
+{
+	return this->index_data_type;
+}
+
+const std::uint8_t* glurg::Model::get_index_data() const
+{
+	return this->index_data.get();
+}
+
+std::size_t glurg::Model::get_index_data_count() const
+{
+	return this->index_data_count;
+}
+
+void glurg::Model::set_index_data(
+	int type, const std::uint8_t* data, std::size_t count)
+{
+	std::size_t element_size;
+	switch (type)
+	{
+		case index_format_none:
+			element_size = 0;
+			break;
+		case index_format_unsigned_byte:
+			element_size = 1;
+			break;
+		case index_format_unsigned_short:
+			element_size = 2;
+			break;
+		case index_format_unsigned_integer:
+			element_size = 4;
+			break;
+		default:
+			throw std::runtime_error("invalid index format type");
+	}
+
+	this->index_data_type = type;
+	if (element_size != 0)
+	{
+		const std::size_t num_bytes = count * element_size;
+
+		this->index_data = std::make_unique<std::uint8_t[]>(num_bytes);
+		this->index_data_count = count;
+
+		std::memcpy(this->index_data.get(), data, num_bytes);
+	}
 }

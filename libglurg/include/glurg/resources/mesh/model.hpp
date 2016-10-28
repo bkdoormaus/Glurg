@@ -17,7 +17,7 @@ namespace glurg
 	class Model
 	{
 	public:
-		Model() = default;
+		Model();
 		~Model() = default;
 
 		const MeshResource* get_mesh_positions() const;
@@ -46,6 +46,20 @@ namespace glurg
 		const MeshResource* get_mesh_colors(std::size_t index);
 		void set_mesh_colors(std::size_t index, std::shared_ptr<MeshResource> value);
 
+		enum
+		{
+			index_format_none,
+			index_format_unsigned_byte,
+			index_format_unsigned_short,
+			index_format_unsigned_integer
+		};
+		int get_index_data_type() const;
+		const std::uint8_t* get_index_data() const;
+		std::size_t get_index_data_count() const;
+
+		void set_index_data(
+			int type, const std::uint8_t* data, std::size_t count);
+
 	private:
 		typedef std::shared_ptr<MeshResource> MeshResourcePointer;
 		MeshResourcePointer positions;
@@ -54,6 +68,10 @@ namespace glurg
 		MeshResourcePointer weights;
 		std::vector<MeshResourcePointer> texture_coordinates;
 		std::vector<MeshResourcePointer> colors;
+
+		int index_data_type;
+		std::unique_ptr<std::uint8_t[]> index_data;
+		std::size_t index_data_count;
 	};
 }
 
