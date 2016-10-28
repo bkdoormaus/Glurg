@@ -62,6 +62,7 @@ set(LIBGLURG_SOURCE_FILES
 	"source/resources/mesh/meshResourceBlob.cpp"
 	"source/resources/mesh/meshResourceBlobBuilder.cpp"
 	"source/resources/mesh/model.cpp"
+	"source/resources/mesh/modelExporter.cpp"
 	"source/resources/texture/pixelUnpacker.cpp"
 	"source/resources/texture/textureResource.cpp"
 	"source/resources/texture/textureResourceBlob.cpp"

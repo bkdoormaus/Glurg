@@ -86,7 +86,8 @@ void glurg::Model::set_num_mesh_colors(std::size_t value)
 	this->colors.resize(value);
 }
 
-const glurg::MeshResource* glurg::Model::get_mesh_colors(std::size_t index)
+const glurg::MeshResource* glurg::Model::get_mesh_colors(
+	std::size_t index) const
 {
 	return this->colors.at(index).get();
 }

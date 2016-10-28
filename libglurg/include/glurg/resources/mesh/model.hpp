@@ -43,7 +43,7 @@ namespace glurg
 		std::size_t get_num_mesh_colors() const;
 		void set_num_mesh_colors(std::size_t value);
 
-		const MeshResource* get_mesh_colors(std::size_t index);
+		const MeshResource* get_mesh_colors(std::size_t index) const;
 		void set_mesh_colors(std::size_t index, std::shared_ptr<MeshResource> value);
 
 		enum
