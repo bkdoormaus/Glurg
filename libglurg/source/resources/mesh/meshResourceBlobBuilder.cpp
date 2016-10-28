@@ -54,6 +54,9 @@ void glurg::MeshResourceBlobBuilder::set_vertex_data(
 
 std::shared_ptr<glurg::MeshResourceBlob> glurg::MeshResourceBlobBuilder::build()
 {
+	verify_vertex_description(this->vertex_description);
+	verify_vertex_data(this->vertex_data.get(), this->vertex_data_size);
+
 	ResourceBlobWriteBuffer buffer;
 	buffer.push_value(this->vertex_description.format);
 	buffer.push_value(this->vertex_description.num_components);
@@ -66,4 +69,60 @@ std::shared_ptr<glurg::MeshResourceBlob> glurg::MeshResourceBlobBuilder::build()
 	buffer.to_read_buffer(result);
 
 	return std::make_shared<glurg::MeshResourceBlob>(std::move(result));
+}
+
+void glurg::MeshResourceBlobBuilder::verify_vertex_description(
+	const VertexDescription& description)
+{
+	switch (description.format)
+	{
+		case VertexDescription::format_float:
+		case VertexDescription::format_byte:
+		case VertexDescription::format_unsigned_byte:
+		case VertexDescription::format_short:
+		case VertexDescription::format_unsigned_short:
+		case VertexDescription::format_integer:
+		case VertexDescription::format_unsigned_integer:
+			break;
+		default:
+			throw std::runtime_error("invalid vertex description format");
+	}
+
+	if (description.num_components < 1 || description.num_components > 4)
+	{
+		throw std::runtime_error("number of components out of range");
+	}
+
+	switch (description.normalized)
+	{
+		case VertexDescription::normalization_disabled:
+		case VertexDescription::normalization_enabled:
+			break;
+		default:
+			throw std::runtime_error("invalid normalization state");
+	}
+
+	if (description.stride < 0)
+	{
+		throw std::runtime_error("stride is invalid value");
+	}
+
+	if (description.offset < 0)
+	{
+		throw std::runtime_error("offset is invalid value");
+	}
+}
+
+void glurg::MeshResourceBlobBuilder::verify_vertex_data(
+	const std::uint8_t* vertex_data, std::size_t size)
+{
+	if (vertex_data == nullptr)
+	{
+		throw std::runtime_error("vertex data not set");
+	}
+
+	if (size == 0)
+	{
+		throw std::runtime_error("invalid vertex data size");
+	}
 }

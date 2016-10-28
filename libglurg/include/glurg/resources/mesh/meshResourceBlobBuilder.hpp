@@ -33,6 +33,8 @@ namespace glurg
 	private:
 		static void verify_vertex_description(
 			const VertexDescription& description);
+		static void verify_vertex_data(
+			const std::uint8_t* vertex_data, std::size_t size);
 
 		VertexDescription vertex_description;
 
