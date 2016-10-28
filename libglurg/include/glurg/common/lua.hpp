@@ -11,7 +11,14 @@ extern "C"
 {
 	#include "lua.h"
 
-	extern "C" int luaopen_glurg(lua_State* L);
+	int luaopen_glurg(lua_State* L);
 }
+
+namespace glurg { namespace lua
+{
+	void export_common(lua_State* L);
+	void export_resources(lua_State* L);
+	void export_trace(lua_State* L);
+} }
 
 #endif

@@ -8,6 +8,7 @@ find_package(Snappy REQUIRED)
 find_package(PNG REQUIRED)
 find_package(glm REQUIRED)
 find_package(Lua51 REQUIRED)
+find_package(assimp REQUIRED)
 pkg_search_module(Sodium REQUIRED libsodium)
 pkg_search_module(JsonCpp REQUIRED jsoncpp)
 
@@ -46,6 +47,9 @@ set(LIBGLURG_SOURCE_FILES
 	"source/common/base64.cpp"
 	"source/common/hash.cpp"
 	"source/common/lua.cpp"
+	"source/common/lua/common.cpp"
+	"source/common/lua/resources.cpp"
+	"source/common/lua/trace.cpp"
 	"source/common/pixelData.cpp"
 	"source/common/process.cpp"
 	"source/common/simpleFileStream.cpp"
@@ -92,6 +96,7 @@ target_include_directories(glurg
 	${PNG_INCLUDE_DIRS}
 	${GLM_INCLUDES_DIRS}
 	${LUA_INCLUDE_DIR}
+	${assimp_INCLUDE_DIRS}
 	${Sodium_INCLUDE_DIRS}
 	${JsonCpp_INCLUDE_DIRS})
 
@@ -100,6 +105,7 @@ target_link_libraries(glurg PUBLIC
 	${Snappy_LIBRARIES} ${Snappy_LDFLAGS}
 	${PNG_LIBRARIES}
 	${LUA_LIBRARIES}
+	${assimp_LIBRARIES}
 	${Sodium_LIBRARIES} ${Sodium_LDFLAGS}
 	${JsonCpp_LIBRARIES} ${JsonCpp_LDFLAGS})
 
