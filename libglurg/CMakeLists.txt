@@ -97,7 +97,7 @@ target_include_directories(glurg
 	${PNG_INCLUDE_DIRS}
 	${GLM_INCLUDES_DIRS}
 	${LUA_INCLUDE_DIR}
-	${assimp_INCLUDE_DIRS}
+	${ASSIMP_INCLUDE_DIRS}
 	${Sodium_INCLUDE_DIRS}
 	${JsonCpp_INCLUDE_DIRS})
 
@@ -106,7 +106,7 @@ target_link_libraries(glurg PUBLIC
 	${Snappy_LIBRARIES} ${Snappy_LDFLAGS}
 	${PNG_LIBRARIES}
 	${LUA_LIBRARIES}
-	${assimp_LIBRARIES}
+	${ASSIMP_LIBRARIES}
 	${Sodium_LIBRARIES} ${Sodium_LDFLAGS}
 	${JsonCpp_LIBRARIES} ${JsonCpp_LDFLAGS})
 

@@ -43,7 +43,7 @@ void glurg::lua::export_resources(lua_State* L)
 		sol::constructors<sol::types<>>(),
 		"set_description_format", &glurg::MeshResourceBlobBuilder::set_vertex_description_format,
 		"set_description_num_components", &glurg::MeshResourceBlobBuilder::set_vertex_description_num_components,
-		"set_description_normalized", &glurg::MeshResourceBlobBuilder::set_vertex_description_normalized,
+		"set_description_normalization", &glurg::MeshResourceBlobBuilder::set_vertex_description_normalized,
 		"set_description_stride", &glurg::MeshResourceBlobBuilder::set_vertex_description_stride,
 		"set_description_offset", &glurg::MeshResourceBlobBuilder::set_vertex_description_offset,
 		"set_vertex_data", &glurg::MeshResourceBlobBuilder::set_vertex_data,
@@ -132,7 +132,7 @@ void glurg::lua::export_resources(lua_State* L)
 		sol::constructors<sol::types<>>(),
 		"format", &glurg::VertexDescription::format,
 		"num_components", &glurg::VertexDescription::num_components,
-		"normalized", &glurg::VertexDescription::normalized,
+		"normalization", &glurg::VertexDescription::normalized,
 		"stride", &glurg::VertexDescription::stride,
 		"offset", &glurg::VertexDescription::stride);
 	sol::table texture = resources.create_named("texture");
