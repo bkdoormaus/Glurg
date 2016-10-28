@@ -6,9 +6,11 @@
 
 glurg = require "glurg"
 Promise = require "glurg.common.Promise"
+TextureBlob = require "glurg.common.TextureBlob"
 
 class Texture
 	new: (blob) =>
+		Promise.keep(blob, Promise.IsClass(blob, TextureBlob))
 		Promise.keep("not blob.is_data", not blob.is_data)
 
 		@_texture = glurg.resources.Texture.new(blob._blob)
