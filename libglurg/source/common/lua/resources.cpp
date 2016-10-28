@@ -135,6 +135,26 @@ void glurg::lua::export_resources(lua_State* L)
 		"normalized", &glurg::VertexDescription::normalized,
 		"stride", &glurg::VertexDescription::stride,
 		"offset", &glurg::VertexDescription::stride);
+
+	sol::table mesh = resources.create_named("mesh");
+	mesh["format_none"] = glurg::VertexDescription::format_none;
+	mesh["format_float"] = glurg::VertexDescription::format_float;
+	mesh["format_byte"] = glurg::VertexDescription::format_byte;
+	mesh["format_unsigned_byte"] = glurg::VertexDescription::format_unsigned_byte;
+	mesh["format_short"] = glurg::VertexDescription::format_short;
+	mesh["format_unsigned_short"] = glurg::VertexDescription::format_unsigned_short;
+	mesh["format_integer"] = glurg::VertexDescription::format_integer;
+	mesh["format_unsigned_integer"] = glurg::VertexDescription::format_unsigned_integer;
+	mesh["normalization_none"] = glurg::VertexDescription::normalization_none;
+	mesh["normalization_disabled"] = glurg::VertexDescription::normalization_disabled;
+	mesh["normalization_enabled"] = glurg::VertexDescription::normalization_enabled;
+
+	sol::table model = resources.create_named("model");
+	model["index_format_none"] = glurg::Model::index_format_none;
+	model["index_format_unsigned_byte"] = glurg::Model::index_format_unsigned_byte;
+	model["index_format_unsigned_short"] = glurg::Model::index_format_unsigned_short;
+	model["index_format_unsigned_integer"] = glurg::Model::index_format_unsigned_integer;
+
 	sol::table texture = resources.create_named("texture");
 	texture["swizzle_red"] = glurg::PixelComponentDescription::swizzle_red;
 	texture["swizzle_green"] = glurg::PixelComponentDescription::swizzle_green;
