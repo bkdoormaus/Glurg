@@ -9,6 +9,11 @@
 #include "glurg/common/process.hpp"
 #include "glurg/resources/renderState.hpp"
 #include "glurg/resources/resourceBlob.hpp"
+#include "glurg/resources/mesh/meshResource.hpp"
+#include "glurg/resources/mesh/meshResourceBlob.hpp"
+#include "glurg/resources/mesh/meshResourceBlobBuilder.hpp"
+#include "glurg/resources/mesh/model.hpp"
+#include "glurg/resources/mesh/modelExporter.hpp"
 #include "glurg/resources/texture/textureResource.hpp"
 #include "glurg/resources/texture/textureResourceBlob.hpp"
 #include "glurg/resources/texture/textureResourceBlobBuilder.hpp"
@@ -19,6 +24,50 @@ void glurg::lua::export_resources(lua_State* L)
 
 	sol::table resources = glurg.create_named("resources");
 	resources["is_compatible_texture_blob"] = &glurg::TextureResource::is_compatible_texture_blob;
+	resources.new_usertype<glurg::MeshResource>(
+		"Mesh",
+		sol::constructors<sol::types<const glurg::MeshResourceBlob*>>(),
+		"num_values", sol::readonly_property(&glurg::MeshResource::get_num_values),
+		"get_value", &glurg::MeshResource::get_value,
+		"blob", sol::readonly_property(&glurg::Resource::get_blob));
+	resources.new_usertype<glurg::MeshResourceBlob>(
+		"MeshBlob",
+		"vertex_description", sol::readonly_property(&glurg::MeshResourceBlob::get_vertex_description),
+		"vertex_data", sol::readonly_property(&glurg::MeshResourceBlob::get_vertex_data),
+		"vertex_data_size", sol::readonly_property(&glurg::MeshResourceBlob::get_vertex_data_size),
+		"hash", sol::readonly_property(&glurg::MeshResourceBlob::get_hash),
+		"data", sol::readonly_property(&glurg::MeshResourceBlob::get_data),
+		"size", sol::readonly_property(&glurg::MeshResourceBlob::get_size));
+	resources.new_usertype<glurg::MeshResourceBlobBuilder>(
+		"MeshBlobBuilder",
+		sol::constructors<sol::types<>>(),
+		"set_description_format", &glurg::MeshResourceBlobBuilder::set_vertex_description_format,
+		"set_description_num_components", &glurg::MeshResourceBlobBuilder::set_vertex_description_num_components,
+		"set_description_normalized", &glurg::MeshResourceBlobBuilder::set_vertex_description_normalized,
+		"set_description_stride", &glurg::MeshResourceBlobBuilder::set_vertex_description_stride,
+		"set_description_offset", &glurg::MeshResourceBlobBuilder::set_vertex_description_offset,
+		"set_vertex_data", &glurg::MeshResourceBlobBuilder::set_vertex_data,
+		"build", &glurg::MeshResourceBlobBuilder::build);
+	resources.new_usertype<glurg::Model>(
+		"Model",
+		sol::constructors<sol::types<>>(),
+		"positions", sol::property(&glurg::Model::get_mesh_positions, &glurg::Model::set_mesh_positions),
+		"normals", sol::property(&glurg::Model::get_mesh_normals, &glurg::Model::set_mesh_normals),
+		"num_texture_coordinates", sol::property(&glurg::Model::get_num_mesh_texture_coordinates, &glurg::Model::set_num_mesh_texture_coordinates),
+		"get_texture_coordinates", &glurg::Model::get_mesh_texture_coordinates,
+		"set_texture_coordinates", &glurg::Model::set_mesh_texture_coordinates,
+		"num_colors", sol::property(&glurg::Model::get_num_mesh_colors, &glurg::Model::set_num_mesh_colors),
+		"get_colors", &glurg::Model::get_mesh_colors,
+		"set_colors", &glurg::Model::set_mesh_colors,
+		"index_data_type", sol::readonly_property(&glurg::Model::get_index_data_type),
+		"index_data", sol::readonly_property(&glurg::Model::get_index_data),
+		"index_data_count", sol::readonly_property(&glurg::Model::get_index_data_count),
+		"set_index_data", &glurg::Model::set_index_data);
+	resources.new_usertype<glurg::ModelExporter>(
+		"ModelExporter",
+		sol::constructors<sol::types<>>(),
+		"model", sol::property(&glurg::ModelExporter::get_model, &glurg::ModelExporter::set_model),
+		"to_dae", &glurg::ModelExporter::to_dae);
 	resources.new_usertype<glurg::PixelComponentDescription>(
 		"PixelComponentDescription",
 		sol::constructors<sol::types<>>(),
@@ -78,6 +127,14 @@ void glurg::lua::export_resources(lua_State* L)
 		"extract_from_state", &glurg::TextureResourceBlobBuilder::extract_from_state,
 		"extract_framebuffer_from_state", &glurg::TextureResourceBlobBuilder::extract_framebuffer_from_state,
 		"extract_from_call", &glurg::TextureResourceBlobBuilder::extract_from_call);
+	resources.new_usertype<glurg::VertexDescription>(
+		"VertexDescription",
+		sol::constructors<sol::types<>>(),
+		"format", &glurg::VertexDescription::format,
+		"num_components", &glurg::VertexDescription::num_components,
+		"normalized", &glurg::VertexDescription::normalized,
+		"stride", &glurg::VertexDescription::stride,
+		"offset", &glurg::VertexDescription::stride);
 	sol::table texture = resources.create_named("texture");
 	texture["swizzle_red"] = glurg::PixelComponentDescription::swizzle_red;
 	texture["swizzle_green"] = glurg::PixelComponentDescription::swizzle_green;
