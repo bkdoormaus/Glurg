@@ -8,67 +8,67 @@ glurg = require "glurg"
 Promise = require "glurg.common.Promise"
 
 marshal_wrap_mode = (wrap_mode) ->
-	switch wrap_mode
+	return switch wrap_mode
 		when glurg.resources.texture.wrap_none
-			return 'none'
+			'none'
 		when glurg.resources.texture.wrap_border_clamp
-			return 'border_clamp'
+			'border_clamp'
 		when glurg.resources.texture.wrap_edge_clamp
-			return 'edge_clamp'
+			'edge_clamp'
 		when glurg.resources.texture.wrap_repeat
-			return 'repeat'
+			'repeat'
 		when glurg.resources.texture.wrap_mirror_edge_clamp
-			return 'mirror_edge_clamp'
+			'mirror_edge_clamp'
 		when glurg.resources.texture.wrap_mirror_repeat
-			return 'mirror_repeat'
+			'mirror_repeat'
 		else
 			error "unknown wrap mode"
 
 marshal_texture_type = (texture_type) ->
-	switch texture_type
+	return switch texture_type
 		when glurg.resources.texture.type_none
-			return 'none'
+			'none'
 		when glurg.resources.texture.type_1d
-			return '1d'
+			'1d'
 		when glurg.resources.texture.type_2d
-			return '2d'
+			'2d'
 		when glurg.resources.texture.type_3d
-			return '3d'
+			'3d'
 		when glurg.resources.texture.type_cube_map_positive_x
-			return 'cube_map_positive_x'
+			'cube_map_positive_x'
 		when glurg.resources.texture.type_cube_map_negative_x
-			return 'cube_map_negative_x'
+			'cube_map_negative_x'
 		when glurg.resources.texture.type_cube_map_positive_y
-			return 'cube_map_positive_y'
+			'cube_map_positive_y'
 		when glurg.resources.texture.type_cube_map_negative_y
-			return 'cube_map_negative_y'
+			'cube_map_negative_y'
 		when glurg.resources.texture.type_cube_map_positive_z
-			return 'cube_map_positive_z'
+			'cube_map_positive_z'
 		when glurg.resources.texture.type_cube_map_negative_z
-			return 'cube_map_negative_z'
+			'cube_map_negative_z'
 		when glurg.resources.texture.type_1d_array
-			return '1d_array'
+			'1d_array'
 		when glurg.resources.texture.type_2d_array
-			return '2d_array'
+			'2d_array'
 		else
 			error "unknown texture type"
 
 marshal_zoom_filter = (zoom_filter) ->
-	switch zoom_filter
+	return switch zoom_filter
 		when glurg.resources.texture.filter_none
-			return 'none'
+			'none'
 		when glurg.resources.texture.filter_nearest
-			return 'nearest'
+			'nearest'
 		when glurg.resources.texture.filter_linear
-			return 'linear'
+			'linear'
 		when glurg.resources.texture.filter_nearest_mipmap_nearest
-			return 'nearest_mipmap_nearest'
+			'nearest_mipmap_nearest'
 		when glurg.resources.texture.filter_linear_mipmap_nearest
-			return 'linear_mipmap_nearest'
+			'linear_mipmap_nearest'
 		when glurg.resources.texture.filter_nearest_mipmap_linear
-			return 'nearest_mipmap_linear'
+			'nearest_mipmap_linear'
 		when glurg.resources.texture.filter_linear_mipmap_linear
-			return 'linear_mipmap_linear'
+			'linear_mipmap_linear'
 		else
 			error "unknown zoom filter"
 
