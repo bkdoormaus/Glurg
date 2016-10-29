@@ -21,16 +21,16 @@ namespace glurg
 		~Model() = default;
 
 		const MeshResource* get_mesh_positions() const;
-		void set_mesh_positions(std::shared_ptr<MeshResource> value);
+		void set_mesh_positions(const MeshResource* value);
 
 		const MeshResource* get_mesh_normals() const;
-		void set_mesh_normals(std::shared_ptr<MeshResource> value);
+		void set_mesh_normals(const MeshResource* value);
 
 		const MeshResource* get_mesh_bones() const;
-		void set_mesh_bones(std::shared_ptr<MeshResource> value);
+		void set_mesh_bones(const MeshResource* value);
 
 		const MeshResource* get_mesh_weights() const;
-		void set_mesh_weights(std::shared_ptr<MeshResource> value);
+		void set_mesh_weights(const MeshResource* value);
 
 		std::size_t get_num_mesh_texture_coordinates() const;
 		void set_num_mesh_texture_coordinates(std::size_t value);
@@ -38,13 +38,13 @@ namespace glurg
 		const MeshResource* get_mesh_texture_coordinates(
 			std::size_t index) const;
 		void set_mesh_texture_coordinates(
-			std::size_t index, std::shared_ptr<MeshResource> value);
+			std::size_t index, const MeshResource* value);
 
 		std::size_t get_num_mesh_colors() const;
 		void set_num_mesh_colors(std::size_t value);
 
 		const MeshResource* get_mesh_colors(std::size_t index) const;
-		void set_mesh_colors(std::size_t index, std::shared_ptr<MeshResource> value);
+		void set_mesh_colors(std::size_t index, const MeshResource* value);
 
 		enum
 		{
@@ -61,13 +61,12 @@ namespace glurg
 			int type, const std::uint8_t* data, std::size_t count);
 
 	private:
-		typedef std::shared_ptr<MeshResource> MeshResourcePointer;
-		MeshResourcePointer positions;
-		MeshResourcePointer normals;
-		MeshResourcePointer bones;
-		MeshResourcePointer weights;
-		std::vector<MeshResourcePointer> texture_coordinates;
-		std::vector<MeshResourcePointer> colors;
+		const MeshResource* positions;
+		const MeshResource* normals;
+		const MeshResource* bones;
+		const MeshResource* weights;
+		std::vector<const MeshResource*> texture_coordinates;
+		std::vector<const MeshResource*> colors;
 
 		int index_data_type;
 		std::unique_ptr<std::uint8_t[]> index_data;

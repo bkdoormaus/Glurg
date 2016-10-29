@@ -16,40 +16,40 @@ glurg::Model::Model()
 
 const glurg::MeshResource* glurg::Model::get_mesh_positions() const
 {
-	return this->positions.get();
+	return this->positions;
 }
 
-void glurg::Model::set_mesh_positions(std::shared_ptr<MeshResource> value)
+void glurg::Model::set_mesh_positions(const MeshResource* value)
 {
 	this->positions = value;
 }
 
 const glurg::MeshResource* glurg::Model::get_mesh_normals() const
 {
-	return this->normals.get();
+	return this->normals;
 }
 
-void glurg::Model::set_mesh_normals(std::shared_ptr<MeshResource> value)
+void glurg::Model::set_mesh_normals(const MeshResource* value)
 {
 	this->normals = value;
 }
 
 const glurg::MeshResource* glurg::Model::get_mesh_bones() const
 {
-	return this->bones.get();
+	return this->bones;
 }
 
-void glurg::Model::set_mesh_bones(std::shared_ptr<MeshResource> value)
+void glurg::Model::set_mesh_bones(const MeshResource* value)
 {
 	this->bones = value;
 }
 
 const glurg::MeshResource* glurg::Model::get_mesh_weights() const
 {
-	return this->weights.get();
+	return this->weights;
 }
 
-void glurg::Model::set_mesh_weights(std::shared_ptr<MeshResource> value)
+void glurg::Model::set_mesh_weights(const MeshResource* value)
 {
 	this->weights = value;
 }
@@ -67,11 +67,11 @@ void glurg::Model::set_num_mesh_texture_coordinates(std::size_t value)
 const glurg::MeshResource* glurg::Model::get_mesh_texture_coordinates(
 	std::size_t index) const
 {
-	return this->texture_coordinates.at(index).get();
+	return this->texture_coordinates.at(index);
 }
 
 void glurg::Model::set_mesh_texture_coordinates(
-	std::size_t index, std::shared_ptr<MeshResource> value)
+	std::size_t index, const MeshResource* value)
 {
 	this->texture_coordinates.at(index) = value;
 }
@@ -89,11 +89,11 @@ void glurg::Model::set_num_mesh_colors(std::size_t value)
 const glurg::MeshResource* glurg::Model::get_mesh_colors(
 	std::size_t index) const
 {
-	return this->colors.at(index).get();
+	return this->colors.at(index);
 }
 
 void glurg::Model::set_mesh_colors(
-	std::size_t index, std::shared_ptr<MeshResource> value)
+	std::size_t index, const MeshResource* value)
 {
 	this->colors.at(index) = value;
 }
