@@ -5,6 +5,7 @@
 -- Copyright 2016 [bk]door.maus
 
 Promise = require "glurg.common.Promise"
+Trace = require "glurg.trace.Trace"
 
 G = {
 	glurg: {
@@ -23,7 +24,7 @@ G = {
 		resources: {
 			Mesh: require "glurg.resources.Mesh"
 			MeshBlob: require "glurg.resources.MeshBlob"
-			MeshBlobBuffer: require "glurg.resources.MeshBlobBuffer"
+			MeshBlobBuilder: require "glurg.resources.MeshBlobBuilder"
 			Model: require "glurg.resources.Model"
 			Texture: require "glurg.resources.Texture"
 			TextureBlob: require "glurg.resources.TextureBlob"
@@ -86,13 +87,6 @@ SwapBuffers = {
 	"glXSwapBuffers": true
 }
 
-safe_call: (func, ...) ->
-	result = { n = select("#", xpcall((...) -> func(...), debug.traceback)) }
-	if not result[1] then
-		io.stderr\write(result[2], "\n")
-
-	return unpack(result, 2, result.n)
-
 class Heuristic
 	new: (filename) =>
 		success, result = pcall(require, "glurg.heuristics." .. filename)
@@ -102,7 +96,7 @@ class Heuristic
 		else
 			func, m = loadfile(filename)
 			if func == nil then
-				error m
+				error m, 0
 
 			@heuristic = setfenv(func, clone_global_table!)!
 
@@ -116,8 +110,8 @@ class Heuristic
 		@data[key] = value
 
 	run: (filename) =>
-		heuristic = safe_call(@heuristic, @data)
-		filters = { safe_call(heuristic\get_filters) }
+		heuristic = @heuristic(@data)
+		filters = { heuristic\get_filters! }
 
 		trace = Trace(filename)
 		current_frame = 1
@@ -128,27 +122,27 @@ class Heuristic
 				can_delete_call = true
 
 				for i = 1, #filters
-					local func = filters[i]["gl"]
+					func = filters[i]["gl"]
 					if filters[i][call_name]
 						func = filters[i][call_name]
 
 					if func != nil then
-						r = safe_call(func, filters[i], trace, event.call)
+						r = func(filters[i], trace, event.call)
 						if r then
 							can_delete_call = false
 
-				local is_lower_call = not @lower_call_range or event.call_index >= @lower_call_range
-				local is_upper_call = not @upper_call_range or @upper_call_range >= event.call_index
-				local is_lower_frame = not @lower_frame_range or current_frame >= @lower_frame_range
-				local is_upper_frame = not @upper_frame_range or @upper_frame_range >= event.call_index
+				is_lower_call = not @lower_call_range or event.call_index >= @lower_call_range
+				is_upper_call = not @upper_call_range or @upper_call_range >= event.call_index
+				is_lower_frame = not @lower_frame_range or current_frame >= @lower_frame_range
+				is_upper_frame = not @upper_frame_range or @upper_frame_range >= event.call_index
 
 				if is_lower_call and is_lower_frame and is_upper_call and is_upper_frame then
-					local func = heuristic["gl"]
+					func = heuristic["gl"]
 					if heuristic[call_name]
 						func = heuristic[call_name]
 
 					if func != nil then
-						r = safe_call(func, filters[i], trace, event.call)
+						r = func(filters[i], trace, event.call)
 						if r then
 							can_delete_call = false
 
@@ -159,6 +153,6 @@ class Heuristic
 					trace\delete_call(event.call_index)
 
 		if heuristic.dispose
-			safe_call(heuristic\dispose, trace)
+			heuristic\dispose(trace)
 
 return Heuristic
