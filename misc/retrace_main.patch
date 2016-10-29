@@ -1,5 +1,5 @@
 diff --git a/retrace/retrace_main.cpp b/retrace/retrace_main.cpp
-index ec49a16..19e25f2 100644
+index ec49a16..187d905 100644
 --- a/retrace/retrace_main.cpp
 +++ b/retrace/retrace_main.cpp
 @@ -30,6 +30,7 @@
@@ -35,10 +35,10 @@ index ec49a16..19e25f2 100644
 +            StateWriter *writer = stateWriterFactory(std::cout);
 +            dumper->dumpState(*writer);
 +            delete writer;
-+            if (dumpStateCallNos.empty())
-+                exit(0);
 +        }
 +        dumpStateCallNos.erase(hasCallNo);
++        if (dumpStateCallNos.empty())
++            exit(0);
      }
  }
  
