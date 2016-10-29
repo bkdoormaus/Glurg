@@ -52,6 +52,11 @@ Promise.IsClass = class extends TypePromise
 	get_value_type: =>
 		return @value.__class.__name
 
+Promise.IsFunction = class extends TypePromise
+	new: (value) =>
+		@name = "function"
+		@value = value
+
 check_promise = (arg) ->
 	if type(arg) == 'boolean' then
 		return arg, "condition not met"
