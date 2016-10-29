@@ -19,7 +19,7 @@ std::size_t glurg::MeshResource::get_num_values() const
 	std::size_t size = this->blob->get_vertex_data_size();
 	auto description = this->blob->get_vertex_description();
 
-	return (size - description.offset) / description.stride;
+	return size / description.stride;
 }
 
 glm::vec4 glurg::MeshResource::get_value(std::size_t index) const

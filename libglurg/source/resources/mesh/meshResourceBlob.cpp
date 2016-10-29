@@ -12,12 +12,12 @@ glurg::MeshResourceBlob::MeshResourceBlob(ResourceBlobReadBuffer&& buffer)
 	this->hash = Hash::hash(
 		this->buffer.get_buffer(), this->buffer.get_buffer_size());
 
-	this->vertex_description.format = buffer.pop_value<int>();
-	this->vertex_description.num_components = buffer.pop_value<int>();
-	this->vertex_description.normalized = buffer.pop_value<bool>();
-	this->vertex_description.stride = buffer.pop_value<int>();
-	this->vertex_description.offset = buffer.pop_value<int>();
-	this->vertex_data = buffer.pop_data(this->vertex_data_size);
+	this->vertex_description.format = this->buffer.pop_value<int>();
+	this->vertex_description.num_components = this->buffer.pop_value<int>();
+	this->vertex_description.normalized = this->buffer.pop_value<int>();
+	this->vertex_description.stride = this->buffer.pop_value<int>();
+	this->vertex_description.offset = this->buffer.pop_value<int>();
+	this->vertex_data = this->buffer.pop_data(this->vertex_data_size);
 }
 
 glurg::VertexDescription glurg::MeshResourceBlob::get_vertex_description() const
