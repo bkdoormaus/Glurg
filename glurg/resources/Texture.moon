@@ -6,7 +6,7 @@
 
 glurg = require "glurg"
 Promise = require "glurg.common.Promise"
-TextureBlob = require "glurg.common.TextureBlob"
+TextureBlob = require "glurg.resources.TextureBlob"
 
 class Texture
 	new: (blob) =>
