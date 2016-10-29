@@ -7,6 +7,7 @@
 glurg = require "glurg"
 Promise = require "glurg.common.Promise"
 MeshBlob = require "glurg.resources.MeshBlob"
+Call = require "glurg.trace.Call"
 
 marshal_mesh_enumeration = (enumeration, value) ->
 	Promise.keep("enumeration", Promise.IsString(enumeration))
@@ -21,7 +22,7 @@ marshal_mesh_enumeration = (enumeration, value) ->
 
 class MeshBlobBuilder
 	new: =>
-		@_builder = glurg.common.MeshBlobBuilder.new!
+		@_builder = glurg.resources.MeshBlobBuilder.new!
 
 		@\set_description_format('float')
 		@\set_description_num_components(3)
@@ -68,8 +69,51 @@ class MeshBlobBuilder
 		if value == nil or value.length == 0 then
 			return false
 
-		@has_vertex_data = @_builder\set_vertex_data(value.data, value.length)
+		@_builder\set_vertex_data(value.data, value.length)
+		@has_vertex_data = true
 
 		return @has_vertex_data
+
+	extract_attrib_call: (call) =>
+		Promise.keep("call", Promise.IsClass(call, Call))
+
+		-- It's an enumeration. "size" can be GL_BGRA, and so apitrace pushes
+		-- the entire thing inside an enum.
+		num_components = call\get_argument_by_name("size")\query!
+		if num_components.value_name == 'GL_BGRA'
+			@\set_description_num_components(4)
+		else
+			@\set_description_num_components(num_components.value\query!)
+
+
+		format = call\get_argument_by_name("type")\query!
+		switch format.value_name
+			when 'GL_FLOAT' then format = 'float'
+			when 'GL_BYTE' then format = 'byte'
+			when 'GL_UNSIGNED_BYTE' then format = 'unsigned_byte'
+			when 'GL_SHORT' then format = 'short'
+			when 'GL_UNSIGNED_SHORT' then format = 'unsigned_short'
+			when 'GL_INT' then format = 'integer'
+			when 'GL_UNSIGNED_INT' then format = 'unsigned_integer'
+			else error "unknown or unsupported data format"
+		@\set_description_format(format)
+
+		normalized = call\get_argument_by_name("normalized")\query!
+		if normalized
+			@\set_description_normalization('enabled')
+		else
+			@\set_description_normalization('disabled')
+
+		@\set_description_stride(call\get_argument_by_name("stride")\query!)
+
+		offset = call\get_argument_by_name("pointer")\query!
+		if type(offset) == "number"
+			@\set_description_offset(offset)
+		else
+			-- The type would be NULL, as a Blob of zero length
+			@\set_description_offset(0)
+
+		return true
+
 
 return MeshBlobBuilder

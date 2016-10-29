@@ -47,7 +47,7 @@ class MeshBlob
 		@vertex_description =
 			format: marshal_vertex_format(blob.vertex_description.format)
 			num_components: blob.vertex_description.num_components
-			normalization: blob.vertex_description.normalized
+			normalization: marshal_vertex_normalization(blob.vertex_description.normalization)
 			stride: blob.vertex_description.stride
 			offset: blob.vertex_description.offset
 		@hash = blob.hash\to_string!

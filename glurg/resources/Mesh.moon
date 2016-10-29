@@ -9,8 +9,8 @@ Promise = require "glurg.common.Promise"
 MeshBlob = require "glurg.resources.MeshBlob"
 
 class Mesh
-	new: (mesh) =>
-		Promise.keep(mesh, Promise.IsClass(blob, MeshBlob))
+	new: (blob) =>
+		Promise.keep("blob", Promise.IsClass(blob, MeshBlob))
 
 		@_mesh = glurg.resources.Mesh.new(blob._blob)
 		@num_values = @_mesh.num_values
