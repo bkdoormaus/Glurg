@@ -181,9 +181,22 @@ void glurg::ModelExporter::to_dae(Buffer& output_buffer)
 	scene->mNumMeshes = 1;
 	scene->mMeshes = new aiMesh*[1];
 	scene->mMeshes[0] = mesh.release();
+	scene->mNumMaterials = 1;
+	scene->mMaterials = new aiMaterial*[1];
+	scene->mMaterials[0] = new aiMaterial();
+	scene->mRootNode = new aiNode();
+	scene->mRootNode->mName = "root";
+	scene->mRootNode->mNumMeshes = 1;
+	scene->mRootNode->mMeshes = new std::uint32_t[1];
+	scene->mRootNode->mMeshes[0] = 0;
 
 	std::unique_ptr<Assimp::Exporter> exporter(new Assimp::Exporter());
-	auto blob = exporter->ExportToBlob(scene.get(), "dae", 0);
+	auto blob = exporter->ExportToBlob(scene.get(), "collada", 0);
+
+	if (blob == nullptr)
+	{
+		throw std::runtime_error("couldn't export model");
+	}
 
 	output_buffer.insert(output_buffer.end(),
 		(std::uint8_t*)blob->data, (std::uint8_t*)blob->data + blob->size);
