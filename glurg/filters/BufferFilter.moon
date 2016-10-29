@@ -60,7 +60,7 @@ class BufferFilter extends Filter
 
 		target = call\get_argument_by_name("target")\query!.value_name
 		if target == @target then
-			_get_buffer(@current_buffer)\_update_data(call)
+			@\_get_buffer(@current_buffer)\_update_data(call)
 
 		return true
 
