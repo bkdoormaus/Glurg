@@ -88,6 +88,9 @@ class ProgramFilter extends Filter
 
 		@_shaders[shader.name] = shader
 
+	_remove_shader: (shader) =>
+		@_shaders[shader] = nil
+
 	_get_program: (name) =>
 		Promise.keep("@_programs[name] != nil", @_programs[name] != nil)
 
@@ -98,6 +101,9 @@ class ProgramFilter extends Filter
 			@_programs[program.name] == nil)
 
 		@_programs[program.name] = program
+
+	_remove_program: (program) =>
+		@_programs[program] = nil
 
 	get_current_program: =>
 		return @\_get_program(@current_program)
@@ -113,7 +119,7 @@ class ProgramFilter extends Filter
 
 		return false
 
-	glShaderSource: (trace, call)
+	glShaderSource: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
@@ -122,7 +128,7 @@ class ProgramFilter extends Filter
 
 		return false
 
-	glCreateProgram: (trace, call)
+	glCreateProgram: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
@@ -131,7 +137,7 @@ class ProgramFilter extends Filter
 
 		return false
 
-	glAttachShader: (trace, call)
+	glAttachShader: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
@@ -142,7 +148,7 @@ class ProgramFilter extends Filter
 
 		return false
 
-	glDetachShader: (trace, call)
+	glDetachShader: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
@@ -153,25 +159,27 @@ class ProgramFilter extends Filter
 
 		return false
 
-	glDeleteShader: (trace, call)
+	glDeleteShader: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
 		shader = call\get_argument_by_name("shader")\query!
 		@\_get_shader(shader).is_deleted = true
+		@\_remove_shader(shader)
 
 		return false
 
-	glDeleteProgram: (trace, call)
+	glDeleteProgram: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
 		program = call\get_argument_by_name("program")\query!
 		@\_get_program(program).is_deleted = true
+		@\_remove_program(program)
 
 		return false
 
-	glBindAttribLocation: (trace, call)
+	glBindAttribLocation: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
