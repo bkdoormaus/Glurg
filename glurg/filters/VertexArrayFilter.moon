@@ -62,22 +62,24 @@ class VertexArrayFilter extends Filter
 			when "GL_ARRAY_BUFFER"
 				@_current_array_buffer = buffer
 
-		return false
+		return true
 
 	glBindVertexArray: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
-		@current_vertex_array = event.call\get_argument_by_name("array")\query!
+		@current_vertex_array = call\get_argument_by_name("array")\query!
 
-	glVertexAttribPointer: (trace, call)
+		return false
+
+	glVertexAttribPointer: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
 		vao = @\_get_vertex_array(@current_vertex_array)
 		vao\_update_description(trace, @_current_array_buffer, call)
 
-		return false
+		return true
 
 	dispose: (trace) =>
 		for _, vao in pairs(@_vertex_arrays)
