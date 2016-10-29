@@ -22,6 +22,9 @@ class GL3StaticModelHeuristic
 			texture_coordinate_binding: data["texture"]
 		@output_directory = data["output-dir"] or "."
 
+	get_filters: =>
+		return @array_buffer_filter, @element_array_buffer_filter, @program_filter, @vertex_array_filter
+
 	make_mesh: (attribute_name) =>
 		program = @program_filter\get_current_program!
 		attribute_index = program\get_attribute(attribute_name)
