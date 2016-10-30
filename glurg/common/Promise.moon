@@ -46,8 +46,15 @@ Promise.IsUserdata = class extends TypePromise
 
 Promise.IsClass = class extends TypePromise
 	new: (value, object) =>
-		@value = value
-		@name = object.__name
+		if type(value) != "table" then
+			@value = { __class: { __name: "empty" } }
+		else
+			@value = value
+
+		if object != nil then
+			@name = object.__name
+		else
+			@name = "nil"
 
 	get_value_type: =>
 		return @value.__class.__name
