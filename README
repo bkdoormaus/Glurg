@@ -46,6 +46,29 @@ In order to dump the state of many calls, a patched glretrace with such a
 feature must be used with Glurg. The patch is located at misc/retrace_main.patch
 and applies cleanly to the apitrace 7.1 tag.
 
+Running
+================================================================================
+To run Glurg, use the provided shell script.
+
+Glurg requires two inputs: the trace file produced by apitrace and the heuristic
+to run. Heuristics can also require options. For example, this command:
+
+```
+$ glurg --trace araxxor001.trace --heuristic GL3StaticModelHeuristic \
+  --min-frame=1932 --max-frame=1932 \
+  -o position=aVertexPosition -o normal=aVertexNormal -o texture=aTextureUV \
+  -o output-dir=./models
+```
+
+...successfully extracted the various meshes from the game RuneScape 3, such
+as the monster Araxxor:
+
+![Araxxor](https://github.com/bkdoormaus/Glurg/raw/develop/misc/examples/game01.png)
+
+To view options available to heuristics, you should check the relevant source.
+For example, the options in the example above are found in the
+glurg.common.GL3StaticModelHeuristic constructor.
+
 License
 ================================================================================
 Glurg is licensed under the Mozilla Public License, version 2. See the file
