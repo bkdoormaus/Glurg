@@ -110,7 +110,7 @@ class Heuristic
 		@data[key] = value
 
 	run: (filename) =>
-		heuristic = @heuristic(@data)
+		heuristic = self.heuristic(@data)
 		filters = { heuristic\get_filters! }
 
 		trace = Trace(filename)
@@ -134,7 +134,7 @@ class Heuristic
 				is_lower_call = not @lower_call_range or event.call_index >= @lower_call_range
 				is_upper_call = not @upper_call_range or @upper_call_range >= event.call_index
 				is_lower_frame = not @lower_frame_range or current_frame >= @lower_frame_range
-				is_upper_frame = not @upper_frame_range or @upper_frame_range >= event.call_index
+				is_upper_frame = not @upper_frame_range or @upper_frame_range >= current_frame
 
 				if is_lower_call and is_lower_frame and is_upper_call and is_upper_frame then
 					func = heuristic["gl"]
@@ -142,11 +142,12 @@ class Heuristic
 						func = heuristic[call_name]
 
 					if func != nil then
-						r = func(filters[i], trace, event.call)
+						r = func(heuristic, trace, event.call)
 						if r then
 							can_delete_call = false
 
 				if SwapBuffers[call_name]
+					print(current_frame)
 					current_frame += 1
 
 				if can_delete_call then

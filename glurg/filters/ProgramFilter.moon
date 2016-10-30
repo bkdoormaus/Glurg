@@ -137,6 +137,14 @@ class ProgramFilter extends Filter
 
 		return false
 
+	glUseProgram: (trace, call) =>
+		Promise.keep("trace", Promise.IsClass(trace, Trace))
+		Promise.keep("call", Promise.IsClass(call, Call))
+
+		@current_program = call\get_argument_by_name("program")\query!
+
+		return false
+
 	glAttachShader: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))

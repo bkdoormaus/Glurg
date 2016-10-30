@@ -46,7 +46,7 @@ class VertexArrayFilter extends Filter
 		return @_vertex_arrays[name]
 
 	get_current_vertex_array: (name) =>
-		return _get_vertex_array(@current_vertex_array)
+		return @\_get_vertex_array(@current_vertex_array)
 
 	glBindBuffer: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))

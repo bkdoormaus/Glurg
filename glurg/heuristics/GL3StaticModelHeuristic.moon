@@ -8,7 +8,11 @@ Promise = require "glurg.common.Promise"
 BufferFilter = require "glurg.filters.BufferFilter"
 ProgramFilter = require "glurg.filters.ProgramFilter"
 VertexArrayFilter = require "glurg.filters.VertexArrayFilter"
+Model = require "glurg.resources.Model"
+Mesh = require "glurg.resources.Mesh"
 MeshBlobBuilder = require "glurg.resources.MeshBlobBuilder"
+Call = require "glurg.trace.Call"
+Trace = require "glurg.trace.Trace"
 
 class GL3StaticModelHeuristic
 	new: (data) =>
@@ -36,9 +40,8 @@ class GL3StaticModelHeuristic
 
 		builder = MeshBlobBuilder!
 		extracted_description = builder\extract_attrib_call(description.call)
-		extracted_buffer = builder\extracted_buffer_call(buffer.data)
-
-		if extract_description and extracted_buffer
+		extracted_buffer = builder\extract_buffer_call(buffer.data)
+		if extracted_description and extracted_buffer
 			return Mesh(builder\build!)
 
 	make_model: (positions_mesh, normals_mesh, texture_coordinates_mesh, call) =>
@@ -54,6 +57,7 @@ class GL3StaticModelHeuristic
 
 		vertex_array = @vertex_array_filter\get_current_vertex_array!
 		element_array_buffer = @element_array_buffer_filter\get_buffer(vertex_array.element_array_buffer)
+
 		model\extract_index_data(index_format, element_array_buffer.data)
 
 		return model
@@ -68,19 +72,29 @@ class GL3StaticModelHeuristic
 		return vertices and normals and textures
 
 	save_model: (call) =>
-		if is_compatible!
-			positions_mesh = make_mesh(attributes.position_binding)
-			normals_mesh = make_mesh(attributes.normal_binding)
-			texture_coordinates_mesh = make_mesh(attributes.texture_coordinate_binding)
+		if @\is_compatible!
+			positions_mesh = @\make_mesh(@attributes.position_binding)
+			normals_mesh = @\make_mesh(@attributes.normal_binding)
+			texture_coordinates_mesh = @\make_mesh(@attributes.texture_coordinate_binding)
 
-			model = make_model(positions_mesh, normals_mesh, texture_coordinates_mesh, call)
-			model\save_dae(string.format("%s/%10d.dae", call.index))
+			if positions_mesh and normals_mesh and texture_coordinates_mesh
+				model = @\make_model(positions_mesh, normals_mesh, texture_coordinates_mesh, call)
+				model\save_dae(string.format("%s/%010d.dae", @output_directory, call.index))
+				print("saved model")
 
 	glDrawElements: (trace, call) =>
-		Promise.keep("name", Promise.IsString(name))
-		Promise.keep("index", Promise.IsNumber(index))
+		Promise.keep("trace", Promise.IsClass(trace, Trace))
+		Promise.keep("call", Promise.IsClass(call, Call))
 
-		save_model(call)
+		@\save_model(call)
+
+		return false
+
+	glDrawRangeElements: (trace, call) =>
+		Promise.keep("trace", Promise.IsClass(trace, Trace))
+		Promise.keep("call", Promise.IsClass(call, Call))
+
+		@\save_model(call)
 
 		return false
 
