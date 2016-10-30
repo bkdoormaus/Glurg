@@ -147,7 +147,6 @@ class Heuristic
 							can_delete_call = false
 
 				if SwapBuffers[call_name]
-					print(current_frame)
 					current_frame += 1
 
 				if can_delete_call then

@@ -48,7 +48,8 @@ and applies cleanly to the apitrace 7.1 tag.
 
 Running
 ================================================================================
-To run Glurg, use the provided shell script.
+To run Glurg, use the provided shell script, 'glurg.sh'. It expects libglurg.so,
+generated from the build step, to be located at 'bin/libglurg.so'.
 
 Glurg requires two inputs: the trace file produced by apitrace and the heuristic
 to run. Heuristics can also require options. For example, this command:
