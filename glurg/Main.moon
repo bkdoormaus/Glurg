@@ -4,6 +4,7 @@
 --
 -- Copyright 2016 [bk]door.maus
 
+Log = require "glurg.common.Log"
 ParameterParser = require "glurg.common.ParameterParser"
 Heuristic = require "glurg.heuristics.Heuristic"
 
@@ -33,13 +34,25 @@ State.set_min_call = (value) ->
 State.set_max_call = (value) ->
 	State.parameters.max_call = tonumber(value)
 
+State.set_verbosity = (value) ->
+	switch value
+		when 'high', 'medium', 'low'
+			Log.message_threshold = value
+		else
+			Log\error("invalid verbosity threshold: '%s'", value)
 
 Parameters = ParameterParser("glurg")
 do
+	print_usage = ->
+		Parameters\print_usage!
+		os.exit(0)
+
 	Parameters\add(
 		"trace", "t", "apitrace file to process", true, State.set_trace)
 	Parameters\add(
-		"heuristic", "h", "heuristic to run", true, State.set_heuristic)
+		"heuristic", "i", "heuristic to run", true, State.set_heuristic)
+	Parameters\add(
+		"option", "o", "set heuristic option in form KEY=VALUE", true, State.set_option)
 	Parameters\add(
 		"min-frame", nil, "minimum frame to examine", true, State.set_min_frame)
 	Parameters\add(
@@ -49,7 +62,9 @@ do
 	Parameters\add(
 		"max-call", nil, "maximum call to examine", true, State.set_max_call)
 	Parameters\add(
-		"option", "o", "set heuristic option in form KEY=VALUE", true, State.set_option)
+		"verbosity", "v", "verbosity threshold (low, medium, high)", true, State.set_verbosity)
+	Parameters\add(
+		"help", "h", "prints usage information", false, print_usage)
 
 main = (arguments) ->
 	success, result = Parameters\parse(arguments)

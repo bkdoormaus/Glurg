@@ -15,22 +15,23 @@ class ParameterParser
 		@short_forms = {}
 		@parameters = {}
 
-		@\add("help", "h", "prints usage information", false, @\print_usage)
-		@long_forms["help"].is_help = true
-
 	print_usage: =>
 		io.stdout\write("#{@program_name} <options>\n")
 		io.stdout\write("\n")
-		for i = 1, #parameters
-			if parameters[i].short_form
-				io.stdout\write(parameters[i].long_form, ", ", parameters[i].short_form, "\n")
-			else
-				io.stdout\write(parameters[i].long_form, "\n")
+		io.stdout\write("parameters:\n")
 
-			if type(parameters[i].description) == "table"
-				io.stdout\write("\t", table.concat(parameters[i].description, "\n"))
+		for i = 1, #@parameters
+			io.stdout\write("\t", "--", @parameters[i].long_form)
+			if @parameters[i].short_form
+				io.stdout\write(",", " ", "-", @parameters[i].short_form)
+			if @parameters[i].has_argument
+				io.stdout\write(" ", "<ARGUMENT>")
+			io.stdout\write("\n")
+
+			if type(@parameters[i].description) == "table"
+				io.stdout\write("\t\t", table.concat(@parameters[i].description, "\n"))
 			else
-				io.stdout\write("\t", parameters[i].description)
+				io.stdout\write("\t\t", @parameters[i].description, "\n")
 
 	add: (long_form, short_form, description, has_argument, callback) =>
 		Promise.keep("long_form", Promise.IsString(long_form))
@@ -59,7 +60,7 @@ class ParameterParser
 		index = 1
 		loose = {}
 
-		while index < #arguments
+		while index <= #arguments
 			argument = arguments[index]
 
 			is_loose = false
@@ -83,9 +84,6 @@ class ParameterParser
 				success, message = pcall(parameter.callback, parameter_argument)
 				if not success then
 					return false, message
-
-				if parameter.is_help then
-					return false, nil
 
 			index += 1
 
