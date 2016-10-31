@@ -4,12 +4,14 @@
 --
 -- Copyright 2016 [bk]door.maus
 
+Log = require "glurg.common.Log"
 Promise = require "glurg.common.Promise"
 Trace = require "glurg.trace.Trace"
 
 G = {
 	glurg: {
 		common: {
+			Log: require "glurg.common.Log"
 			Promise: require "glurg.common.Promise"
 			Retrace: require "glurg.common.Retrace"
 		},
@@ -147,6 +149,7 @@ class Heuristic
 							can_delete_call = false
 
 				if SwapBuffers[call_name]
+					Log\info('low', "finished frame #{current_frame}")
 					current_frame += 1
 
 				if can_delete_call then

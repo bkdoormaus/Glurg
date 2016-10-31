@@ -4,6 +4,7 @@
 --
 -- Copyright 2016 [bk]door.maus
 
+Log = require "glurg.common.Log"
 Promise = require "glurg.common.Promise"
 BufferFilter = require "glurg.filters.BufferFilter"
 ProgramFilter = require "glurg.filters.ProgramFilter"
@@ -79,8 +80,12 @@ class GL3StaticModelHeuristic
 
 			if positions_mesh and normals_mesh and texture_coordinates_mesh
 				model = @\make_model(positions_mesh, normals_mesh, texture_coordinates_mesh, call)
-				model\save_dae(string.format("%s/%010d.dae", @output_directory, call.index))
-				print("saved model")
+
+				filename = string.format("%s/%010d.dae", @output_directory, call.index)
+				model\save_dae(filename)
+
+				Log\info('medium', "saved model: #{filename}")
+
 
 	glDrawElements: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
