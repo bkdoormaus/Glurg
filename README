@@ -64,7 +64,7 @@ $ glurg --trace araxxor001.trace --heuristic GL3StaticModelHeuristic \
 ...successfully extracted the various meshes from the game RuneScape 3, such
 as the monster Araxxor:
 
-![Araxxor](https://github.com/bkdoormaus/Glurg/raw/develop/misc/examples/game01.png)
+![Araxxor](/misc/examples/game01.png?raw=true)
 
 To view options available to heuristics, you should check the relevant source.
 For example, the options in the example above are found in the
