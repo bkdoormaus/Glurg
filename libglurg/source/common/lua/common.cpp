@@ -23,11 +23,18 @@ const std::uint8_t* get_data_buffer_data(
 	return &buffer.at(0);
 }
 
+const std::uint8_t* slice_data(
+	const std::uint8_t* buffer, std::size_t offset)
+{
+	return buffer + offset;
+}
+
 void glurg::lua::export_common(lua_State* L)
 {
 	sol::table glurg = sol::stack::get<sol::table>(L, -1);
 
 	sol::table common = glurg.create_named("common");
+	common["slice_data"] = &slice_data;
 	common["hash_data"] = &glurg::Hash::hash;
 	common["file_mode_read"] = glurg::FileStream::mode_read;
 	common["file_mode_write"] = glurg::FileStream::mode_write;
