@@ -23,16 +23,16 @@ State.set_heuristic = (value) ->
 	State.parameters.heuristic = value
 
 State.set_min_frame = (value) ->
-	State.parameters.min_frame = tonumber(value)
+	State.parameters.min_frame = tonumber(value) + 1
 
 State.set_max_frame = (value) ->
-	State.parameters.max_frame = tonumber(value)
+	State.parameters.max_frame = tonumber(value) + 1
 
 State.set_min_call = (value) ->
-	State.parameters.min_call = tonumber(value)
+	State.parameters.min_call = tonumber(value) + 1
 
 State.set_max_call = (value) ->
-	State.parameters.max_call = tonumber(value)
+	State.parameters.max_call = tonumber(value) + 1
 
 State.set_verbosity = (value) ->
 	switch value
