@@ -104,7 +104,7 @@ class Value
 		return switch @type
 			when 'boolean' then @_value\to_boolean!
 			when 'integer' then @_value\to_integer!
-			when 'float' then @_value\to_float!
+			when 'float' then @_value\to_number!
 			when 'string' then @_value\to_string!
 			when 'nil' then nil
 			when 'blob' then Blob(@_value\to_blob!)
