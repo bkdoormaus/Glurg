@@ -4,84 +4,74 @@
 --
 -- Copyright 2016 [bk]door.maus
 
+moonscript = require "moonscript"
 Log = require "glurg.common.Log"
 Promise = require "glurg.common.Promise"
 Trace = require "glurg.trace.Trace"
 
-G = {
-	glurg: {
-		common: {
-			Log: require "glurg.common.Log"
-			Promise: require "glurg.common.Promise"
-			Retrace: require "glurg.common.Retrace"
+clone_global_table = ->
+	g = {
+		glurg: {
+			common: {
+				Log: require "glurg.common.Log"
+				Promise: require "glurg.common.Promise"
+				Retrace: require "glurg.common.Retrace"
+			},
+			filters: {
+				BufferFilter: require "glurg.filters.BufferFilter"
+				ProgramFilter: require "glurg.filters.ProgramFilter"
+				VertexArrayFilter: require "glurg.filters.VertexArrayFilter"
+			},
+			heuristics: {
+				GL3StaticModelHeuristic: require "glurg.heuristics.GL3StaticModelHeuristic"
+			},
+			resources: {
+				Mesh: require "glurg.resources.Mesh"
+				MeshBlob: require "glurg.resources.MeshBlob"
+				MeshBlobBuilder: require "glurg.resources.MeshBlobBuilder"
+				Model: require "glurg.resources.Model"
+				Texture: require "glurg.resources.Texture"
+				TextureBlob: require "glurg.resources.TextureBlob"
+				TextureBlobBuilder: require "glurg.resources.TextureBlobBuilder"
+			},
+			trace: {
+				Call: require "glurg.trace.Call"
+				Event: require "glurg.trace.Event"
+				Trace: require "glurg.trace.Trace"
+				Value: require "glurg.trace.Value"
+			}
 		},
-		filters: {
-			BufferFilter: require "glurg.filters.BufferFilter"
-			ProgramFilter: require "glurg.filters.ProgramFilter"
-			VertexArrayFilter: require "glurg.filters.VertexArrayFilter"
-		},
-		heuristics: {
-			GL3ModelHeuristic: require "glurg.heuristics.GL3StaticModelHeuristic"
-		},
-		resources: {
-			Mesh: require "glurg.resources.Mesh"
-			MeshBlob: require "glurg.resources.MeshBlob"
-			MeshBlobBuilder: require "glurg.resources.MeshBlobBuilder"
-			Model: require "glurg.resources.Model"
-			Texture: require "glurg.resources.Texture"
-			TextureBlob: require "glurg.resources.TextureBlob"
-			TextureBlobBuilder: require "glurg.resources.TextureBlobBuilder"
-		},
-		trace: {
-			Call: require "glurg.trace.Call"
-			Event: require "glurg.trace.Event"
-			Trace: require "glurg.trace.Trace"
-			Value: require "glurg.trace.Value"
-		}
-	},
 
-	:error,
-	:getfenv,
-	:getmetatable,
-	:ipairs,
-	:next,
-	:pairs,
-	:pcall,
-	:print,
-	:rawequal,
-	:rawget,
-	:rawset,
-	:select,
-	:setfenv,
-	:setmetatable,
-	:tonumber,
-	:tostring,
-	:type,
-	:unpack,
-	:xpcall,
+		:error,
+		:getfenv,
+		:getmetatable,
+		:ipairs,
+		:next,
+		:pairs,
+		:pcall,
+		:print,
+		:rawequal,
+		:rawget,
+		:rawset,
+		:select,
+		:setfenv,
+		:setmetatable,
+		:tonumber,
+		:tostring,
+		:type,
+		:unpack,
+		:xpcall,
 
-	:coroutine,
-	:io,
-	:math,
-	:os,
-	:string,
-	:table
-}
-G._G = G
-
-_dofile = dofile
-G.require = (path) ->
-	return _dofile(path .. ".moon")
-
-clone_global_table: (g, o) ->
-	g = g or {}
-	o = o or G
-
-	for key, value in pairs(o)
-		if type(value) == "table"
-			g[key] = clone_global_table({}, value)
-		else
-			g[key] = value
+		:coroutine,
+		:io,
+		:math,
+		:os,
+		:string,
+		:table
+	}
+	g.require = (path) ->
+		return _dofile(path .. ".moon")
+	g._G = g
 
 	return g
 
@@ -96,7 +86,7 @@ class Heuristic
 		if success then
 			@heuristic = result
 		else
-			func, m = loadfile(filename)
+			func, m = moonscript.loadfile(filename)
 			if func == nil then
 				error m, 0
 
