@@ -17,7 +17,7 @@ class Mesh
 		@blob = blob
 
 	get_value: (index) =>
-		Promise.keep("index", Promise.IsNumber(blob))
+		Promise.keep("index", Promise.IsNumber(index))
 		Promise.keep("index >= 1", index >= 1)
 		Promise.keep("index <= @num_values", index <= @num_values)
 
