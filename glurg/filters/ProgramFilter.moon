@@ -22,7 +22,7 @@ class Shader
 			@name == call\get_argument_by_name("shader")\query!)
 
 		s = {}
-		argument = call\get_argument_by_name("string")
+		argument = call\get_argument_by_name("string")\query!
 		for i = 1, #argument
 			table.insert(s, argument[i]\query!)
 		@source = table.concat(s, "\n")
@@ -56,7 +56,7 @@ class Program
 		if location == -1
 			return false
 
-		uniform = { call: false }
+		uniform = { call: false, :name, :location }
 		if @uniforms[name] == nil
 			Promise.keep("@uniforms[location] == nil",
 				@uniforms[location] == nil)
@@ -75,6 +75,9 @@ class Program
 		if @uniforms[key].call then
 			trace\delete_call(@uniforms[key].call.index)
 		@uniforms[key].call = call
+
+	get_uniforms: =>
+		return [item for key, item in pairs(@uniforms) when type(key) == "number"]
 
 	get_uniform: (key) =>
 		Promise.keep_any("key", Promise.IsNumber(key), Promise.IsString(key))
@@ -104,7 +107,7 @@ class Program
 					count = call\get_argument_by_name("count")\query!
 					value = call\get_argument_by_name("value")\query!
 					if count == 1
-						return value, 'scalar'
+						return value[1], 'scalar'
 					else
 						return value, 'scalar_array'
 				when "glUniform2fv", "glUniform2iv", "glUniform2uiv"
@@ -113,42 +116,42 @@ class Program
 					result = {}
 					for i = 1, count
 						result[i] = { 
-							x: value[i * 2 + 0],
-							y: value[i * 2 + 1]
+							x: value[i * 2 + 0]\query!,
+							y: value[i * 2 + 1]\query!
 						}
 					if count == 1
-						return value[1], 'vec2'
+						return result[1], 'vec2'
 					else
-						return value, 'vec2_array'
+						return result, 'vec2_array'
 				when "glUniform3fv", "glUniform3iv", "glUniform3uiv"
 					count = call\get_argument_by_name("count")\query!
 					value = call\get_argument_by_name("value")\query!
 					result = {}
 					for i = 1, count
 						result[i] = {
-							x: value[i * 3 + 0],
-							y: value[i * 3 + 1],
-							z: value[i * 3 + 2]
+							x: value[(i - 1) * 3 + 1]\query!,
+							y: value[(i - 1) * 3 + 2]\query!,
+							z: value[(i - 1) * 3 + 3]\query!
 						}
 					if count == 1
-						return value[1], 'vec3'
+						return result[1], 'vec3'
 					else
-						return value, 'vec3_array'
+						return result, 'vec3_array'
 				when "glUniform4fv", "glUniform4iv", "glUniform4uiv"
 					count = call\get_argument_by_name("count")\query!
 					value = call\get_argument_by_name("value")\query!
 					result = {}
 					for i = 1, count
 						result[i] = {
-							x: value[i * 4 + 0],
-							y: value[i * 4 + 1],
-							z: value[i * 4 + 2],
-							w: value[i * 4 + 3]
+							x: value[(i - 1) * 4 + 1]\query!,
+							y: value[(i - 1) * 4 + 2]\query!,
+							z: value[(i - 1) * 4 + 3]\query!,
+							w: value[(i - 1) * 4 + 4]\query!
 						}
 					if count == 1
-						return value[1], 'vec4'
+						return result[1], 'vec4'
 					else
-						return value, 'vec4_array'
+						return result, 'vec4_array'
 				when "glUniformMatrix2fv"
 					Log\warn('high', "cannot get uniform; type not yet implemented")
 					return nil
@@ -166,17 +169,17 @@ class Program
 							for j = 1, 4 do
 								result[i][j] = {}
 							for j = 1, 4 do
-								result[i][1][j] = value[i * 16 + j * 4 + 0]
-								result[i][2][j] = value[i * 16 + j * 4 + 1]
-								result[i][3][j] = value[i * 16 + j * 4 + 2]
-								result[i][4][j] = value[i * 16 + j * 4 + 3]
+								result[i][1][j] = value[(i - 1) * 16 + (j - 1) * 4 + 1]\query!
+								result[i][2][j] = value[(i - 1) * 16 + (j - 1) * 4 + 2]\query!
+								result[i][3][j] = value[(i - 1) * 16 + (j - 1) * 4 + 3]\query!
+								result[i][4][j] = value[(i - 1) * 16 + (j - 1) * 4 + 4]\query!
 						else
 							for j = 1, 4 do
 								result[i][j] = {
-									value[i * 16 + j * 4 + 0],
-									value[i * 16 + j * 4 + 1],
-									value[i * 16 + j * 4 + 2],
-									value[i * 16 + j * 4 + 3]
+									value[(i - 1) * 16 + (j - 1) * 4 + 1]\query!,
+									value[(i - 1) * 16 + (j - 1) * 4 + 2]\query!,
+									value[(i - 1) * 16 + (j - 1) * 4 + 3]\query!,
+									value[(i - 1) * 16 + (j - 1) * 4 + 4]\query!
 								}
 
 					if count == 1
@@ -225,7 +228,7 @@ class Program
 					break
 
 	get_shader_source: (shader_type) =>
-		source = [s for i, s in ipairs(@shaders[shader_type] or {})]
+		source = [s.source for i, s in ipairs(@shaders[shader_type] or {})]
 		return table.concat(source, "\n")
 
 class ProgramFilter extends Filter
