@@ -49,10 +49,17 @@ void glurg::lua::export_common(lua_State* L)
 	common.new_usertype<glm::ivec4>(
 		"Pixel",
 		sol::constructors<sol::types<>>(),
-		"r", &glm::ivec4::x,
-		"g", &glm::ivec4::y,
-		"b", &glm::ivec4::z,
+		"r", &glm::ivec4::r,
+		"g", &glm::ivec4::g,
+		"b", &glm::ivec4::b,
 		"a", &glm::ivec4::a);
+	common.new_usertype<glm::vec4>(
+		"Vector4",
+		sol::constructors<sol::types<>>(),
+		"x", &glm::vec4::x,
+		"y", &glm::vec4::y,
+		"z", &glm::vec4::z,
+		"w", &glm::vec4::w);
 	common.new_usertype<DataBuffer>(
 		"DataBuffer",
 		sol::constructors<sol::types<>>(),
