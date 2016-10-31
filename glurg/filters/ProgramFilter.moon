@@ -231,6 +231,14 @@ class Program
 		source = [s.source for i, s in ipairs(@shaders[shader_type] or {})]
 		return table.concat(source, "\n")
 
+	dispose: (trace) =>
+		Promise.keep("trace", Promise.IsClass(trace, Trace))
+		uniforms = @\get_uniforms!
+		for i = 1, #uniforms
+			if uniforms[i].call
+				trace\delete_call(call.index)
+				uniforms[i].call = false
+
 class ProgramFilter extends Filter
 	new: =>
 		@_shaders = {}
@@ -475,5 +483,11 @@ class ProgramFilter extends Filter
 
 	glUniformMatrix4x3fv: (trace, call) =>
 		return @\_set_uniform(trace, call)
+
+	dispose: (trace) =>
+		Promise.keep("trace", Promise.IsClass(trace, Trace))
+
+		for _, program in pairs(@_programs)
+			program\dispose(trace)
 
 return ProgramFilter

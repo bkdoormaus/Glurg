@@ -103,4 +103,12 @@ class GL3StaticModelHeuristic
 
 		return false
 
+	dispose: (trace) =>
+		Promise.keep("trace", Promise.IsClass(trace, Trace))
+
+		@array_buffer_filter\dispose(trace)
+		@element_array_buffer_filter\dispose(trace)
+		@program_filter\dispose(trace)
+		@vertex_array_filter\dispose(trace)
+
 return GL3StaticModelHeuristic
