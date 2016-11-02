@@ -9,8 +9,8 @@ other things, too.
 
 Building
 ================================================================================
-Currently, Glurg is in very early stages of development. Not much is done. See
-'develop' branch for WIP progress.
+Currently, Glurg is useable. Newest developments can be found in the develop
+branch.
 
 Glurg's application logic is written in MoonScript. However, the native library,
 libglurg, requires building using your platform's C++ compiler.
@@ -69,6 +69,9 @@ as the monster Araxxor:
 To view options available to heuristics, you should check the relevant source.
 For example, the options in the example above are found in the
 glurg.common.GL3StaticModelHeuristic constructor.
+
+A simple example of extracting meshes from the game RuneScape can be found
+at [/misc/tutorial/tutorial.markdown](/misc/tutorial/tutorial.markdown).
 
 License
 ================================================================================

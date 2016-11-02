@@ -181,7 +181,9 @@ pretty simple. It extracts the sub-meshes of a draw call, as well as the
 textures from the atlas.
 
 The batched terrain in all its glory, as three separate meshes:
+
 ![Batched image of some terrain](/misc/tutorial/images/batch_result.png?raw=true)
 
 And Telos:
+
 ![Telos](/misc/tutorial/images/telos.png?raw=true)
