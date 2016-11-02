@@ -68,10 +68,12 @@ class BufferFilter extends Filter
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
-		deleted_buffers = call\get_argument_by_name("buffers")\query!
-		for i = 1, #deleted_buffers
-			if @_buffers[deleted_buffers[i]]
-				@_buffers[deleted_buffers[i]].is_deleted = true
+		buffers = call\get_argument_by_name("buffers")\query!
+		for i = 1, #buffers
+			if @_buffers[buffers[i]]
+				@_buffers[buffers[i]].is_deleted = true
+				@_buffers[buffers[i]]\dispose!
+				@_buffers[buffers[i]] = nil
 
 		return false
 

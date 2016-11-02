@@ -81,6 +81,17 @@ class VertexArrayFilter extends Filter
 
 		return true
 
+	glDeleteVertexArrays: (trace, call) =>
+		Promise.keep("trace", Promise.IsClass(trace, Trace))
+		Promise.keep("call", Promise.IsClass(call, Call))
+
+		arrays = call\get_argument_by_name("arrays")\query!
+		for i = 1, #arrays
+			if @_vertex_arrays[arrays[i]]
+				@_vertex_arrays[arrays[i]].is_deleted = true
+				@_vertex_arrays[arrays[i]]\dispose!
+				@_vertex_arrays[arrays[i]] = nil
+
 	dispose: (trace) =>
 		for _, vao in pairs(@_vertex_arrays)
 			vao\dispose(trace)

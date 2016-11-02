@@ -349,8 +349,11 @@ class ProgramFilter extends Filter
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
 		Promise.keep("call", Promise.IsClass(call, Call))
 
-		program = call\get_argument_by_name("program")\query!
-		@\_get_program(program).is_deleted = true
+		name = call\get_argument_by_name("program")\query!
+		program = @\_get_program(name)
+		program.is_deleted = true
+		program\dispose!
+
 		@\_remove_program(program)
 
 		return false
