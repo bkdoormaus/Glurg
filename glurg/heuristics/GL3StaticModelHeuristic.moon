@@ -51,9 +51,9 @@ class GL3StaticModelHeuristic
 		model.texture_coordinates[1] = texture_coordinates_mesh
 
 		index_format = switch call\get_argument_by_name("type")\query!.value_name
-			when 'GL_UNSIGNED_BYTE' then index_format = 'unsigned_byte'
-			when 'GL_UNSIGNED_SHORT' then index_format = 'unsigned_short'
-			when 'GL_UNSIGNED_INT' then index_format = 'unsigned_integer'
+			when 'GL_UNSIGNED_BYTE' then 'unsigned_byte'
+			when 'GL_UNSIGNED_SHORT' then 'unsigned_short'
+			when 'GL_UNSIGNED_INT' then 'unsigned_integer'
 			else error "unknown index type"
 
 		vertex_array = @vertex_array_filter\get_current_vertex_array!
