@@ -78,7 +78,7 @@ $ ./glurg.sh --trace telos001.trace --heuristic GL3StaticModelHeuristic \
 After examining the output, it was evident RuneScape NXT makes gratuitous use of
 batching to reduce state changes and draw calls:
 
-![Batched image of some terrain](/images/batch.png?raw=true)
+![Batched image of some terrain](/misc/tutorial/images/batch.png?raw=true)
 
 ## Extracting sub-meshes
 
@@ -127,7 +127,7 @@ RuneScape NXT uses texture giant atlases. I dumped the OpenGL state with
 qapitrace/glretrace for a known good state: the draw call for batched terrain
 object.
 
-![Texture atlas in use at time](/images/atlas_example.png?raw=true)
+![Texture atlas in use at time](/misc/tutorial/images/atlas_example.png?raw=true)
 
 By having qapitrace only show texture calls, it became immediately clear the
 process:
@@ -181,7 +181,7 @@ pretty simple. It extracts the sub-meshes of a draw call, as well as the
 textures from the atlas.
 
 The batched terrain in all its glory, as three separate meshes:
-![Batched image of some terrain](/images/batch_final.png?raw=true)
+![Batched image of some terrain](/misc/tutorial/images/batch_result.png?raw=true)
 
 And Telos:
-![telos](/images/telos.png?raw=true)
+![Telos](/misc/tutorial/images/telos.png?raw=true)
