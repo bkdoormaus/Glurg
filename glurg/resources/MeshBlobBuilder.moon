@@ -74,6 +74,25 @@ class MeshBlobBuilder
 
 		return @has_vertex_data
 
+	extract_buffer_call_slice: (call, offset, size) =>
+		Promise.keep("call", Promise.IsClass(call, Call))
+		Promise.keep("offset", Promise.IsNumber(offset))
+		Promise.keep("size", Promise.IsNumber(size))
+		Promise.keep("offset >= 0", offset >= 0)
+		Promise.keep("size >= 1", size >= 1)
+
+		value = call\get_argument_by_name("data")\query!
+		if value == nil or value.length == 0 then
+			return false
+
+		if offset + size > value.length
+			return false
+
+		@_builder\set_vertex_data(glurg.common.slice_data(value.data, offset), size)
+		@has_vertex_data = true
+
+		return @has_vertex_data
+
 	extract_attrib_call: (call) =>
 		Promise.keep("call", Promise.IsClass(call, Call))
 
@@ -84,8 +103,7 @@ class MeshBlobBuilder
 			@\set_description_num_components(4)
 		else
 			@\set_description_num_components(num_components.value\query!)
-
-
+		
 		format = call\get_argument_by_name("type")\query!
 		switch format.value_name
 			when 'GL_FLOAT' then format = 'float'
@@ -99,7 +117,7 @@ class MeshBlobBuilder
 		@\set_description_format(format)
 
 		normalized = call\get_argument_by_name("normalized")\query!
-		if normalized
+		if normalized.value_name == "GL_TRUE"
 			@\set_description_normalization('enabled')
 		else
 			@\set_description_normalization('disabled')
