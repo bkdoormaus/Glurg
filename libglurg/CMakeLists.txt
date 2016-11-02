@@ -41,7 +41,8 @@ set(LIBGLURG_INCLUDE_FILES
 	"include/glurg/trace/enumerationSignature.hpp"
 	"include/glurg/trace/structure.hpp"
 	"include/glurg/trace/structureSignature.hpp"
-	"include/glurg/trace/traceFile.hpp")
+	"include/glurg/trace/traceFile.hpp"
+	"source/resources/texture/textureCompression.h")
 
 set(LIBGLURG_SOURCE_FILES
 	"source/common/base64.cpp"
@@ -64,6 +65,7 @@ set(LIBGLURG_SOURCE_FILES
 	"source/resources/mesh/model.cpp"
 	"source/resources/mesh/modelExporter.cpp"
 	"source/resources/texture/pixelUnpacker.cpp"
+	"source/resources/texture/textureCompression.c"
 	"source/resources/texture/textureResource.cpp"
 	"source/resources/texture/textureResourceBlob.cpp"
 	"source/resources/texture/textureResourceBlobBuilder.cpp"

@@ -126,7 +126,8 @@ void glurg::lua::export_resources(lua_State* L)
 		"build", &glurg::TextureResourceBlobBuilder::build,
 		"extract_from_state", &glurg::TextureResourceBlobBuilder::extract_from_state,
 		"extract_framebuffer_from_state", &glurg::TextureResourceBlobBuilder::extract_framebuffer_from_state,
-		"extract_from_call", &glurg::TextureResourceBlobBuilder::extract_from_call);
+		"extract_from_call", &glurg::TextureResourceBlobBuilder::extract_from_call,
+		"extract_compressed_from_call", &glurg::TextureResourceBlobBuilder::extract_compressed_from_call);
 	resources.new_usertype<glurg::VertexDescription>(
 		"VertexDescription",
 		sol::constructors<sol::types<>>(),
@@ -194,4 +195,9 @@ void glurg::lua::export_resources(lua_State* L)
 	texture["filter_linear_mipmap_nearest"] = glurg::TextureResourceBlob::filter_linear_mipmap_nearest;
 	texture["filter_nearest_mipmap_linear"] = glurg::TextureResourceBlob::filter_nearest_mipmap_linear;
 	texture["filter_linear_mipmap_linear"] = glurg::TextureResourceBlob::filter_linear_mipmap_linear;
+	texture["compression_bc1"] = glurg::TextureResourceBlobBuilder::compression_bc1;
+	texture["compression_bc2"] = glurg::TextureResourceBlobBuilder::compression_bc2;
+	texture["compression_bc3"] = glurg::TextureResourceBlobBuilder::compression_bc3;
+	texture["compression_bc4"] = glurg::TextureResourceBlobBuilder::compression_bc4;
+	texture["compression_bc5"] = glurg::TextureResourceBlobBuilder::compression_bc5;
 }

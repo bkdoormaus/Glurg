@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <cstring>
+#include "textureCompression.h"
 #include "glurg/common/base64.hpp"
 #include "glurg/common/pixelData.hpp"
 #include "glurg/resources/openGL.hpp"
@@ -457,6 +458,11 @@ bool glurg::TextureResourceBlobBuilder::extract_from_call(
 		return false;
 	}
 
+	if (this->pixels)
+	{
+		delete[] this->pixels;
+	}
+
 	this->pixels = d.release();
 	this->pixels_size = data_size;
 
@@ -498,6 +504,106 @@ bool glurg::TextureResourceBlobBuilder::extract_from_call(
 
 	set_uniform_pixel_component_descriptions(
 		num_components, storage_type, component_bits);
+
+	return true;
+}
+
+bool glurg::TextureResourceBlobBuilder::extract_compressed_from_call(
+	int format, const std::uint8_t* data)
+{
+	verify_texture_type(this->texture_type);
+	verify_dimensions(this->width, this->height, this->depth);
+	verify_mipmap_level(this->level);
+
+	if (this->width % 4 != 0 || this->height % 4 != 0)
+	{
+		throw std::runtime_error("width and/or height not multiple of four");
+	}
+
+	switch (format)
+	{
+		case compression_bc1:
+		case compression_bc2:
+		case compression_bc3:
+		case compression_bc4:
+		case compression_bc5:
+			break;
+		default:
+			throw std::runtime_error("invalid compression format");
+	}
+
+	{
+		PixelComponentDescription red;
+		red.swizzle = PixelComponentDescription::swizzle_red;
+		red.storage = PixelComponentDescription::storage_unsigned_normalized;
+		red.bit_size = 8;
+		set_red_description(red);
+
+		PixelComponentDescription green;
+		green.swizzle = PixelComponentDescription::swizzle_green;
+		green.storage = PixelComponentDescription::storage_unsigned_normalized;
+		green.bit_size = 8;
+		set_green_description(green);
+
+		PixelComponentDescription blue;
+		blue.swizzle = PixelComponentDescription::swizzle_blue;
+		blue.storage = PixelComponentDescription::storage_unsigned_normalized;
+		blue.bit_size = 8;
+		set_blue_description(blue);
+
+		PixelComponentDescription alpha;
+		alpha.swizzle = PixelComponentDescription::swizzle_alpha;
+		alpha.storage = PixelComponentDescription::storage_unsigned_normalized;
+		alpha.bit_size = 8;
+		set_alpha_description(alpha);
+	}
+
+	const std::size_t pixel_size = 4;
+	const std::size_t row_size = this->width * pixel_size;
+	const std::size_t plane_size = row_size * this->width;
+	auto pixels = std::make_unique<std::uint8_t[]>(plane_size * this->depth);
+	auto p = pixels.get();
+	auto d = data;
+	for (std::size_t z = 0; z < this->depth; ++z)
+	{
+		for (std::size_t y = 0; y < this->height; y += 4)
+		{
+			for (std::size_t x = 0; x < this->height; x += 4)
+			{
+				switch (format)
+				{
+					case compression_bc1:
+						DecompressBlockBC1(x, y, row_size, d, p);
+						d += 8;
+						break;
+					case compression_bc2:
+						DecompressBlockBC2(x, y, row_size, d, p);
+						d += 16;
+						break;
+					case compression_bc3:
+						DecompressBlockBC3(x, y, row_size, d, p);
+						d += 16;
+						break;
+					case compression_bc4:
+						DecompressBlockBC4(x, y, row_size, BC4_UNORM, d, p);
+						d += 8;
+						break;
+					case compression_bc5:
+						DecompressBlockBC5(x, y, row_size, BC5_UNORM, d, p);
+						d += 16;
+						break;
+				}
+			}
+		}
+		p += plane_size;
+	}
+
+	if (this->pixels)
+	{
+		delete[] this->pixels;
+	}
+	this->pixels = pixels.release();
+	this->pixels_size = plane_size * this->depth;
 
 	return true;
 }

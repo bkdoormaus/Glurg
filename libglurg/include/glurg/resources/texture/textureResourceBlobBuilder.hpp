@@ -52,6 +52,16 @@ namespace glurg
 		bool extract_from_call(
 			GLenum data_format, GLenum data_type, const std::uint8_t* data);
 
+		enum
+		{
+			compression_bc1,
+			compression_bc2,
+			compression_bc3,
+			compression_bc4,
+			compression_bc5
+		};
+		bool extract_compressed_from_call(int format, const std::uint8_t* data);
+
 	private:
 		bool extract_unpacked_pixels(
 			std::size_t num_components, std::size_t component_size,

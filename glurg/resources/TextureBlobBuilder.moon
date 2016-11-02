@@ -126,6 +126,32 @@ class TextureBlobBuilder
 
 		return @has_pixel_data
 
+	extract_compressed_2d: (call) =>
+		Promise.keep("call", Promise.IsClass(call, Call))
+
+		@\set_width(call\get_argument_by_name("width")\query!)
+		@\set_height(call\get_argument_by_name("height")\query!)
+		@\set_depth(1)
+		@\set_mipmap_level(call\get_argument_by_name("data"))
+
+		pixel_data = call\get_argument_by_name("data")\query!
+		if pixel_data == nil or pixel_data.length == 0
+			return false
+
+		format = call\get_argument_by_name("format")\query!
+		compression = switch format.value_name
+			when "GL_COMPRESSED_RGB_S3TC_DXT1_EXT", "GL_COMPRESSED_SRGB_S3TC_DXT1_EXT"
+				'bc1'
+			when "GL_COMPRESSED_RGB_S3TC_DXT3_EXT", "GL_COMPRESSED_SRGB_S3TC_DXT3_EXT"
+				'bc2'
+			when "GL_COMPRESSED_RGB_ALPHA_S3TC_DXT5_EXT", "GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT"
+				'bc3'
+			else
+				error "unsupported compression format"
+
+		@has_pixel_data = @_builder\extract_compressed_from_call(
+			marshal_texture_enumeration('compression', compression), pixel_data.data)
+
 	extract_framebuffer_attachment: (render_state, attachment_type, attachment_index) =>
 		Promise.keep("render_state", Promise.IsUserdata(render_state))
 		Promise.keep("attachment_type", Promise.IsString(attachment_type))
