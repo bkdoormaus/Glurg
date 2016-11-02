@@ -236,7 +236,7 @@ class Program
 		uniforms = @\get_uniforms!
 		for i = 1, #uniforms
 			if uniforms[i].call
-				trace\delete_call(call.index)
+				trace\delete_call(uniforms[i].call.index)
 				uniforms[i].call = false
 
 class ProgramFilter extends Filter
