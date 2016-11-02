@@ -19,6 +19,7 @@ clone_global_table = ->
 			},
 			filters: {
 				BufferFilter: require "glurg.filters.BufferFilter"
+				Filter: require "glurg.filters.Filter"
 				ProgramFilter: require "glurg.filters.ProgramFilter"
 				VertexArrayFilter: require "glurg.filters.VertexArrayFilter"
 			},
@@ -70,7 +71,9 @@ clone_global_table = ->
 		:table
 	}
 	g.require = (path) ->
-		return _dofile(path .. ".moon")
+		s = moonscript.loadfile(path .. ".moon")
+		g.setfenv(s, g)
+		return s()
 	g._G = g
 
 	return g
