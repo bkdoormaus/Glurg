@@ -112,10 +112,10 @@ $ uniq ./models/0004561583.mesh
 With this knowledge, I could write a custom heuristic to extract meshes
 relatively easily, since they are simply stored one after another:
 
-1) Determine unique meshes by iterating over aTextureMeta. The values from this
+1. Determine unique meshes by iterating over aTextureMeta. The values from this
    attribute are also necessary for texture lookup.
-2) Generated sliced meshes, using the ranges extracted in the previous step.
-3) Adjust index data to account for new starting index.
+2. Generated sliced meshes, using the ranges extracted in the previous step.
+3. Adjust index data to account for new starting index.
 
 This logic is demonstrated in the RS3Model heuristic, which is a giant
 modification to GL3StaticModelHeuristic.
@@ -132,8 +132,8 @@ object.
 By having qapitrace only show texture calls, it became immediately clear the
 process:
 
-1) The atlas is created and storage is allocated via glCompressedTexImage2D
-2) As needed, images are stored in the atlas via glCompressedTexSubImage2D calls
+1. The atlas is created and storage is allocated via glCompressedTexImage2D
+2. As needed, images are stored in the atlas via glCompressedTexSubImage2D calls
 
 So I created a texture filter to track calls to glCompressedTexSubImage2D. This
 filter--the TextureAtlasFilter--tracks all the textures submitted and creates
