@@ -29,6 +29,35 @@ const std::uint8_t* slice_data(
 	return buffer + offset;
 }
 
+template <typename Value>
+Value read_data(
+	const std::uint8_t* buffer, std::size_t offset)
+{
+	return *((const Value*)(buffer + offset));
+}
+
+template <typename Value>
+void write_data(
+	std::uint8_t* buffer, std::size_t offset, Value value)
+{
+	*((Value*)(buffer + offset)) = value;
+}
+
+std::uint8_t* make_mutable(
+	const std::uint8_t* data, std::size_t size)
+{
+	auto result = new std::uint8_t[size];
+	std::memcpy(result, data, size);
+
+	return result;
+}
+
+void delete_data(
+	std::uint8_t* data)
+{
+	delete[] data;
+}
+
 void glurg::lua::export_common(lua_State* L)
 {
 	sol::table glurg = sol::stack::get<sol::table>(L, -1);
@@ -36,6 +65,8 @@ void glurg::lua::export_common(lua_State* L)
 	sol::table common = glurg.create_named("common");
 	common["slice_data"] = &slice_data;
 	common["hash_data"] = &glurg::Hash::hash;
+	common["duplicate_data"] = &make_mutable;
+	common["delete_data"] = &delete_data;
 	common["file_mode_read"] = glurg::FileStream::mode_read;
 	common["file_mode_write"] = glurg::FileStream::mode_write;
 	common["process_mode_read"] = glurg::Process::mode_read;
@@ -95,4 +126,20 @@ void glurg::lua::export_common(lua_State* L)
 		"SnappyFileStream",
 		sol::constructors<sol::types<>>(),
 		sol::base_classes, sol::bases<glurg::SimpleFileStream, glurg::FileStream>());
+
+	sol::table data = common.create_named("data");
+	data["read_byte"] = &read_data<std::int8_t>;
+	data["read_unsigned_byte"] = &read_data<std::uint8_t>;
+	data["read_short"] = &read_data<std::int16_t>;
+	data["read_unsigned_short"] = &read_data<std::uint16_t>;
+	data["read_integer"] = &read_data<std::int32_t>;
+	data["read_unsigned_integer"] = &read_data<std::uint32_t>;
+	data["read_float"] = &read_data<float>;
+	data["write_byte"] = &write_data<std::int8_t>;
+	data["write_unsigned_byte"] = &write_data<std::uint8_t>;
+	data["write_short"] = &write_data<std::int16_t>;
+	data["write_unsigned_short"] = &write_data<std::uint16_t>;
+	data["write_integer"] = &write_data<std::int32_t>;
+	data["write_unsigned_integer"] = &write_data<std::uint32_t>;
+	data["write_float"] = &read_data<float>;
 }
