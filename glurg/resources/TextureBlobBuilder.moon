@@ -152,6 +152,8 @@ class TextureBlobBuilder
 		@has_pixel_data = @_builder\extract_compressed_from_call(
 			marshal_texture_enumeration('compression', compression), pixel_data.data)
 
+		return @has_pixel_data
+
 	extract_framebuffer_attachment: (render_state, attachment_type, attachment_index) =>
 		Promise.keep("render_state", Promise.IsUserdata(render_state))
 		Promise.keep("attachment_type", Promise.IsString(attachment_type))
