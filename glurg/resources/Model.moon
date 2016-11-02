@@ -39,14 +39,24 @@ class Model
 		if value == nil or value.length == 0 then
 			return false
 
+		@\set_index_data(index_format, value.data, value.length)
+
+		return true
+
+	set_index_data: (index_format, data, data_length) =>
+		Promise.keep("index_format", Promise.IsString(index_format))
+		Promise.keep("data", Promise.IsUserdata(data))
+		Promise.keep("data_length", Promise.IsNumber(data_length))
+		Promise.keep("data_length >= 1", data_length >= 1)
+
 		index_size = switch index_format
 			when 'unsigned_byte' then 1
 			when 'unsigned_short' then 2
 			when 'unsigned_integer' then 4
-		index_format = marshal_model_enumeration('index_format', index_format)
-		@_model\set_index_data(index_format, value.data, (value.length / index_size))
+			else error "invalid index format"
 
-		return true
+		index_format = marshal_model_enumeration('index_format', index_format)
+		@_model\set_index_data(index_format, data, (data_length / index_size))
 
 	save_dae: (filename) =>
 		Promise.keep("filename", Promise.IsString(filename))
