@@ -72,7 +72,7 @@ class BufferFilter extends Filter
 		for i = 1, #buffers
 			if @_buffers[buffers[i]]
 				@_buffers[buffers[i]].is_deleted = true
-				@_buffers[buffers[i]]\dispose!
+				@_buffers[buffers[i]]\dispose(trace)
 				@_buffers[buffers[i]] = nil
 
 		return false

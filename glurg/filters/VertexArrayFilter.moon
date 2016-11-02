@@ -89,7 +89,7 @@ class VertexArrayFilter extends Filter
 		for i = 1, #arrays
 			if @_vertex_arrays[arrays[i]]
 				@_vertex_arrays[arrays[i]].is_deleted = true
-				@_vertex_arrays[arrays[i]]\dispose!
+				@_vertex_arrays[arrays[i]]\dispose(trace)
 				@_vertex_arrays[arrays[i]] = nil
 
 	dispose: (trace) =>

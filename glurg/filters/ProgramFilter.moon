@@ -352,9 +352,8 @@ class ProgramFilter extends Filter
 		name = call\get_argument_by_name("program")\query!
 		program = @\_get_program(name)
 		program.is_deleted = true
-		program\dispose!
-
-		@\_remove_program(program)
+		program\dispose(trace)
+		@\_remove_program(name)
 
 		return false
 
