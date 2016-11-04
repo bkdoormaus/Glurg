@@ -13,6 +13,7 @@ clone_global_table = ->
 	g = {
 		glurg: {
 			common: {
+				Blob: require "glurg.common.Blob"
 				Log: require "glurg.common.Log"
 				Promise: require "glurg.common.Promise"
 				Retrace: require "glurg.common.Retrace"

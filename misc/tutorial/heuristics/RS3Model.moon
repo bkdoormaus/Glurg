@@ -177,7 +177,6 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 
 		index_count = (index_data_end - index_data_start)
 		model\set_index_data(index_format, index_data\slice(index_data_start), index_count)
-		index_data\dispose!
 
 		return model
 

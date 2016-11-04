@@ -29,6 +29,31 @@ const std::uint8_t* slice_data(
 	return buffer + offset;
 }
 
+void delete_data(std::uint8_t* data)
+{
+	delete[] data;
+}
+
+std::shared_ptr<uint8_t> create_data(std::size_t size)
+{
+	std::uint8_t* data = new std::uint8_t[size];
+	return std::shared_ptr<std::uint8_t>(data, &delete_data);
+}
+
+std::shared_ptr<std::uint8_t> duplicate_data(
+	const std::uint8_t* data, std::size_t size)
+{
+	auto result = create_data(size);
+	std::memcpy(result.get(), data, size);
+
+	return result;
+}
+
+void copy_data(std::uint8_t* to, const std::uint8_t* from, std::size_t size)
+{
+	std::memcpy(to, from, size);
+}
+
 template <typename Value>
 Value read_data(
 	const std::uint8_t* buffer, std::size_t offset)
@@ -43,21 +68,6 @@ void write_data(
 	*((Value*)(buffer + offset)) = value;
 }
 
-std::uint8_t* make_mutable(
-	const std::uint8_t* data, std::size_t size)
-{
-	auto result = new std::uint8_t[size];
-	std::memcpy(result, data, size);
-
-	return result;
-}
-
-void delete_data(
-	std::uint8_t* data)
-{
-	delete[] data;
-}
-
 void glurg::lua::export_common(lua_State* L)
 {
 	sol::table glurg = sol::stack::get<sol::table>(L, -1);
@@ -65,8 +75,9 @@ void glurg::lua::export_common(lua_State* L)
 	sol::table common = glurg.create_named("common");
 	common["slice_data"] = &slice_data;
 	common["hash_data"] = &glurg::Hash::hash;
-	common["duplicate_data"] = &make_mutable;
-	common["delete_data"] = &delete_data;
+	common["duplicate_data"] = &duplicate_data;
+	common["create_data"] = &create_data;
+	common["copy_data"] = &copy_data;
 	common["file_mode_read"] = glurg::FileStream::mode_read;
 	common["file_mode_write"] = glurg::FileStream::mode_write;
 	common["process_mode_read"] = glurg::Process::mode_read;
