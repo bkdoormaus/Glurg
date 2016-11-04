@@ -71,7 +71,9 @@ clone_global_table = ->
 		:table
 	}
 	g.require = (path) ->
-		s = moonscript.loadfile(path .. ".moon")
+		s, m = moonscript.loadfile(path .. ".moon")
+		if not s
+			error m
 		g.setfenv(s, g)
 		return s()
 	g._G = g
