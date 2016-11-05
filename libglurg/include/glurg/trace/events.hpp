@@ -39,7 +39,7 @@ namespace glurg { namespace trace
 		Type get_type() const;
 		Call::Index get_call_index() const;
 
-		static Event* read(TraceFile& trace, FileStream& stream);
+		static std::shared_ptr<Event> read(TraceFile& trace, FileStream& stream);
 
 	private:
 		enum

@@ -23,7 +23,7 @@ glurg::trace::Call::Index glurg::trace::Event::get_call_index() const
 	return this->call_index;
 }
 
-glurg::trace::Event* glurg::trace::Event::read(
+std::shared_ptr<glurg::trace::Event> glurg::trace::Event::read(
 	TraceFile& trace, FileStream& stream)
 {
 	std::uint8_t type;
@@ -59,7 +59,7 @@ glurg::trace::Event* glurg::trace::Event::read(
 
 	parse_call_detail(call, trace, stream);
 
-	return event;
+	return std::shared_ptr<Event>(event);
 }
 
 void glurg::trace::Event::skip_backtrace(TraceFile& trace, FileStream& stream)
