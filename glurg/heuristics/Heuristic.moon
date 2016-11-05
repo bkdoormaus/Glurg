@@ -9,77 +9,38 @@ Log = require "glurg.common.Log"
 Promise = require "glurg.common.Promise"
 Trace = require "glurg.trace.Trace"
 
-clone_global_table = ->
-	g = {
-		glurg: {
-			common: {
-				Blob: require "glurg.common.Blob"
-				Log: require "glurg.common.Log"
-				Promise: require "glurg.common.Promise"
-				Retrace: require "glurg.common.Retrace"
-			},
-			filters: {
-				BufferFilter: require "glurg.filters.BufferFilter"
-				Filter: require "glurg.filters.Filter"
-				ProgramFilter: require "glurg.filters.ProgramFilter"
-				VertexArrayFilter: require "glurg.filters.VertexArrayFilter"
-			},
-			heuristics: {
-				GL3StaticModelHeuristic: require "glurg.heuristics.GL3StaticModelHeuristic"
-			},
-			resources: {
-				Mesh: require "glurg.resources.Mesh"
-				MeshBlob: require "glurg.resources.MeshBlob"
-				MeshBlobBuilder: require "glurg.resources.MeshBlobBuilder"
-				Model: require "glurg.resources.Model"
-				Texture: require "glurg.resources.Texture"
-				TextureBlob: require "glurg.resources.TextureBlob"
-				TextureBlobBuilder: require "glurg.resources.TextureBlobBuilder"
-			},
-			trace: {
-				Call: require "glurg.trace.Call"
-				Event: require "glurg.trace.Event"
-				Trace: require "glurg.trace.Trace"
-				Value: require "glurg.trace.Value"
-			}
-		},
-
-		:error,
-		:getfenv,
-		:getmetatable,
-		:ipairs,
-		:next,
-		:pairs,
-		:pcall,
-		:print,
-		:rawequal,
-		:rawget,
-		:rawset,
-		:select,
-		:setfenv,
-		:setmetatable,
-		:tonumber,
-		:tostring,
-		:type,
-		:unpack,
-		:xpcall,
-
-		:coroutine,
-		:io,
-		:math,
-		:os,
-		:string,
-		:table
+export glurg = {
+	common: {
+		Blob: require "glurg.common.Blob"
+		Log: require "glurg.common.Log"
+		Promise: require "glurg.common.Promise"
+		Retrace: require "glurg.common.Retrace"
+	},
+	filters: {
+		BufferFilter: require "glurg.filters.BufferFilter"
+		Filter: require "glurg.filters.Filter"
+		ProgramFilter: require "glurg.filters.ProgramFilter"
+		VertexArrayFilter: require "glurg.filters.VertexArrayFilter"
+	},
+	heuristics: {
+		GL3StaticModelHeuristic: require "glurg.heuristics.GL3StaticModelHeuristic"
+	},
+	resources: {
+		Mesh: require "glurg.resources.Mesh"
+		MeshBlob: require "glurg.resources.MeshBlob"
+		MeshBlobBuilder: require "glurg.resources.MeshBlobBuilder"
+		Model: require "glurg.resources.Model"
+		Texture: require "glurg.resources.Texture"
+		TextureBlob: require "glurg.resources.TextureBlob"
+		TextureBlobBuilder: require "glurg.resources.TextureBlobBuilder"
+	},
+	trace: {
+		Call: require "glurg.trace.Call"
+		Event: require "glurg.trace.Event"
+		Trace: require "glurg.trace.Trace"
+		Value: require "glurg.trace.Value"
 	}
-	g.require = (path) ->
-		s, m = moonscript.loadfile(path .. ".moon")
-		if not s
-			error m
-		g.setfenv(s, g)
-		return s()
-	g._G = g
-
-	return g
+}
 
 SwapBuffers = {
 	"glXSwapBuffers": true
@@ -92,11 +53,10 @@ class Heuristic
 		if success then
 			@heuristic = result
 		else
-			func, m = moonscript.loadfile(filename)
-			if func == nil then
-				error m, 0
-
-			@heuristic = setfenv(func, clone_global_table!)!
+			success, result = pcall(moonscript.dofile, filename)
+			if not success then
+				error result, 0
+			@heuristic = result
 
 		@data = {}
 		@lower_call_range = nil
