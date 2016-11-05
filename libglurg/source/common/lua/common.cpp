@@ -68,6 +68,11 @@ void write_data(
 	*((Value*)(buffer + offset)) = value;
 }
 
+std::size_t cast_data(const std::uint8_t* data)
+{
+	return (std::size_t)data;
+}
+
 void glurg::lua::export_common(lua_State* L)
 {
 	sol::table glurg = sol::stack::get<sol::table>(L, -1);
@@ -78,6 +83,7 @@ void glurg::lua::export_common(lua_State* L)
 	common["duplicate_data"] = &duplicate_data;
 	common["create_data"] = &create_data;
 	common["copy_data"] = &copy_data;
+	common["cast_data"] = &cast_data;
 	common["file_mode_read"] = glurg::FileStream::mode_read;
 	common["file_mode_write"] = glurg::FileStream::mode_write;
 	common["process_mode_read"] = glurg::Process::mode_read;

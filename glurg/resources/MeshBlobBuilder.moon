@@ -5,6 +5,7 @@
 -- Copyright 2016 [bk]door.maus
 
 glurg = require "glurg"
+Blob = require "glurg.common.Blob"
 Promise = require "glurg.common.Promise"
 MeshBlob = require "glurg.resources.MeshBlob"
 Call = require "glurg.trace.Call"
@@ -61,6 +62,15 @@ class MeshBlobBuilder
 		Promise.keep("@has_vertex_data", @has_vertex_data == true)
 
 		return MeshBlob(@_builder\build!)
+
+	set_vertex_data: (blob) =>
+		Promise.keep("blob", Promise.IsClass(blob, Blob))
+		Promise.keep("blob.length >= 1", blob.length >= 1)
+
+		@_builder\set_vertex_data(blob.data, blob.length)
+		@has_vertex_data = true
+
+		return @has_vertex_data
 
 	extract_buffer_call: (call) =>
 		Promise.keep("call", Promise.IsClass(call, Call))

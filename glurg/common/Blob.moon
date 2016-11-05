@@ -37,24 +37,31 @@ class Blob
 
 		return blob
 
+	cast: =>
+		return glurg.common.cast_data(@data)
+
 	slice: (offset) =>
 		Promise.keep("offset <= @length", offset <= @length)
 
 		return glurg.common.slice_data(@data, offset)
 
-	copy: (other, num_bytes, offset) =>
+	copy: (other, num_bytes, offset, other_offset) =>
 		offset = offset or 0
+		other_offset = other_offset or 0
 
 		Promise.keep("other", Promise.IsClass(other, Blob))
 		Promise.keep("num_bytes", Promise.IsNumber(num_bytes))
 		Promise.keep("num_bytes >= 0", num_bytes >= 0)
-		Promise.keep("num_bytes <= @length", num_bytes <= @length)
 		Promise.keep("offset", Promise.IsNumber(offset))
 		Promise.keep("offset >= 0", offset >= 0)
-		Promise.keep("offset + num_bytes <= other.length",
-			offset + num_bytes <= other.length)
+		Promise.keep("offset + num_bytes <= @length",
+			offset + num_bytes <= @length)
+		Promise.keep("other_offset >= 0", other_offset >= 0)
+		Promise.keep("other_offset + num_bytes <= other.length",
+			other_offset + num_bytes <= other.length)
 
-		glurg.common.copy_data(@data, other\slice(offset), num_bytes)
+		glurg.common.copy_data(
+			@\slice(offset), other\slice(other_offset), num_bytes)
 
 	calculate_hash: (offset, size) =>
 		offset = offset or 0

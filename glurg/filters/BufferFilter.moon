@@ -4,6 +4,7 @@
 --
 -- Copyright 2016 [bk]door.maus
 
+Blob = require "glurg.common.Blob"
 Promise = require "glurg.common.Promise"
 Filter = require "glurg.filters.Filter"
 Call = require "glurg.trace.Call"
@@ -15,15 +16,21 @@ class Buffer
 		@data = false
 		@is_deleted = false
 
-	_update_data: (trace, call) =>
-		if @data
-			trace\delete_call(@data.index)
-		@data = call
+	_buffer_data: (call) =>
+		size = call\get_argument_by_name("size")\query!
+		data = call\get_argument_by_name("data")\query!
 
-	dispose: (trace) =>
+		@data = Blob(size)
+		if data != nil and data.length >= 1
+			@data\copy(data, data.length)
+
+	_buffer_sub_data: (call) =>
 		if @data
-			trace\delete_call(@data.index)
-		@data = false
+			offset = call\get_argument_by_name("offset")\query!
+			size = call\get_argument_by_name("size")\query!
+			data = call\get_argument_by_name("data")\query!
+
+			@data\copy(data, size, offset)
 
 class BufferFilter extends Filter
 	new: (target) =>
@@ -60,9 +67,19 @@ class BufferFilter extends Filter
 
 		target = call\get_argument_by_name("target")\query!.value_name
 		if target == @target then
-			@\_get_buffer(@current_buffer)\_update_data(trace, call)
+			@\_get_buffer(@current_buffer)\_buffer_data(call)
 
-		return true
+		return false
+
+	glBufferSubData: (trace, call) =>
+		Promise.keep("trace", Promise.IsClass(trace, Trace))
+		Promise.keep("call", Promise.IsClass(call, Call))
+
+		target = call\get_argument_by_name("target")\query!.value_name
+		if target == @target then
+			@\_get_buffer(@current_buffer)\_buffer_sub_data(call)
+
+		return false
 
 	glDeleteBuffers: (trace, call) =>
 		Promise.keep("trace", Promise.IsClass(trace, Trace))
@@ -72,13 +89,8 @@ class BufferFilter extends Filter
 		for i = 1, #buffers
 			if @_buffers[buffers[i]]
 				@_buffers[buffers[i]].is_deleted = true
-				@_buffers[buffers[i]]\dispose(trace)
 				@_buffers[buffers[i]] = nil
 
 		return false
-
-	dispose: (trace) =>
-		for _, buffer in pairs(@_buffers)
-			buffer\dispose(trace)
 
 return BufferFilter

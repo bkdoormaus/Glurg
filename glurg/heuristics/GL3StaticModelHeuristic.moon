@@ -41,7 +41,7 @@ class GL3StaticModelHeuristic
 
 		builder = MeshBlobBuilder!
 		extracted_description = builder\extract_attrib_call(description.call)
-		extracted_buffer = builder\extract_buffer_call(buffer.data)
+		extracted_buffer = builder\set_vertex_data(buffer.data)
 		if extracted_description and extracted_buffer
 			return Mesh(builder\build!)
 
