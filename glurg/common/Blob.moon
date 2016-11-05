@@ -43,28 +43,28 @@ class Blob
 		return glurg.common.slice_data(@data, offset)
 
 	copy: (other, num_bytes, offset) =>
+		offset = offset or 0
+
 		Promise.keep("other", Promise.IsClass(other, Blob))
 		Promise.keep("num_bytes", Promise.IsNumber(num_bytes))
 		Promise.keep("num_bytes >= 0", num_bytes >= 0)
 		Promise.keep("num_bytes <= @length", num_bytes <= @length)
-		Promise.keep_any("offset", offset == nil, Promise.IsNumber(offset))
-		Promise.keep_any("offset >= 0", offset == nil, offset >= 0)
-		Promise.keep_any("offset + num_bytes <= other.length",
-			offset == nil, offset + num_bytes <= other.length)
+		Promise.keep("offset", Promise.IsNumber(offset))
+		Promise.keep("offset >= 0", offset >= 0)
+		Promise.keep("offset + num_bytes <= other.length",
+			offset + num_bytes <= other.length)
 
-		offset = offset or 0
 		glurg.common.copy_data(@data, other\slice(offset), num_bytes)
 
 	calculate_hash: (offset, size) =>
-		Promise.keep_any("offset", offset == nil, Promise.IsNumber(offset))
-		Promise.keep_any("size", size == nil, Promise.IsNumber(size))
-		Promise.keep_any("offset >= 0", offset == nil, offset >= 0)
-		Promise.keep_any("size >= 1", size == nil, size >= 1)
-		Promise.keep_any("offset + size <= @length",
-			offset == nil, offset + size <= @length)
-
 		offset = offset or 0
 		size = size or @length
+
+		Promise.keep("offset", Promise.IsNumber(offset))
+		Promise.keep("size", Promise.IsNumber(size))
+		Promise.keep("offset >= 0", offset >= 0)
+		Promise.keep("size >= 1", size >= 1)
+		Promise.keep("offset + size <= @length", offset + size <= @length)
 
 		return glurg.common.hash_data(@\slice(offset), size)\to_string!
 
