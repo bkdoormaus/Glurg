@@ -34,6 +34,14 @@ State.set_min_call = (value) ->
 State.set_max_call = (value) ->
 	State.parameters.max_call = tonumber(value) + 1
 
+State.set_frame = (value) ->
+	State.parameters.min_frame = tonumber(value) + 1
+	State.parameters.max_frame = tonumber(value) + 1
+
+State.set_call = (value) ->
+	State.parameters.min_call = tonumber(value) + 1
+	State.parameters.max_call = tonumber(value) + 1
+
 State.set_verbosity = (value) ->
 	switch value
 		when 'high', 'medium', 'low'
@@ -58,9 +66,13 @@ do
 	Parameters\add(
 		"max-frame", nil, "maximum frame to examine", true, State.set_max_frame)
 	Parameters\add(
+		"frame", "f", "sets minimum and maximum frame to value", true, State.set_frame)
+	Parameters\add(
 		"min-call", nil, "minimum call to examine", true, State.set_min_call)
 	Parameters\add(
 		"max-call", nil, "maximum call to examine", true, State.set_max_call)
+	Parameters\add(
+		"call", "c", "sets minimum and maximum call to value", true, State.set_frame)
 	Parameters\add(
 		"verbosity", "v", "verbosity threshold (low, medium, high)", true, State.set_verbosity)
 	Parameters\add(
