@@ -5,6 +5,7 @@
 -- Copyright 2016 [bk]door.maus
 
 glurg = require "glurg"
+Blob = require "glurg.common.Blob"
 Promise = require "glurg.common.Promise"
 
 marshal_vertex_format = (format) ->
@@ -50,6 +51,7 @@ class MeshBlob
 			normalization: marshal_vertex_normalization(blob.vertex_description.normalization)
 			stride: blob.vertex_description.stride
 			offset: blob.vertex_description.offset
+		@vertex_data = Blob(blob.vertex_data, blob.vertex_data_size)
 		@hash = blob.hash\to_string!
 
 return MeshBlob

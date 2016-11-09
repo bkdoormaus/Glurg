@@ -1,4 +1,4 @@
-TextureAtlasFilter = require "Heuristics/TextureAtlasFilter"
+TextureAtlasFilter = require "heuristics.TextureAtlasFilter"
 
 class RS3Model
 	new: (model, texture) =>
@@ -176,7 +176,7 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 				offset += index_size
 
 		index_count = (index_data_end - index_data_start)
-		model\set_index_data(index_format, index_data\slice(index_data_start), index_count)
+		model\set_index_data(index_format, index_data\raw_slice(index_data_start), index_count)
 
 		return model
 
