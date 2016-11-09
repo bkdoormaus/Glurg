@@ -80,6 +80,14 @@ class Blob
 		glurg.common.copy_data(
 			@\raw_slice(offset), other\raw_slice(other_offset), num_bytes)
 
+	save: (filename) =>
+		Promise.keep("filename", Promise.IsString(filename))
+		
+		fileStream = glurg.common.SimpleFileStream.new!
+		fileStream\open(filename, glurg.common.file_mode_write)
+		fileStream\write(@data, @length)
+		fileStream\close!
+
 	calculate_hash: (offset, size) =>
 		offset = offset or 0
 		size = size or @length
