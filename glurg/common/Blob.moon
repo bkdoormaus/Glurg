@@ -8,14 +8,23 @@ glurg = require "glurg"
 Promise = require "glurg.common.Promise"
 
 class Blob
-	new: (blob) =>
+	new: (blob, size) =>
 		if type(blob) == "userdata"
 			Promise.keep("blob", Promise.IsUserdata(blob))
 
-			@_blob = blob
-			@data = blob.data
-			@length = blob.length
-			@is_mutable = false
+			if size != nil
+				Promise.keep("size", Promise.IsNumber(size))
+				Promise.keep("size >= 0", size >= 0)
+
+				@_blob = false
+				@data = blob
+				@length = size
+				@is_mutable = false
+			else
+				@_blob = blob
+				@data = blob.data
+				@length = blob.length
+				@is_mutable = false
 		elseif type(blob) == "number"
 			Promise.keep("blob >= 1", blob >= 1)
 
@@ -40,10 +49,18 @@ class Blob
 	cast: =>
 		return glurg.common.cast_data(@data)
 
-	slice: (offset) =>
+	raw_slice: (offset) =>
 		Promise.keep("offset <= @length", offset <= @length)
 
 		return glurg.common.slice_data(@data, offset)
+
+	make_slice: (offset) =>
+		Promise.keep("offset <= @length", offset <= @length)
+
+		slice = Blob(glurg.common.slice_data(@data, offset), @length - offset)
+		slice.is_mutable = @is_mutable
+
+		return slice
 
 	copy: (other, num_bytes, offset, other_offset) =>
 		offset = offset or 0
@@ -61,7 +78,7 @@ class Blob
 			other_offset + num_bytes <= other.length)
 
 		glurg.common.copy_data(
-			@\slice(offset), other\slice(other_offset), num_bytes)
+			@\raw_slice(offset), other\raw_slice(other_offset), num_bytes)
 
 	calculate_hash: (offset, size) =>
 		offset = offset or 0
@@ -73,7 +90,7 @@ class Blob
 		Promise.keep("size >= 1", size >= 1)
 		Promise.keep("offset + size <= @length", offset + size <= @length)
 
-		return glurg.common.hash_data(@\slice(offset), size)\to_string!
+		return glurg.common.hash_data(@\raw_slice(offset), size)\to_string!
 
 	write_byte: (offset, value) =>
 		Promise.keep("offset", Promise.IsNumber(offset))
