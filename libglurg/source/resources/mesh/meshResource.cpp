@@ -102,7 +102,7 @@ void glurg::MeshResource::get_values(
 			}
 
 			// Sanitize.
-			if (std::isnan(r[j]))
+			if (std::isnan(r[j]) || std::isinf(r[j]))
 			{
 				r[j] = 0.0f;
 			}
