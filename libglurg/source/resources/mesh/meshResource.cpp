@@ -100,6 +100,12 @@ void glurg::MeshResource::get_values(
 				default:
 					assert(false);
 			}
+
+			// Sanitize.
+			if (std::isnan(r[j]))
+			{
+				r[j] = 0.0f;
+			}
 		}
 
 		output[i] = result;
