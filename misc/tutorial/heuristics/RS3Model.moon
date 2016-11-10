@@ -1,4 +1,4 @@
-TextureAtlasFilter = require "heuristics.TextureAtlasFilter"
+TextureAtlasFilter = require "Heuristics/TextureAtlasFilter"
 
 class RS3Model
 	new: (model, texture) =>
@@ -29,6 +29,7 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 
 		@texture_atlas_filter = TextureAtlasFilter!
 		@attributes.atlas_binding = data["atlas"]
+		@attributes.color_binding = data["color"]
 		@atlas_sampler = data["atlas-sampler"]
 		@atlas_meta = data["atlas-meta"]
 	
@@ -38,6 +39,7 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 	is_compatible: =>
 		program = @program_filter\get_current_program!
 		atlas = program\has_attribute(@attributes.atlas_binding)
+		color = program\has_attribute(@attributes.color_binding)
 
 		return super\is_compatible! and atlas
 
@@ -50,13 +52,13 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 		index = 1
 		while index < atlas_mesh.num_values
 			c = atlas_mesh\get_value(index + 1) -- current
-			d = 0.001
+			d = 1
 			dx = math.abs(p.x - c.x) > d
 			dy = math.abs(p.y - c.y) > d
 			dz = math.abs(p.z - c.z) > d
 			dw = math.abs(p.w - c.w) > d
 			if dx or dy or dz or dw
-				table.insert(meshes, { start: p_start, stop: index, meta: p })
+				table.insert(meshes, { start: p_start, stop: index - 1, meta: p })
 				p = c
 				p_start = index
 			index += 1
@@ -116,15 +118,15 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 
 		builder = glurg.resources.MeshBlobBuilder!
 		extracted_description = builder\extract_attrib_call(description.call)
-		extracted_buffer = builder\extract_buffer_call_slice(
-			buffer.data, buffer_offset, buffer_size)
+		extracted_buffer = builder\set_vertex_data(buffer.data\make_slice(buffer_offset, buffer_size))
 		if extracted_description and extracted_buffer
 			return glurg.resources.Mesh(builder\build!)
 
-	make_sliced_model: (positions_mesh, normals_mesh, texture_coordinates_mesh, offset_start, offset_end, call) =>
+	make_sliced_model: (positions_mesh, normals_mesh, texture_coordinates_mesh, colors_mesh, offset_start, offset_end, call) =>
 		model = glurg.resources.Model(positions_mesh)
 		model.normals = normals_mesh
 		model.texture_coordinates[1] = texture_coordinates_mesh
+		model.colors[1] = colors_mesh
 
 		index_format, index_size = switch call\get_argument_by_name("type")\query!.value_name
 			when 'GL_UNSIGNED_BYTE' then 'unsigned_byte', 1
@@ -135,7 +137,7 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 		vertex_array = @vertex_array_filter\get_current_vertex_array!
 		element_array_buffer = @element_array_buffer_filter\get_buffer(vertex_array.element_array_buffer)
 
-		index_data = element_array_buffer.data\get_argument_by_name("data")\query!
+		index_data = element_array_buffer.data
 		index_data_start = nil
 		index_data_end = nil
 		do
@@ -150,18 +152,20 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 						index_data_start = offset
 				else
 					if value <= offset_end
-						index_data_end = offset
+						index_data_end = offset + index_size
 					else
 						break
 
 				offset += index_size
 
-		glurg.common.Log\info('low', "index start: %d, index end: %d", index_data_start, index_data_end)
+		glurg.common.Log\info('low',
+			"index sub-region start: %d, index sub-region end: %d",
+			index_data_start, index_data_end)
 
 		index_data = index_data\get_mutable!
 		do
 			offset = index_data_start
-			while offset <= index_data_end
+			while offset < index_data_end
 				switch index_format
 					when 'unsigned_byte'
 						value = index_data\read_unsigned_byte(offset) - offset_start
@@ -175,8 +179,8 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 
 				offset += index_size
 
-		index_count = (index_data_end - index_data_start)
-		model\set_index_data(index_format, index_data\raw_slice(index_data_start), index_count)
+		index_length = (index_data_end - index_data_start)
+		model\set_index_data(index_format, index_data\make_slice(index_data_start, index_length))
 
 		return model
 
@@ -228,6 +232,7 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 					p = @attributes.position_binding
 					n = @attributes.normal_binding
 					t = @attributes.texture_coordinate_binding
+					c = @attributes.color_binding
 					start = meshes[i].start
 					stop = meshes[i].stop
 					glurg.common.Log\info('low', "mesh #{i} start: #{start}")
@@ -237,10 +242,11 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 					positions_mesh = @\make_sliced_mesh(p, start, stop)
 					normals_mesh = @\make_sliced_mesh(n, start, stop)
 					texture_coordinates_mesh = @\make_sliced_mesh(t, start, stop)
+					colors_mesh = @\make_sliced_mesh(c, start, stop)
 
 				if positions_mesh and normals_mesh and texture_coordinates_mesh
 					model = @\make_sliced_model(
-						positions_mesh, normals_mesh, texture_coordinates_mesh,
+						positions_mesh, normals_mesh, texture_coordinates_mesh, colors_mesh,
 						meshes[i].start, meshes[i].stop, call)
 					texture = @\get_mesh_texture(meshes[i].meta)
 					glurg.common.Log\info('low', "extracted model")
@@ -248,5 +254,6 @@ class ExtractRS3Model extends glurg.heuristics.GL3StaticModelHeuristic
 					group\add_model(model, (texture or {}).texture)
 
 			group\save_node(@output_directory)
+		super\save_model(call)
 
 return ExtractRS3Model
