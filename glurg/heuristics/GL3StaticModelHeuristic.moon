@@ -59,7 +59,7 @@ class GL3StaticModelHeuristic
 		vertex_array = @vertex_array_filter\get_current_vertex_array!
 		element_array_buffer = @element_array_buffer_filter\get_buffer(vertex_array.element_array_buffer)
 
-		model\extract_index_data(index_format, element_array_buffer.data)
+		model\set_index_data(index_format, element_array_buffer.data)
 
 		return model
 

@@ -54,10 +54,15 @@ class Blob
 
 		return glurg.common.slice_data(@data, offset)
 
-	make_slice: (offset) =>
-		Promise.keep("offset <= @length", offset <= @length)
+	make_slice: (offset, length) =>
+		Promise.keep("offset", Promise.IsNumber(offset))
 
-		slice = Blob(glurg.common.slice_data(@data, offset), @length - offset)
+		length = length or (@length - offset)
+		Promise.keep("length", Promise.IsNumber(length))
+		Promise.keep("length >= 1", length >= 1)
+		Promise.keep("offset + length <= @length", offset <= @length)
+
+		slice = Blob(glurg.common.slice_data(@data, offset), length)
 		slice.is_mutable = @is_mutable
 
 		return slice

@@ -5,6 +5,7 @@
 -- Copyright 2016 [bk]door.maus
 
 glurg = require "glurg"
+Blob = require "glurg.common.Blob"
 Promise = require "glurg.common.Promise"
 Mesh = require "glurg.resources.Mesh"
 Call = require "glurg.trace.Call"
@@ -43,11 +44,9 @@ class Model
 
 		return true
 
-	set_index_data: (index_format, data, data_length) =>
+	set_index_data: (index_format, blob) =>
 		Promise.keep("index_format", Promise.IsString(index_format))
-		Promise.keep("data", Promise.IsUserdata(data))
-		Promise.keep("data_length", Promise.IsNumber(data_length))
-		Promise.keep("data_length >= 1", data_length >= 1)
+		Promise.keep("blob", Promise.IsClass(blob, Blob))
 
 		index_size = switch index_format
 			when 'unsigned_byte' then 1
@@ -56,7 +55,9 @@ class Model
 			else error "invalid index format"
 
 		index_format = marshal_model_enumeration('index_format', index_format)
-		@_model\set_index_data(index_format, data, (data_length / index_size))
+		index_count = (blob.length / index_size)
+		assert(index_count % 3 == 0)
+		@_model\set_index_data(index_format, blob.data, index_count)
 
 	save_dae: (filename) =>
 		Promise.keep("filename", Promise.IsString(filename))
