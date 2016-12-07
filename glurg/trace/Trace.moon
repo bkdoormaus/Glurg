@@ -18,6 +18,7 @@ class Trace
 			error "incompatible stream"
 
 		@is_end_of_file = false
+		@filename = filename
 
 	next_event: =>
 		e = glurg.trace.read_event(@_traceFile, @_fileStream)
