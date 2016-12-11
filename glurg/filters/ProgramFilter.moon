@@ -101,8 +101,8 @@ class Program
 					v0 = call\get_argument_by_name("v0")\query!
 					v1 = call\get_argument_by_name("v1")\query!
 					v2 = call\get_argument_by_name("v2")\query!
-					v4 = call\get_argument_by_name("v4")\query!
-					return { x: v0, y: v1, z: v2, w: v4 }, 'vec4'
+					v3 = call\get_argument_by_name("v3")\query!
+					return { x: v0, y: v1, z: v2, w: v3 }, 'vec4'
 				when "glUniform1fv", "glUniform1iv", "glUniform1uiv" 
 					count = call\get_argument_by_name("count")\query!
 					value = call\get_argument_by_name("value")\query!
