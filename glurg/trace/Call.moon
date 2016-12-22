@@ -23,7 +23,7 @@ class CallSignature
 
 	get_parameter_index: (name) =>
 		Promise.keep("name", Promise.IsString(name))
-		Promise.keep("name", @_parameters[name] != nil)
+		Promise.keep("@_parameters['#{name}']", @_parameters[name] != nil)
 
 		return @_parameters[name]
 

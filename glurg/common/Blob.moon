@@ -46,6 +46,9 @@ class Blob
 
 		return blob
 
+	duplicate: =>
+		return @\get_mutable!
+
 	cast: =>
 		return glurg.common.cast_data(@data)
 

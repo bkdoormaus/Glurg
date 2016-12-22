@@ -158,5 +158,5 @@ void glurg::lua::export_common(lua_State* L)
 	data["write_unsigned_short"] = &write_data<std::uint16_t>;
 	data["write_integer"] = &write_data<std::int32_t>;
 	data["write_unsigned_integer"] = &write_data<std::uint32_t>;
-	data["write_float"] = &read_data<float>;
+	data["write_float"] = &write_data<float>;
 }

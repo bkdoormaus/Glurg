@@ -45,7 +45,7 @@ class VertexArrayFilter extends Filter
 			@_vertex_arrays[name] = VertexArray(name)
 		return @_vertex_arrays[name]
 
-	get_current_vertex_array: (name) =>
+	get_current_vertex_array: =>
 		return @\_get_vertex_array(@current_vertex_array)
 
 	glBindBuffer: (trace, call) =>
